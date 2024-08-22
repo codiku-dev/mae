@@ -15,7 +15,6 @@ export function Home() {
   const [isVisible, setIsVisible] = useState(false);
 
   const stopAndResetAll = () => {
-    logToMain('stopAndResetAll()...');
     LangChainService.getInstance().abortAllRequests();
     setIsVisible(false);
     setStreamedResponse('');
@@ -46,9 +45,7 @@ export function Home() {
         setIsVisible(false);
       }
     });
-    window.electron.ipcRenderer.on('on-main-window-blur', () => {
-      logToMain('BLUR');
-    });
+    window.electron.ipcRenderer.on('on-main-window-blur', () => {});
   }, []);
 
   const handleSubmit = useCallback(async (submittedText: string) => {
