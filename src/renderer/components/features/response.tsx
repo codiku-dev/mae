@@ -8,7 +8,7 @@ export function Response(p: { streamedResponse: string; isLoading: boolean; isSt
     <div onClick={(e) => {
       e.preventDefault();
       e.stopPropagation();
-    }} className="interactive mt-4 p-4 rounded-md bg-white animate-in flex justify-between items-start relative w-full  max-h-[500px] overflow-y-auto">
+    }} className="interactive mt-4 p-4 rounded-md bg-white animate-in flex justify-between items-start relative w-full ">
       {
         p.isLoading ? <div className='w-full flex flex-col gap-1 mt-5'>
           <Skeleton className='w-full h-6 ' /></div> :
@@ -33,7 +33,7 @@ export function Response(p: { streamedResponse: string; isLoading: boolean; isSt
               <div>
                 <span className='text-sm text-black font-bold'>Question : </span><span>"{p.question}"</span>
               </div>
-              <span><span className='text-sm text-black font-bold'>Answer : </span>{p.streamedResponse}</span>
+              <span className=' max-h-[500px] overflow-y-auto'><span className='text-sm text-black font-bold '>Answer : </span>{p.streamedResponse}</span>
             </div>
 
           </div>
