@@ -26,6 +26,7 @@ export class EventListenersService {
     this.addFocusRequestListener();
     this.addBlurListener();
     this.addCopyTextToClipboardRequestListener();
+    this.addCloseRequestListener();
   }
 
   private addFocusRequestListener() {
@@ -34,6 +35,12 @@ export class EventListenersService {
     });
   }
 
+  private addCloseRequestListener() {
+    ipcMain.on('request-close-window', () => {
+      console.log('hide window');
+      this.mainWindow?.hide();
+    });
+  }
   private addBlurListener() {
     this.mainWindow?.on('blur', () => {
       this.mainWindow?.webContents.send('on-main-window-blur');
@@ -55,9 +62,13 @@ export class EventListenersService {
 
   private addCmdSListeners() {
     let lastCallTime = 0;
-    const debounceTime = 350; // Prevent spam
+    const debounceTime = 500; // Prevent spam
 
     globalShortcut.register('CommandOrControl+Shift+P', () => {
+      if (this.mainWindow?.isVisible() === false) {
+        console.log('open windows');
+        this.mainWindow?.show();
+      }
       const currentTime = Date.now();
       if (currentTime - lastCallTime >= debounceTime) {
         lastCallTime = currentTime;

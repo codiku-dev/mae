@@ -1,10 +1,11 @@
 import { app, BrowserWindow /* ,screen */, screen } from 'electron';
 import path from 'path';
+import { start } from './start';
 
 export function initWindow() {
   // const { width, height } = screen.getPrimaryDisplay().workAreaSize;
 
-  const mainWindow = new BrowserWindow({
+  let mainWindow = new BrowserWindow({
     height: screen.getPrimaryDisplay().workAreaSize.height,
     width: screen.getPrimaryDisplay().workAreaSize.width,
     x: 0,
@@ -35,22 +36,15 @@ export function initWindow() {
   global.ignoreMouseEvent = true;
   // mainWindow.setAlwaysOnTop(true, 'screen-saver', 1);
 
-  mainWindow.webContents.on('did-finish-load', async () => {
-    try {
-      //   const [width, height] = await mainWindow.webContents.executeJavaScript(
-      //     `
-      //   [document.getElementById("container").offsetWidth, document.getElementById("container").offsetHeight]
-      // `,
-      //   );
-      // mainWindow.setContentSize(width, height);
-      // mainWindow.setPosition(
-      //   screen.getPrimaryDisplay().workAreaSize.width / 2 - width / 2,
-      //   300,
-      // );
-    } catch (error) {
-      console.error(error);
+  mainWindow.on('ready-to-show', () => {
+    if (!mainWindow) {
+      throw new Error('mainWindow" is not defined');
     }
-  });
 
+    start(mainWindow);
+  });
+  mainWindow.on('closed', () => {
+    mainWindow = null;
+  });
   return mainWindow;
 }

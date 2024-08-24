@@ -3,8 +3,7 @@ import { Error } from '@/renderer/components/features/error';
 import { Response } from '@/renderer/components/features/response';
 import {
   cn,
-  logToMain,
-  makeInteractiveClassClickable,
+  makeInteractiveClassClickable
 } from '@/renderer/libs/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useCallback, useEffect, useState } from 'react';
@@ -16,7 +15,6 @@ export function Home() {
   const [isVisible, setIsVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-
   const stopAndResetAll = () => {
     LangChainService.getInstance().abortAllRequests();
     setIsVisible(false);
@@ -49,14 +47,13 @@ export function Home() {
         setIsVisible(false);
       }
     });
-    window.electron.ipcRenderer.on('on-main-window-blur', () => { });
+    window.electron.ipcRenderer.on('on-main-window-blur', () => "");
   }, []);
 
   const handleSubmit = useCallback(async (submittedText: string) => {
     if (submittedText !== '') {
       setStreamedResponse('');
       setIsLoading(true);
-      logToMain("START LOADING")
       try {
         const stream = LangChainService.getInstance().requestLLM(
           submittedText,
@@ -66,13 +63,13 @@ export function Home() {
         for await (const chunk of stream) {
           if (chunk) {
             setStreamedResponse((prev) => prev + chunk);
-            logToMain("FIRST CHUNK STOP LOADING")
             setIsLoading(false);
           }
         }
       } catch (error) {
-        logToMain('Error in submit: ' + error);
-        setError('Something went wrong...Make sur the LLM is started !');
+        if ((error as Error).message !== "Aborted") {
+          setError('Something went wrong...Make sur the LLM is started !');
+        }
         setIsLoading(false);
       }
     }
@@ -102,6 +99,9 @@ export function Home() {
               }) => {
                 if (definition.opacity === 0) {
                   stopAndResetAll();
+                  setTimeout(() => {
+                    window.electron.ipcRenderer.sendMessage('request-close-window');
+                  }, 100);
                 }
               }}
             >

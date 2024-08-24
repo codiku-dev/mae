@@ -95,7 +95,7 @@ export class LangChainService {
       this.removeAbortController(id);
       logToMain('Error in requestLLM: ' + (error as Error).message);
       // Propagate the error to the consumer of the generator
-      if (error !== 'AbortError') throw error;
+      throw error;
     } finally {
       this.removeAbortController(id);
     }

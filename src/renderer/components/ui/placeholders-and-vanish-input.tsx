@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { cn, logToMain } from 'src/renderer/libs/utils';
+import { cn } from 'src/renderer/libs/utils';
 import { InputProps } from './input';
 
 export function PlaceholdersAndVanishInput({
@@ -21,7 +21,12 @@ export function PlaceholdersAndVanishInput({
   const newDataRef = useRef<any[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {}, []);
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     logToMain("INPUT MOUNT and focus")
+  //     inputRef.current?.focus()
+  //   }, 1000)
+  // }, []);
   const startAnimation = () => {
     intervalRef.current = setInterval(() => {
       setCurrentPlaceholder((prev) => (prev + 1) % placeholders.length);

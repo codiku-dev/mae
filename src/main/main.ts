@@ -11,10 +11,9 @@
 import 'reflect-metadata';
 
 import { app, BrowserWindow, shell } from 'electron';
-import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
+import { autoUpdater } from 'electron-updater';
 import { resolveHtmlPath } from './util';
-import { start } from './start';
 import { initWindow } from './window';
 
 let mainWindow: BrowserWindow | null = null;
@@ -60,17 +59,6 @@ const createWindow = async () => {
   mainWindow = initWindow();
 
   mainWindow.loadURL(resolveHtmlPath('index.html'));
-
-  mainWindow.on('ready-to-show', () => {
-    if (!mainWindow) {
-      throw new Error('mainWindow" is not defined');
-    }
-
-    start(mainWindow);
-  });
-  mainWindow.on('closed', () => {
-    mainWindow = null;
-  });
 
   // Open urls in the user's browser
   mainWindow.webContents.setWindowOpenHandler((edata) => {
