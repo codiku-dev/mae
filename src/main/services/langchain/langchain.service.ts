@@ -1,6 +1,7 @@
 import { Ollama } from '@langchain/ollama';
 import { v4 as uuidv4 } from 'uuid';
 
+import { logToMain } from '../../../renderer/libs/utils';
 import { LLMMode } from './langchain.service.type';
 import { PROMPT_TEMPLATES } from './prompts';
 
@@ -20,7 +21,7 @@ export class LangChainService {
 
   // private memory: BufferMemory;
   constructor() {
-    console.log('Setup ollama...');
+    logToMain('Setup ollama...');
 
     LangChainService.llm = new Ollama({
       baseUrl: 'http://127.0.0.1:11434',
@@ -43,17 +44,17 @@ export class LangChainService {
   // @exposedToRenderer()
   async abortAllRequests() {
     LangChainService.abortControllers.forEach((entry) => {
-      console.log(
-        'aborting for',
-        entry.id,
-        ' at ',
-        new Date().toLocaleTimeString('en-US', {
-          hour12: false,
-          hour: '2-digit',
-          minute: '2-digit',
-          second: '2-digit',
-          fractionalSecondDigits: 3,
-        }),
+      logToMain(
+        'aborting for' +
+          entry.id +
+          ' at ' +
+          new Date().toLocaleTimeString('en-US', {
+            hour12: false,
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            fractionalSecondDigits: 3,
+          }),
       );
       entry.controller.abort();
     });
@@ -69,7 +70,6 @@ export class LangChainService {
       LangChainService.abortControllers.filter((entry) => entry.id !== id);
   }
 
-  // @exposedToRenderer()
   async *requestLLM(input: string, mode: LLMMode) {
     const id = uuidv4();
     const controller = new AbortController();
@@ -82,14 +82,22 @@ export class LangChainService {
       });
 
       for await (const chunk of stream) {
-        yield chunk;
+        try {
+          yield chunk;
+        } catch (error) {
+          logToMain(
+            'Error reading the little chunk: ' + (error as Error).message,
+          );
+        }
       }
-
       this.removeAbortController(id);
     } catch (error) {
-      console.log('ERROR', error);
       this.removeAbortController(id);
-      yield null;
+      logToMain('Error in requestLLM: ' + (error as Error).message);
+      // Propagate the error to the consumer of the generator
+      if (error !== 'AbortError') throw error;
+    } finally {
+      this.removeAbortController(id);
     }
   }
 }

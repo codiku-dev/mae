@@ -7,8 +7,6 @@ export type Channels =
   | 'log'
   | 'request-close-window'
   | 'request-open-window'
-  | 'LangchainService:requestLLM'
-  | 'LangchainService:requestLLM-reply'
   | 'set-ignore-mouse-events'
   | 'request-focus-window'
   | 'on-main-window-blur'

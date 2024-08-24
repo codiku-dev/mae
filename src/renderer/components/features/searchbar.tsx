@@ -1,7 +1,7 @@
 import { ChangeEvent, FormEvent } from 'react';
 import { PlaceholdersAndVanishInput } from '../ui/placeholders-and-vanish-input';
 
-const placeholders = ['Ask any question and press enter !'];
+const placeholders = ['Ask any question and press enter !', "Escape to close"];
 export function SearchBar(p: {
   value: string;
   onChange: (value: string) => void;

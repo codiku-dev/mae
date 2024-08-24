@@ -1,24 +1,28 @@
-import { useCallback, useEffect, useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { LangChainService } from '@/main/services/langchain/langchain.service';
+import { Error } from '@/renderer/components/features/error';
+import { Response } from '@/renderer/components/features/response';
 import {
   cn,
   logToMain,
   makeInteractiveClassClickable,
 } from '@/renderer/libs/utils';
-import { LangChainService } from '@/main/services/langchain/langchain.service';
-import { Response } from '@/renderer/components/features/response';
+import { AnimatePresence, motion } from 'framer-motion';
+import { useCallback, useEffect, useState } from 'react';
 import { SearchBar } from '../../components/features/searchbar';
 
 export function Home() {
   const [value, setValue] = useState<string>('');
   const [streamedResponse, setStreamedResponse] = useState<string>('');
   const [isVisible, setIsVisible] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const stopAndResetAll = () => {
     LangChainService.getInstance().abortAllRequests();
     setIsVisible(false);
     setStreamedResponse('');
     setValue('');
+    setError('');
   };
 
   useEffect(makeInteractiveClassClickable, []);
@@ -45,13 +49,14 @@ export function Home() {
         setIsVisible(false);
       }
     });
-    window.electron.ipcRenderer.on('on-main-window-blur', () => {});
+    window.electron.ipcRenderer.on('on-main-window-blur', () => { });
   }, []);
 
   const handleSubmit = useCallback(async (submittedText: string) => {
     if (submittedText !== '') {
       setStreamedResponse('');
-
+      setIsLoading(true);
+      logToMain("START LOADING")
       try {
         const stream = LangChainService.getInstance().requestLLM(
           submittedText,
@@ -61,13 +66,19 @@ export function Home() {
         for await (const chunk of stream) {
           if (chunk) {
             setStreamedResponse((prev) => prev + chunk);
+            logToMain("FIRST CHUNK STOP LOADING")
+            setIsLoading(false);
           }
         }
       } catch (error) {
-        console.error('Error in streaming:', error);
+        logToMain('Error in submit: ' + error);
+        setError('Something went wrong...Make sur the LLM is started !');
+        setIsLoading(false);
       }
     }
   }, []);
+
+
 
   return (
     <div id="container" className={cn('w-full h-full', isVisible && '')}>
@@ -101,9 +112,8 @@ export function Home() {
                   onSubmit={handleSubmit}
                 />
 
-                {streamedResponse && (
-                  <Response streamedResponse={streamedResponse} />
-                )}
+                {(isLoading || (streamedResponse && streamedResponse !== "")) && <Response streamedResponse={streamedResponse} isLoading={isLoading} />}
+                {error && <Error errorMessage={error} />}
               </div>
             </motion.div>
           )}
