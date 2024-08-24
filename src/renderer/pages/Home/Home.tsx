@@ -15,7 +15,7 @@ export function Home() {
   const [isVisible, setIsVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isStreamingFinished, setIsStreamingFinished] = useState(true);
-
+  const [submitedPrompt, setSubmitedPrompt] = useState('');
   const [error, setError] = useState('');
   const stopAndResetAll = () => {
     LangChainService.getInstance().abortAllRequests()
@@ -57,6 +57,7 @@ export function Home() {
 
   const handleSubmit = useCallback(async (submittedText: string) => {
     if (submittedText !== '') {
+      setSubmitedPrompt(submittedText)
       setStreamedResponse('');
       setIsLoading(true);
       setIsStreamingFinished(false);
@@ -81,47 +82,51 @@ export function Home() {
 
   return (
     <div id="container" className={cn('w-full h-full', isVisible && '')}>
-      <div className="flex justify-center mt-10">
-        <AnimatePresence>
-          {isVisible && (
-            <motion.div
-              key="modal"
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 50 }}
-              transition={{
-                type: 'spring',
-                stiffness: 300,
-                damping: 30,
-                duration: 0.15,
-              }}
-              onAnimationComplete={(definition: {
-                opacity: number;
-                y: number;
-              }) => {
-                if (definition.opacity === 0) {
-                  stopAndResetAll();
-                  setTimeout(() => {
-                    window.electron.ipcRenderer.sendMessage('request-close-window');
-                  }, 100);
-                }
-              }}
-            >
-              <div id="ai-container" className="interactive w-96">
-                <SearchBar
-                  value={value}
-                  onChange={setValue}
-                  onSubmit={handleSubmit}
-                />
-
-                {(isLoading || (streamedResponse && streamedResponse !== "")) &&
-                  <Response streamedResponse={streamedResponse} isLoading={isLoading} isStreamingFinished={isStreamingFinished} />}
-                {error && <Error errorMessage={error} />}
+      <AnimatePresence>
+        {isVisible && (
+          <motion.div
+            key="modal"
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 50 }}
+            transition={{
+              type: 'spring',
+              stiffness: 300,
+              damping: 30,
+              duration: 0.15,
+            }}
+            onAnimationComplete={(definition: {
+              opacity: number;
+              y: number;
+            }) => {
+              if (definition.opacity === 0) {
+                stopAndResetAll();
+                setTimeout(() => {
+                  window.electron.ipcRenderer.sendMessage('request-close-window');
+                }, 100);
+              }
+            }}
+          >
+            <div className=" w-screen">
+              <div className='flex flex-col  items-center '>
+                <div id="ai-searchbar" className='w-96 interactive'>
+                  <SearchBar
+                    value={value}
+                    onChange={setValue}
+                    onSubmit={handleSubmit}
+                  />
+                </div>
+                <div id="ai-response" className='interactive w-1/2'>
+                  {(isLoading || (streamedResponse && streamedResponse !== "")) &&
+                    <Response question={submitedPrompt} streamedResponse={streamedResponse} isLoading={isLoading} isStreamingFinished={isStreamingFinished} />}
+                  {error && <Error errorMessage={error} />}
+                </div>
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
+
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

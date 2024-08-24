@@ -1,9 +1,9 @@
 .todo
+- [] Prevent scroll global
+- [] Allow more width and limit height and add scroll
 - [] Ajouter ollama dans l'installation
 - [x] Gérer erreur Ollama
 - [x] Gérer loading
-- [] Prevent scroll global
-- [] Allow more width and limit height and add scroll
 - [] Button to abort
 - [] Remettre question
 - [] Limiter taille
