@@ -37,7 +37,6 @@ export class EventListenersService {
 
   private addCloseRequestListener() {
     ipcMain.on('request-close-window', () => {
-      console.log('hide window');
       this.mainWindow?.hide();
     });
   }
@@ -66,7 +65,6 @@ export class EventListenersService {
 
     globalShortcut.register('CommandOrControl+Shift+P', () => {
       if (this.mainWindow?.isVisible() === false) {
-        console.log('open windows');
         this.mainWindow?.show();
       }
       const currentTime = Date.now();

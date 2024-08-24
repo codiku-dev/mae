@@ -21,12 +21,7 @@ export function PlaceholdersAndVanishInput({
   const newDataRef = useRef<any[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     logToMain("INPUT MOUNT and focus")
-  //     inputRef.current?.focus()
-  //   }, 1000)
-  // }, []);
+
   const startAnimation = () => {
     intervalRef.current = setInterval(() => {
       setCurrentPlaceholder((prev) => (prev + 1) % placeholders.length);

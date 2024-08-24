@@ -1,22 +1,12 @@
 .todo
-
-Ajouter ollama dans l'installation
-
-Gérer erreur Ollama
-
-Gérer loading
-
-Prevent scroll global
-
-Allow more width and limit height and add scroll
-
-Button to abort
-
-Remettre question
-
-Limiter taille
-
-Animation copy
-
-Md , latex , schema generation
+- [] Ajouter ollama dans l'installation
+- [x] Gérer erreur Ollama
+- [x] Gérer loading
+- [] Prevent scroll global
+- [] Allow more width and limit height and add scroll
+- [] Button to abort
+- [] Remettre question
+- [] Limiter taille
+- []  Animation copy
+- [] Md, latex, schema generation
 

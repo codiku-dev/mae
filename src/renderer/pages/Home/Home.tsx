@@ -14,13 +14,17 @@ export function Home() {
   const [streamedResponse, setStreamedResponse] = useState<string>('');
   const [isVisible, setIsVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isStreamingFinished, setIsStreamingFinished] = useState(true);
+
   const [error, setError] = useState('');
   const stopAndResetAll = () => {
-    LangChainService.getInstance().abortAllRequests();
+    LangChainService.getInstance().abortAllRequests()
     setIsVisible(false);
     setStreamedResponse('');
     setValue('');
     setError('');
+    setIsLoading(false);
+    setIsStreamingFinished(true);
   };
 
   useEffect(makeInteractiveClassClickable, []);
@@ -37,6 +41,7 @@ export function Home() {
   useEffect(function addOpenCloseListener() {
     window.electron.ipcRenderer.on('global-shortcut', (e) => {
       if (e.data.shortcut === 'CommandOrControl+Shift+P') {
+
         setIsVisible((prev) => {
           return !prev;
         });
@@ -54,24 +59,21 @@ export function Home() {
     if (submittedText !== '') {
       setStreamedResponse('');
       setIsLoading(true);
-      try {
-        const stream = LangChainService.getInstance().requestLLM(
-          submittedText,
-          'question',
-        );
-
-        for await (const chunk of stream) {
-          if (chunk) {
-            setStreamedResponse((prev) => prev + chunk);
-            setIsLoading(false);
-          }
+      setIsStreamingFinished(false);
+      setError('');
+      LangChainService.getInstance().requestLlamaStream(submittedText, "question", (chunk) => {
+        if (chunk.done === false) {
+          setStreamedResponse((prev) => prev + chunk.message.content);
+          setIsLoading(false);
+        } else {
+          setIsStreamingFinished(true);
+          setIsLoading(false);
         }
-      } catch (error) {
-        if ((error as Error).message !== "Aborted") {
-          setError('Something went wrong...Make sur the LLM is started !');
-        }
-        setIsLoading(false);
-      }
+      }, () => {
+        setError('Something went wrong...Make sur the LLM is started !');
+        setIsLoading(false)
+        setIsStreamingFinished(true)
+      })
     }
   }, []);
 
@@ -112,7 +114,8 @@ export function Home() {
                   onSubmit={handleSubmit}
                 />
 
-                {(isLoading || (streamedResponse && streamedResponse !== "")) && <Response streamedResponse={streamedResponse} isLoading={isLoading} />}
+                {(isLoading || (streamedResponse && streamedResponse !== "")) &&
+                  <Response streamedResponse={streamedResponse} isLoading={isLoading} isStreamingFinished={isStreamingFinished} />}
                 {error && <Error errorMessage={error} />}
               </div>
             </motion.div>
