@@ -74,3 +74,8 @@ export async function getOllamaPID() {
   const { stdout } = await execAsync('lsof -t -i :11434');
   return stdout.trim();
 }
+
+export async function restartOllama() {
+  await stopOllama();
+  await startOllama();
+}

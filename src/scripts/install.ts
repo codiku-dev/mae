@@ -1,6 +1,6 @@
 import { installOllama } from './ollama/ollama-install';
 
-export async function afterInstall() {
+export async function install() {
   console.log('[After install script starting...]');
   await installOllama();
   console.log('Install scripts executed successfully.');
