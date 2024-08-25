@@ -1,4 +1,4 @@
-import { LangChainService } from '@/main/services/langchain/langchain.service';
+import { OllamaService } from '@/main/services/ollama/ollama.service';
 import { Error } from '@/renderer/components/features/error';
 import { Response } from '@/renderer/components/features/response';
 import {
@@ -18,7 +18,7 @@ export function Home() {
   const [submitedPrompt, setSubmitedPrompt] = useState('');
   const [error, setError] = useState('');
   const stopAndResetAll = () => {
-    LangChainService.getInstance().abortAllRequests()
+    OllamaService.getInstance().abortAllRequests()
     setIsVisible(false);
     setStreamedResponse('');
     setValue('');
@@ -62,7 +62,7 @@ export function Home() {
       setIsLoading(true);
       setIsStreamingFinished(false);
       setError('');
-      LangChainService.getInstance().requestLlamaStream(submittedText, "question", (chunk) => {
+      OllamaService.getInstance().requestLlamaStream(submittedText, "question", (chunk) => {
         if (chunk.done === false) {
           setStreamedResponse((prev) => prev + chunk.message.content);
           setIsLoading(false);

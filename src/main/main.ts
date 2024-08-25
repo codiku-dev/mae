@@ -1,19 +1,8 @@
-/* eslint global-require: off, no-console: off, promise/always-return: off */
-
-/**
- * This module executes inside of electron's main process. You can start
- * electron renderer process from here and communicate with the other processes
- * through IPC.
- *
- * When running `npm run build` or `npm run build:main`, this file is compiled to
- * `./src/main.js` using webpack. This gives us some performance wins.
- */
-import 'reflect-metadata';
-
 import { app, BrowserWindow, shell } from 'electron';
 import log from 'electron-log';
 import { autoUpdater } from 'electron-updater';
-import { beforeStop } from 'scripts/before-stop';
+import { beforeStart } from '../scripts/before-start';
+import { beforeStop } from '../scripts/before-stop';
 import { resolveHtmlPath } from './util';
 import { initWindow } from './window';
 
@@ -85,12 +74,15 @@ app.on('window-all-closed', () => {
 });
 
 app.on('before-quit', () => {
+  // if (process.env.NODE_ENV === 'production') {
   beforeStop();
+  // }
 });
 
 app
   .whenReady()
-  .then(() => {
+  .then(async () => {
+    await beforeStart();
     createWindow();
     app.on('activate', () => {
       // On macOS it's common to re-create a window in the app when the

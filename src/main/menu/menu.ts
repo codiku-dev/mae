@@ -1,6 +1,6 @@
 import { Menu, Tray, app, dialog, nativeImage } from 'electron';
 import path from 'path';
-import { pullOllamaModel } from '../../../scripts/ollama/ollama.commands';
+import { pullOllamaModel } from '../../scripts/ollama/ollama.commands';
 const MENU = {
   UPDATE_MODEL: 1,
   QUIT: 2,
@@ -25,7 +25,7 @@ export function initMenu() {
       commandId: MENU.QUIT,
     },
   ]);
-  tray.setToolTip('This is my application.');
+  tray.setToolTip('Mia. The local AI assistant.');
   tray.setContextMenu(contextMenu);
 }
 
@@ -68,7 +68,6 @@ function setIcon() {
     '..',
     'assets/icons/16x16.png',
   );
-  console.log('pathToIcon', pathToIcon);
   const icon = nativeImage.createFromPath(pathToIcon);
   tray = new Tray(icon);
 }

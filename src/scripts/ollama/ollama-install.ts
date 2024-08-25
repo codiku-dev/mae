@@ -3,7 +3,7 @@ import fs, { promises as fsPromises } from 'fs';
 import https from 'https';
 import path from 'path';
 import { promisify } from 'util';
-import { pullOllamaModel } from '../ollama/ollama.commands';
+import { pullOllamaModel } from './ollama.commands';
 
 const execAsync = promisify(exec);
 export async function installOllama() {
@@ -13,13 +13,13 @@ export async function installOllama() {
 }
 
 async function checkForOLLama() {
-  console.log('Mia : Checking for OLLama...');
+  console.log('Mia: Checking for OLLama...');
   const ollamaPath = '/Applications/OLLama.app';
   try {
     await fsPromises.access(ollamaPath);
     console.log('OLLama is already installed.');
   } catch {
-    console.log('Mia : OLLama is not installed. Downloading and installing...');
+    console.log('Mia: OLLama is not installed. Downloading and installing...');
     await downloadAndInstallOLLama();
   }
 }
@@ -49,26 +49,26 @@ async function downloadFile(downloadUrl: string, dest: string) {
         const newUrl = new URL(response.headers.location, downloadUrl).href;
         downloadFile(newUrl, dest).then(resolve).catch(reject);
       } else if (response.statusCode === 200) {
-        console.log('Mia : Downloading file...\n');
+        console.log('Mia: Downloading file...\n');
         const fileStream = fs.createWriteStream(dest);
         response.pipe(fileStream);
         fileStream.on('finish', async () => {
-          console.log('Mia : File downloaded successfully.\n');
+          console.log('Mia: File downloaded successfully.\n');
           await fileHandle.close(); // Explicitly close the file handle
           fileStream.close(resolve);
         });
         fileStream.on('error', async (err: any) => {
-          console.error('Mia : Error writing to file:', err);
+          console.error('Mia: Error writing to file:', err);
           await fsPromises.unlink(dest);
           await fileHandle.close(); // Explicitly close the file handle
           reject(err);
         });
       } else {
-        console.log('Mia : Failed to download file.\n');
+        console.log('Mia: Failed to download file.\n');
         fsPromises.unlink(dest);
         reject(
           new Error(
-            `Mia : Failed to download file. Status code: ${response.statusCode}`,
+            `Mia: Failed to download file. Status code: ${response.statusCode}`,
           ),
         );
       }
@@ -85,9 +85,9 @@ async function downloadFile(downloadUrl: string, dest: string) {
 async function extractZip(zipPath: string) {
   try {
     await execAsync(`unzip -o ${zipPath} -d /Applications`);
-    console.log('Mia : OLLama installed successfully.\n');
+    console.log('Mia: OLLama installed successfully.\n');
   } catch (err) {
-    console.error('Mia : Error during extraction:', err);
+    console.error('Mia: Error during extraction:', err);
   } finally {
     await fsPromises.unlink(zipPath);
   }
@@ -116,8 +116,8 @@ async function addFirstRunDoneMetadata() {
   try {
     await fsPromises.mkdir(path.dirname(configPath), { recursive: true });
     await fsPromises.writeFile(configPath, JSON.stringify(configData, null, 2));
-    console.log('Mia : First run metadata added successfully.\n');
+    console.log('Mia: First run metadata added successfully.\n');
   } catch (err) {
-    console.error('Mia : Error writing first run metadata:', err);
+    console.error('Mia: Error writing first run metadata:', err);
   }
 }

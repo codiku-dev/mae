@@ -1,20 +1,13 @@
-import { Ollama } from '@langchain/ollama';
 import { v4 as uuidv4 } from 'uuid';
 
 import { logToMain } from '../../../renderer/libs/utils';
 import { LLMMode } from './langchain.service.type';
+import { Ollama } from '@langchain/ollama';
 
 interface ControllerEntry {
   id: string;
   controller: AbortController;
 }
-
-type ResponseChunk = {
-  model: string;
-  created_at: string;
-  response: string;
-  done: boolean;
-};
 
 type ChatResponseChunk = {
   model: string;
@@ -27,39 +20,25 @@ type ChatResponseChunk = {
   done: boolean;
 };
 // @ExposableToRenderer()
-export class LangChainService {
+export class OllamaService {
   // eslint-disable-next-line no-use-before-define
-  private static instance: LangChainService | null = null;
+  private static instance: OllamaService | null = null;
   private messages: any[] = [];
   static llm: Ollama;
 
   public static abortControllers: ControllerEntry[] = [];
 
-  // private memory: BufferMemory;
-  constructor() {
-    logToMain('Setup ollama...');
+  constructor() {}
 
-    // LangChainService.llm = new Ollama({
-    //   baseUrl: 'http://127.0.0.1:11434/wh',
-    //   model: 'llama3.1:latest',
-    //   temperature: 0.2,
-    //   maxRetries: 0,
-    //   maxConcurrency: 1,
-    //   cache: true,
-    //   numThread: 4,
-    // });
-  }
-
-  public static getInstance(): LangChainService {
-    if (LangChainService.instance === null) {
-      LangChainService.instance = new LangChainService();
+  public static getInstance(): OllamaService {
+    if (OllamaService.instance === null) {
+      OllamaService.instance = new OllamaService();
     }
-    return LangChainService.instance;
+    return OllamaService.instance;
   }
 
-  // @exposedToRenderer()
   async abortAllRequests() {
-    LangChainService.abortControllers.forEach((entry) => {
+    OllamaService.abortControllers.forEach((entry) => {
       logToMain(
         'aborting for' +
           entry.id +
@@ -78,12 +57,13 @@ export class LangChainService {
       setTimeout(resolve, 50);
     });
 
-    LangChainService.abortControllers = [];
+    OllamaService.abortControllers = [];
   }
 
   removeAbortController(id: string) {
-    LangChainService.abortControllers =
-      LangChainService.abortControllers.filter((entry) => entry.id !== id);
+    OllamaService.abortControllers = OllamaService.abortControllers.filter(
+      (entry) => entry.id !== id,
+    );
   }
 
   // async *requestLLM(input: string, mode: LLMMode) {
@@ -92,8 +72,8 @@ export class LangChainService {
   //   try {
   //     const promptString = PROMPT_TEMPLATES[mode];
 
-  //     LangChainService.abortControllers.push({ id, controller });
-  //     const stream = await LangChainService.llm.stream(promptString + input, {
+  //     OllamaService.abortControllers.push({ id, controller });
+  //     const stream = await OllamaService.llm.stream(promptString + input, {
   //       signal: controller.signal,
   //     });
 
@@ -128,7 +108,7 @@ export class LangChainService {
     const id = uuidv4(); // Generate a random ID for the controller
     // const promptString = PROMPT_TEMPLATES[mode];
     await this.abortAllRequests();
-    LangChainService.abortControllers.push({ id, controller });
+    OllamaService.abortControllers.push({ id, controller });
 
     try {
       this.messages.push({ role: 'user', content: prompt });

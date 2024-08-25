@@ -3,7 +3,10 @@
     "incremental": true,
     "target": "es2022",
     "module": "commonjs",
-    "lib": ["dom", "es2022"],
+    "lib": [
+      "dom",
+      "es2022"
+    ],
     "jsx": "react-jsx",
     "strict": true,
     "sourceMap": true,
@@ -15,14 +18,32 @@
     "outDir": ".erb/dll",
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
-      "@renderer/*": ["src/renderer/*"],
-      "@main/*": ["src/main/*"],
-      "@release/*": ["release/*"]
+      "@/*": [
+        "src/*"
+      ],
+      "@renderer/*": [
+        "src/renderer/*"
+      ],
+      "@main/*": [
+        "src/main/*"
+      ],
+      "@scripts/*": [
+        "src/scripts/*"
+      ]
     },
     "experimentalDecorators": true,
-    "types": ["node"],
-    "typeRoots": ["./node_modules/@types", "./src/types"]
+    "types": [
+      "node"
+    ],
+    "typeRoots": [
+      "./node_modules/@types",
+      "./src/types"
+    ]
   },
-  "exclude": ["test", "release/build", "release/app/dist", ".erb/dll"]
+  "exclude": [
+    "test",
+    "release/build",
+    "release/app/dist",
+    ".erb/dll"
+  ]
 }
