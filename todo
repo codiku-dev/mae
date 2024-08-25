@@ -1,13 +1,7 @@
-.todo
-- [] Ajouter ollama dans l'installation
-- [X] Prevent scroll global
-- [X] Allow more width and limit height and add scroll
-- [x] Gérer erreur Ollama
-- [x] Gérer loading
 - [] Button to abort
-- [X] Remettre question
-- [X] Limiter taille
 - []  Animation copy
-- [] Md, latex, schema generation
 - [] Menu to quit
-
+- [] Menu to update model and ollama
+- [] Menu to select another model
+- [] Md, latex, schema generation
+- Icon a améliorer
