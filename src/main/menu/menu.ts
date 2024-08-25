@@ -1,7 +1,6 @@
 import { Menu, Tray, app, dialog, nativeImage } from 'electron';
 import path from 'path';
 import { pullOllamaModel } from '../../../scripts/ollama/ollama.commands';
-
 const MENU = {
   UPDATE_MODEL: 1,
   QUIT: 2,

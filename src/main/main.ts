@@ -13,6 +13,7 @@ import 'reflect-metadata';
 import { app, BrowserWindow, shell } from 'electron';
 import log from 'electron-log';
 import { autoUpdater } from 'electron-updater';
+import { beforeStop } from 'scripts/before-stop';
 import { resolveHtmlPath } from './util';
 import { initWindow } from './window';
 
@@ -81,6 +82,10 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit();
   }
+});
+
+app.on('before-quit', () => {
+  beforeStop();
 });
 
 app
