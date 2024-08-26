@@ -1,4 +1,5 @@
 import { exec } from 'child_process';
+import { promises as fsPromises } from 'fs';
 import { promisify } from 'util';
 import { sleep } from '../../libs/utils';
 const execAsync = promisify(exec);
@@ -15,6 +16,15 @@ export async function pullOllamaModel(modelName: string) {
     console.error('Error executing command:', error);
   }
 }
+export async function isOllamaInstalled() {
+  const ollamaPath = '/Applications/OLLama.app';
+  try {
+    await fsPromises.access(ollamaPath);
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 export async function startOllama() {
   console.log('Mia: Starting OLLAMA...');
@@ -23,6 +33,7 @@ export async function startOllama() {
   let isRunning = await isOllamaRunning();
 
   if (!isRunning) {
+    console.log('Mia: ollama serve');
     const ollamaProcess = exec('ollama serve');
     while (!isRunning) {
       await sleep(1000);
@@ -60,10 +71,16 @@ export async function stopOllama() {
 }
 
 export async function isOllamaRunning() {
+  console.log('Mia: Checking if OLLAMA is running...');
   try {
-    const { stdout: checkStdout } = await execAsync('lsof -i :11434');
+    const { stdout: checkStdout, stderr: checkStderr } =
+      await execAsync('lsof -i :11434');
+    console.log('result of isOllamaRunning', checkStdout, checkStderr);
     if (checkStdout) {
       return true;
+    }
+    if (checkStderr) {
+      return false;
     }
   } catch (error) {
     return false;

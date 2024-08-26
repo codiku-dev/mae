@@ -3,7 +3,7 @@ import fs, { promises as fsPromises } from 'fs';
 import https from 'https';
 import path from 'path';
 import { promisify } from 'util';
-import { pullOllamaModel } from './ollama.commands';
+import { isOllamaInstalled, pullOllamaModel } from './ollama.commands';
 
 const execAsync = promisify(exec);
 export async function installOllama() {
@@ -13,13 +13,7 @@ export async function installOllama() {
 }
 
 async function checkForOLLama() {
-  console.log('Mia: Checking for OLLama...');
-  const ollamaPath = '/Applications/OLLama.app';
-  try {
-    await fsPromises.access(ollamaPath);
-    console.log('OLLama is already installed.');
-  } catch {
-    console.log('Mia: OLLama is not installed. Downloading and installing...');
+  if (await isOllamaInstalled()) {
     await downloadAndInstallOLLama();
   }
 }

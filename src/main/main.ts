@@ -1,10 +1,13 @@
 import { app, BrowserWindow, shell } from 'electron';
 import log from 'electron-log';
 import { autoUpdater } from 'electron-updater';
-import { beforeStart } from '../scripts/before-start';
 import { beforeStop } from '../scripts/before-stop';
+import { StoreService } from './store';
+
 import { resolveHtmlPath } from './util';
 import { initWindow } from './window';
+
+const storeService = StoreService.getInstance();
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -82,7 +85,6 @@ app.on('before-quit', () => {
 app
   .whenReady()
   .then(async () => {
-    await beforeStart();
     createWindow();
     app.on('activate', () => {
       // On macOS it's common to re-create a window in the app when the
