@@ -1,1 +1,0 @@
-ts-node ./src/scripts/run-install.ts

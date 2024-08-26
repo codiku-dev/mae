@@ -3,18 +3,28 @@ import fs, { promises as fsPromises } from 'fs';
 import https from 'https';
 import path from 'path';
 import { promisify } from 'util';
-import { isOllamaInstalled, pullOllamaModel } from './ollama.commands';
+import {
+  isOllamaInstalled,
+  pullOllamaModel,
+  startOllama,
+  stopOllama,
+} from './ollama.commands';
 
 const execAsync = promisify(exec);
 export async function installOllama() {
   await checkForOLLama();
   await addFirstRunDoneMetadata();
+  await startOllama();
   await pullOllamaModel('llama3.1');
+  await stopOllama();
 }
 
 async function checkForOLLama() {
-  if (await isOllamaInstalled()) {
+  if ((await isOllamaInstalled()) === false) {
+    console.log('Ollama is not installed, installing...');
     await downloadAndInstallOLLama();
+  } else {
+    console.log('Ollama is already installed, skipping Ollama installation.');
   }
 }
 

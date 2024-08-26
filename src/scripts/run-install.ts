@@ -1,3 +1,3 @@
-import { install } from './install';
+import { install } from '../../build/pkg-scripts/install';
 
 install();

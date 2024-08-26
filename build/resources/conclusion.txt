@@ -1,0 +1,10 @@
+Thank you for installing [Your App Name]!
+
+We hope you enjoy using our application. If you encounter any issues or have any feedback, please feel free to reach out to us at [support email or contact information].
+
+For updates, tips, and more, visit our website at [Your Website URL].
+
+Have a great day!
+
+Best regards,
+The [Your App Name] Team

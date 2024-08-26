@@ -1,0 +1,10 @@
+Welcome to [Your App Name]!
+
+We are thrilled that you have chosen to install our application. [Your App Name] is designed to [brief description of what the app does].
+
+To get started, follow the on-screen instructions. If you need any help, our support team is ready to assist you.
+
+Thank you for choosing [Your App Name]!
+
+Best,
+The [Your App Name] Team
