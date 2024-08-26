@@ -10,7 +10,8 @@ export type Channels =
   | 'set-ignore-mouse-events'
   | 'request-focus-window'
   | 'on-main-window-blur'
-  | 'copy-text-to-clipboard-request';
+  | 'copy-text-to-clipboard-request'
+  | 'log-renderer';
 
 const electronHandler = {
   ipcRenderer: {

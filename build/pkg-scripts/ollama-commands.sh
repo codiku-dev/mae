@@ -41,6 +41,7 @@ startOllama() {
   local ollamaPath
   findOllamaPath
   ollamaPath=$(command -v ollama)
+  echo "In startOllama, ollamaPath is $ollamaPath"
   if [ -z "$ollamaPath" ]; then
     echo "Mia: 'ollama' command not found. Please ensure it is installed and in your PATH."
     exit 1
@@ -93,3 +94,36 @@ restartOllama() {
   stopOllama
   startOllama
 }
+
+# Main execution logic
+if [ $# -eq 0 ]; then
+    echo "Mia: No command provided. Available commands: startOllama, stopOllama, restartOllama, or isOllamaRunning"
+    exit 0
+fi
+
+command="$1"
+
+case "$command" in
+    startOllama)
+        startOllama
+        ;;
+    stopOllama)
+        stopOllama
+        ;;
+    restartOllama)
+        restartOllama
+        ;;
+    isOllamaRunning)
+        if isOllamaRunning; then
+            echo "Mia: OLLAMA is running."
+        else
+            echo "Mia: OLLAMA is not running."
+        fi
+        ;;
+    *)
+        echo "Mia: Unknown command. Available commands: startOllama, stopOllama, restartOllama, or isOllamaRunning"
+        exit 0
+        ;;
+esac
+
+exit 0

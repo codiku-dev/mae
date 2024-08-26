@@ -61,13 +61,8 @@ function updateMenuLabel(commandId: number, newLabel: string) {
 }
 
 function setIcon() {
-  const pathToIcon = path.join(
-    __dirname,
-    '..',
-    '..',
-    '..',
-    'assets/icons/16x16.png',
-  );
+  const rootPath = process.cwd();
+  const pathToIcon = path.join(rootPath, 'assets/icons/16x16.png');
   const icon = nativeImage.createFromPath(pathToIcon);
   tray = new Tray(icon);
 }

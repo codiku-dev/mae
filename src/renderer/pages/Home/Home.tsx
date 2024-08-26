@@ -27,6 +27,8 @@ export function Home() {
     setIsStreamingFinished(true);
   };
 
+
+
   useEffect(makeInteractiveClassClickable, []);
 
   useEffect(
@@ -41,7 +43,7 @@ export function Home() {
   useEffect(function addOpenCloseListener() {
     window.electron.ipcRenderer.on('global-shortcut', (e) => {
       if (e.data.shortcut === 'CommandOrControl+Shift+P') {
-
+        console.log("CommandOrControl+Shift+P received")
         setIsVisible((prev) => {
           return !prev;
         });
@@ -49,10 +51,13 @@ export function Home() {
     });
     window.electron.ipcRenderer.on('global-shortcut', (e) => {
       if (e.data.shortcut === 'Escape') {
+        console.log("Escape received")
         setIsVisible(false);
       }
     });
     window.electron.ipcRenderer.on('on-main-window-blur', () => "");
+
+
   }, []);
 
   const handleSubmit = useCallback(async (submittedText: string) => {

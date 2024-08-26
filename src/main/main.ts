@@ -2,12 +2,9 @@ import { app, BrowserWindow, shell } from 'electron';
 import log from 'electron-log';
 import { autoUpdater } from 'electron-updater';
 import { beforeStop } from '../scripts/before-stop';
-import { StoreService } from './store';
 
 import { resolveHtmlPath } from './util';
 import { initWindow } from './window';
-
-const storeService = StoreService.getInstance();
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -30,6 +27,7 @@ const isDebug =
 if (isDebug) {
   require('electron-debug')();
 }
+app.disableHardwareAcceleration();
 
 // const installExtensions = async () => {
 //   const installer = require('electron-devtools-installer');
@@ -48,6 +46,7 @@ const createWindow = async () => {
   if (isDebug) {
     // await installExtensions();
   }
+  // await startOllama();
 
   mainWindow = initWindow();
 
@@ -76,9 +75,9 @@ app.on('window-all-closed', () => {
   }
 });
 
-app.on('before-quit', () => {
+app.on('before-quit', async () => {
   // if (process.env.NODE_ENV === 'production') {
-  beforeStop();
+  await beforeStop();
   // }
 });
 

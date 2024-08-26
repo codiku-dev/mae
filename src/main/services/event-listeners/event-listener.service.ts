@@ -1,4 +1,5 @@
 import { BrowserWindow, clipboard, globalShortcut, ipcMain } from 'electron';
+// import { logToRenderer } from '../../../libs/utils';
 
 export class EventListenersService {
   private mainWindow: BrowserWindow | null = null;
@@ -60,10 +61,12 @@ export class EventListenersService {
   }
 
   private addCmdSListeners() {
+    // logToRenderer(this.mainWindow, 'addCmdSListeners()');
     let lastCallTime = 0;
     const debounceTime = 500; // Prevent spam
 
     globalShortcut.register('CommandOrControl+Shift+P', () => {
+      // logToRenderer(this.mainWindow, 'CommandOrControl+Shift+P');
       if (this.mainWindow?.isVisible() === false) {
         this.mainWindow?.show();
       }

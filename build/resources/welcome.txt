@@ -1,10 +1,13 @@
-Welcome to [Your App Name]!
+Welcome to Mia installer !
+Mia is a simple AI assistant fully working offline with 0 data retention. Nothing is sent to a cloud or stuff like that :)
 
-We are thrilled that you have chosen to install our application. [Your App Name] is designed to [brief description of what the app does].
 
-To get started, follow the on-screen instructions. If you need any help, our support team is ready to assist you.
+Duration : 10 minutes (you have to download the AI model which is 5gb )
 
-Thank you for choosing [Your App Name]!
 
-Best,
-The [Your App Name] Team
+You are about to install this :
+
++ Mia (300mb): The tool that allow you to chat with AI
++ Ollama (150mb): External tool that allow run an AI on your machine 
++ Llama3.1 (4.5gb): External AI model built by Facebook
+ 

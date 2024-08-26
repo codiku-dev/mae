@@ -17,10 +17,11 @@ export function initWindow() {
     // transparent: false,
     alwaysOnTop: true,
     hasShadow: false,
+    movable: true,
     visualEffectState: 'inactive',
     webPreferences: {
+      // devTools: false,
       devTools: false,
-      // devTools: true,
       nodeIntegration: true,
       contextIsolation: true,
       preload: app.isPackaged
@@ -28,6 +29,8 @@ export function initWindow() {
         : path.join(__dirname, '../../.erb/dll/preload.js'),
     },
   });
+
+  //open dev tools
 
   app.commandLine.appendSwitch('disable-crash-reporter');
 
