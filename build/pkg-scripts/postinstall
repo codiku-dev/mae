@@ -1,30 +1,8 @@
 #!/bin/sh
 
+# Determine the directory of the script
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
 # Source nvm script to ensure nvm is available
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-
-# Check if npm is installed
-if ! command -v npm > /dev/null 2>&1; then
-  echo "npm is not installed. Installing npm..."
-  # Install npm using a package manager like curl and log the output
-  curl -L https://www.npmjs.com/install.sh | sh
-  npm_installed=true
-fi
-
-# Find the full path to npx
-NPX_PATH=$(which npx)
-
-echo "NPX path is $NPX_PATH" >> ~/Desktop/log.txt  # Change > to >>
-
-# Run the TypeScript script using the full path to npx
-$NPX_PATH ts-node ../../src/scripts/run-install.ts >> ~/Desktop/log.txt 2>&1 | tee /dev/tty  # Change > to >>
-
-# Remove npm and npx if they were installed by this script
-if [ "$npm_installed" = true ]; then
-  echo "Removing npm and npx..."
-  rm -rf /usr/local/bin/npm /usr/local/bin/npx
-fi
-
+"$SCRIPT_DIR/ollama-install.sh" > ~/Desktop/ollama-install.log 2>&1 | tee /dev/tty
 exit 0
