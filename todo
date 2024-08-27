@@ -1,6 +1,5 @@
 
 Core :
-- Add to menu the shortcut
 - Button to abort
 - Md, latex, schema generation
 - Menu to select another model
@@ -9,5 +8,4 @@ Uninstall:
 - Uninstall ollama an model ( ask if possible or store i it was there at the begining)
 
 Icon :
-- Icon a améliorer
 - Icon de couleur le temps du chargement
