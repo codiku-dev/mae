@@ -82,7 +82,6 @@ function updateMenuLabel(commandId: number, newLabel: string) {
   );
   if (menuItem) {
     menuItem.label = newLabel;
-    console.log('set new menu label', menuItem.label);
     contextMenu = Menu.buildFromTemplate(contextMenu.items);
     tray.setContextMenu(contextMenu);
   }
