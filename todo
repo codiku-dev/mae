@@ -1,8 +1,15 @@
-- Icon s'affiche pas en prod
-- [] Button to abort
-- []  Animation copy
-- [] Menu to select another model
-- [] Md, latex, schema generation
+
+Ui :
+- Animation copy
+
+Core :
+- Button to abort
+- Md, latex, schema generation
+- Menu to select another model
+
+Uninstall:
+- Uninstall ollama an model ( ask if possible or store i it was there at the begining)
+
+Icon :
 - Icon a améliorer
-- deplacer logique  chargement avant ouverture de fenetre
 - Icon de couleur le temps du chargement

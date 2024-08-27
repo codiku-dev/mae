@@ -1,6 +1,5 @@
+import { getResourcesPath } from '@/libs/utils';
 import { BrowserWindow, Menu, Tray, app, dialog, nativeImage } from 'electron';
-import path from 'path';
-import { logToRenderer } from '../../libs/utils';
 import { pullOllamaModel } from '../../scripts/ollama/ollama.commands';
 const MENU = {
   UPDATE_MODEL: 1,
@@ -11,7 +10,7 @@ let tray: Tray;
 let contextMenu: Menu;
 
 export function initMenu(mainWindow: BrowserWindow) {
-  setIcon(mainWindow);
+  setIcon();
   contextMenu = Menu.buildFromTemplate([
     {
       label: 'Update AI model',
@@ -26,7 +25,8 @@ export function initMenu(mainWindow: BrowserWindow) {
       commandId: MENU.QUIT,
     },
   ]);
-  tray.setToolTip('Mia. The local AI assistant.');
+
+  tray.setToolTip('⌘+⇧+p to start conversation');
   tray.setContextMenu(contextMenu);
 }
 
@@ -61,11 +61,10 @@ function updateMenuLabel(commandId: number, newLabel: string) {
   }
 }
 
-function setIcon(mainWindow: BrowserWindow) {
-  const rootPath = process.cwd();
-
-  const pathToIcon = path.join(rootPath, 'assets/icons/16x16.png');
-  const icon = nativeImage.createFromPath(pathToIcon);
+function setIcon() {
+  console.log('path', getResourcesPath('/assets/icons/16x16.png'));
+  const icon = nativeImage.createFromPath(
+    getResourcesPath('/assets/icons/16x16.png'),
+  );
   tray = new Tray(icon);
-  logToRenderer(mainWindow, 'Mia: Tray icon set at ' + pathToIcon);
 }
