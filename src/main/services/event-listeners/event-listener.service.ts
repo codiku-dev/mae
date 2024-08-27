@@ -32,6 +32,7 @@ export class EventListenersService {
 
   private addFocusRequestListener() {
     ipcMain.on('request-focus-window', () => {
+      console.log('MIA main : FOCUSING');
       this.mainWindow?.focus();
     });
   }

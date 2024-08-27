@@ -4,10 +4,15 @@ import { promisify } from 'util';
 import { sleep } from '../../libs/utils';
 const execAsync = promisify(exec);
 
+const BASE_LOCAL_BIN_PATH = '/usr/local/bin';
+const BASE_BIN_PATH = '/usr/bin';
+const BASE_SBIN_PATH = '/usr/sbin';
 export async function pullOllamaModel(modelName: string) {
   console.log(`Mia: Pulling ${modelName} model...`);
   try {
-    const { stdout, stderr } = await execAsync(`ollama pull ${modelName}`);
+    const { stdout, stderr } = await execAsync(
+      `${BASE_LOCAL_BIN_PATH}/ollama pull ${modelName}`,
+    );
     console.log('Command output:', stdout);
     if (stderr) {
       console.error('Command error output:', stderr);
@@ -34,7 +39,7 @@ export async function startOllama() {
 
   if (!isRunning) {
     console.log('Mia: ollama serve');
-    const ollamaProcess = exec('ollama serve');
+    const ollamaProcess = exec(`${BASE_LOCAL_BIN_PATH}/ollama serve`);
     while (!isRunning) {
       await sleep(1000);
       isRunning = await isOllamaRunning();
@@ -61,7 +66,7 @@ export async function stopOllama() {
   console.log('Mia: Stopping OLLAMA...');
   // Find the process ID (PID) using the port number
 
-  const { stdout } = await execAsync('pkill -9 ollama Ollama');
+  const { stdout } = await execAsync(`${BASE_BIN_PATH}/pkill -9 ollama Ollama`);
   if (stdout) {
     console.log('Mia: OLLAMA stopped successfully.');
   } else {
@@ -72,8 +77,9 @@ export async function stopOllama() {
 export async function isOllamaRunning() {
   console.log('Mia: Checking if OLLAMA is running...');
   try {
-    const { stdout: checkStdout, stderr: checkStderr } =
-      await execAsync('lsof -i :11434');
+    const { stdout: checkStdout, stderr: checkStderr } = await execAsync(
+      `${BASE_SBIN_PATH}/lsof -i :11434`,
+    );
     if (checkStdout) {
       return true;
     }

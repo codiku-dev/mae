@@ -1,7 +1,8 @@
+- Icon s'affiche pas en prod
 - [] Button to abort
 - []  Animation copy
-- [] Menu to quit
-- [] Menu to update model and ollama
 - [] Menu to select another model
 - [] Md, latex, schema generation
 - Icon a améliorer
+- deplacer logique  chargement avant ouverture de fenetre
+- Icon de couleur le temps du chargement

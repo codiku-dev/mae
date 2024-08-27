@@ -3,6 +3,7 @@ import { Error } from '@/renderer/components/features/error';
 import { Response } from '@/renderer/components/features/response';
 import {
   cn,
+  logToMain,
   makeInteractiveClassClickable
 } from '@/renderer/libs/utils';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -31,14 +32,6 @@ export function Home() {
 
   useEffect(makeInteractiveClassClickable, []);
 
-  useEffect(
-    function focusMainWindowOnVisible() {
-      if (isVisible) {
-        window.electron.ipcRenderer.sendMessage('request-focus-window');
-      }
-    },
-    [isVisible],
-  );
 
   useEffect(function addOpenCloseListener() {
     window.electron.ipcRenderer.on('global-shortcut', (e) => {
@@ -109,6 +102,13 @@ export function Home() {
                 setTimeout(() => {
                   window.electron.ipcRenderer.sendMessage('request-close-window');
                 }, 100);
+              } else {
+
+                setTimeout(() => {
+                  logToMain('MIA : request-focus-window');
+                  window.electron.ipcRenderer.sendMessage('request-focus-window');
+                }, 100)
+
               }
             }}
           >

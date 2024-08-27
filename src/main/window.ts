@@ -4,24 +4,24 @@ import { start } from './start';
 
 export function initWindow() {
   // const { width, height } = screen.getPrimaryDisplay().workAreaSize;
+  const DEBUG = false;
 
   let mainWindow = new BrowserWindow({
     height: screen.getPrimaryDisplay().workAreaSize.height,
     width: screen.getPrimaryDisplay().workAreaSize.width,
     x: 0,
     y: 0,
-    // show: false,
-    show: true,
-    frame: false,
-    transparent: true,
-    // transparent: false,
-    alwaysOnTop: true,
+    frame: DEBUG ? true : false,
+    transparent: DEBUG ? false : true,
+    movable: DEBUG ? true : false,
     hasShadow: false,
-    movable: true,
+    show: false,
     visualEffectState: 'inactive',
+    alwaysOnTop: true,
+    focusable: false,
     webPreferences: {
       // devTools: false,
-      devTools: false,
+      devTools: DEBUG,
       nodeIntegration: true,
       contextIsolation: true,
       preload: app.isPackaged

@@ -21,7 +21,6 @@ export function PlaceholdersAndVanishInput({
   const newDataRef = useRef<any[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
 
-
   const startAnimation = () => {
     intervalRef.current = setInterval(() => {
       setCurrentPlaceholder((prev) => (prev + 1) % placeholders.length);
@@ -202,6 +201,7 @@ export function PlaceholdersAndVanishInput({
         id="ai-input"
         onKeyDown={handleKeyDown}
         ref={inputRef}
+        autoFocus={true}
         value={value}
         type="text"
         className={cn(

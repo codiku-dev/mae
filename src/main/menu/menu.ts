@@ -1,5 +1,6 @@
-import { Menu, Tray, app, dialog, nativeImage } from 'electron';
+import { BrowserWindow, Menu, Tray, app, dialog, nativeImage } from 'electron';
 import path from 'path';
+import { logToRenderer } from '../../libs/utils';
 import { pullOllamaModel } from '../../scripts/ollama/ollama.commands';
 const MENU = {
   UPDATE_MODEL: 1,
@@ -9,8 +10,8 @@ const MENU = {
 let tray: Tray;
 let contextMenu: Menu;
 
-export function initMenu() {
-  setIcon();
+export function initMenu(mainWindow: BrowserWindow) {
+  setIcon(mainWindow);
   contextMenu = Menu.buildFromTemplate([
     {
       label: 'Update AI model',
@@ -60,9 +61,11 @@ function updateMenuLabel(commandId: number, newLabel: string) {
   }
 }
 
-function setIcon() {
+function setIcon(mainWindow: BrowserWindow) {
   const rootPath = process.cwd();
+
   const pathToIcon = path.join(rootPath, 'assets/icons/16x16.png');
   const icon = nativeImage.createFromPath(pathToIcon);
   tray = new Tray(icon);
+  logToRenderer(mainWindow, 'Mia: Tray icon set at ' + pathToIcon);
 }
