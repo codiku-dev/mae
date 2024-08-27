@@ -190,9 +190,10 @@ export function PlaceholdersAndVanishInput({
           logToMain('STOP');
           e.preventDefault();
           onClickStop();
+          inputRef.current?.focus();
         }}
         id="ai-stop-button"
-        className="interactive absolute right-2 top-1/2 z-50 -translate-y-1/2 h-8 w-8 rounded-full  bg-black    flex items-center justify-center"
+        className="interactive cursor-pointer absolute right-2 top-1/2 z-50 -translate-y-1/2 h-8 w-8 rounded-full  bg-black    flex items-center justify-center"
       >
         <Square className="size-3  text-white" />
       </button>
@@ -200,9 +201,10 @@ export function PlaceholdersAndVanishInput({
       <button
         id="ai-submit-button"
         type="submit"
-        className="interactive pointer absolute right-2 top-1/2 z-50 -translate-y-1/2 h-8 w-8 rounded-full  bg-black dark:bg-zinc-900  transition duration-200 flex items-center justify-center"
+        className="interactive cursor-pointer absolute right-2 top-1/2 z-50 -translate-y-1/2 h-8 w-8 rounded-full  bg-black dark:bg-zinc-900  transition duration-200 flex items-center justify-center"
         onClick={(e) => {
           e.stopPropagation();
+          inputRef.current?.focus();
         }}
       >
         <motion.svg
