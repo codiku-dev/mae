@@ -33,6 +33,7 @@ export function Home() {
   useEffect(function addOpenCloseListener() {
     window.electron.ipcRenderer.on('global-shortcut', (e) => {
       if (e.data.shortcut === 'CommandOrControl+Shift+P') {
+        logToMain('CommandOrControl+Shift+P received');
         console.log('CommandOrControl+Shift+P received');
         setIsVisible((prev) => {
           return !prev;

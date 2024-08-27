@@ -4,6 +4,7 @@ import { pullOllamaModel } from '../../scripts/ollama/ollama.commands';
 const MENU = {
   UPDATE_MODEL: 1,
   QUIT: 2,
+  OPEN_CLOSE: 3,
 };
 
 let tray: Tray;
@@ -12,6 +13,19 @@ let contextMenu: Menu;
 export function initMenu(mainWindow: BrowserWindow) {
   setIcon();
   contextMenu = Menu.buildFromTemplate([
+    {
+      label: 'Open Mia (⌘+⇧+p)',
+      click: () => {
+        if (!mainWindow.isVisible()) {
+          mainWindow.show();
+        }
+        mainWindow.webContents.send('global-shortcut', {
+          data: { shortcut: 'CommandOrControl+Shift+P' },
+        });
+        console.log('Start conversation');
+      },
+      commandId: MENU.OPEN_CLOSE,
+    },
     {
       label: 'Update AI model',
       click: updateModel,
@@ -26,7 +40,18 @@ export function initMenu(mainWindow: BrowserWindow) {
     },
   ]);
 
-  tray.setToolTip('⌘+⇧+p to start conversation');
+  // listener to window visibility to update menu label
+  mainWindow.on('show', () => {
+    console.log('show');
+    console.log('update labl to Close Mia (⌘+⇧+p)');
+
+    updateMenuLabel(MENU.OPEN_CLOSE, 'Close Mia (⌘+⇧+p)');
+  });
+  mainWindow.on('hide', () => {
+    console.log('hide');
+    console.log('update labl to Open Mia (⌘+⇧+p)');
+    updateMenuLabel(MENU.OPEN_CLOSE, 'Open Mia (⌘+⇧+p)');
+  });
   tray.setContextMenu(contextMenu);
 }
 
@@ -57,6 +82,8 @@ function updateMenuLabel(commandId: number, newLabel: string) {
   );
   if (menuItem) {
     menuItem.label = newLabel;
+    console.log('set new menu label', menuItem.label);
+    contextMenu = Menu.buildFromTemplate(contextMenu.items);
     tray.setContextMenu(contextMenu);
   }
 }

@@ -3,8 +3,8 @@ import log from 'electron-log';
 import { autoUpdater } from 'electron-updater';
 import { beforeStop } from '../scripts/before-stop';
 
+import { resolveHtmlPath } from '../libs/utils';
 import { startOllama } from '../scripts/ollama/ollama.commands';
-import { resolveHtmlPath } from './util';
 import { initWindow } from './window';
 
 let mainWindow: BrowserWindow | null = null;

@@ -1,5 +1,6 @@
 
 Core :
+- Add to menu the shortcut
 - Button to abort
 - Md, latex, schema generation
 - Menu to select another model
