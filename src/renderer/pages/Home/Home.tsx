@@ -4,7 +4,7 @@ import { Response } from '@/renderer/components/features/response';
 import {
   cn,
   logToMain,
-  makeInteractiveClassClickable
+  makeInteractiveClassClickable,
 } from '@/renderer/libs/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useCallback, useEffect, useState } from 'react';
@@ -19,7 +19,7 @@ export function Home() {
   const [submitedPrompt, setSubmitedPrompt] = useState('');
   const [error, setError] = useState('');
   const stopAndResetAll = () => {
-    OllamaService.getInstance().abortAllRequests()
+    OllamaService.getInstance().abortAllRequests();
     setIsVisible(false);
     setStreamedResponse('');
     setValue('');
@@ -28,15 +28,12 @@ export function Home() {
     setIsStreamingFinished(true);
   };
 
-
-
   useEffect(makeInteractiveClassClickable, []);
-
 
   useEffect(function addOpenCloseListener() {
     window.electron.ipcRenderer.on('global-shortcut', (e) => {
       if (e.data.shortcut === 'CommandOrControl+Shift+P') {
-        console.log("CommandOrControl+Shift+P received")
+        console.log('CommandOrControl+Shift+P received');
         setIsVisible((prev) => {
           return !prev;
         });
@@ -44,39 +41,40 @@ export function Home() {
     });
     window.electron.ipcRenderer.on('global-shortcut', (e) => {
       if (e.data.shortcut === 'Escape') {
-        console.log("Escape received")
+        console.log('Escape received');
         setIsVisible(false);
       }
     });
-    window.electron.ipcRenderer.on('on-main-window-blur', () => "");
-
-
+    window.electron.ipcRenderer.on('on-main-window-blur', () => '');
   }, []);
 
   const handleSubmit = useCallback(async (submittedText: string) => {
     if (submittedText !== '') {
-      setSubmitedPrompt(submittedText)
+      setSubmitedPrompt(submittedText);
       setStreamedResponse('');
       setIsLoading(true);
       setIsStreamingFinished(false);
       setError('');
-      OllamaService.getInstance().requestLlamaStream(submittedText, "question", (chunk) => {
-        if (chunk.done === false) {
-          setStreamedResponse((prev) => prev + chunk.message.content);
+      OllamaService.getInstance().requestLlamaStream(
+        submittedText,
+        'question',
+        (chunk) => {
+          if (chunk.done === false) {
+            setStreamedResponse((prev) => prev + chunk.message.content);
+            setIsLoading(false);
+          } else {
+            setIsStreamingFinished(true);
+            setIsLoading(false);
+          }
+        },
+        () => {
+          setError('Something went wrong...Make sur the LLM is started !');
           setIsLoading(false);
-        } else {
           setIsStreamingFinished(true);
-          setIsLoading(false);
-        }
-      }, () => {
-        setError('Something went wrong...Make sur the LLM is started !');
-        setIsLoading(false)
-        setIsStreamingFinished(true)
-      })
+        },
+      );
     }
   }, []);
-
-
 
   return (
     <div id="container" className={cn('w-full h-full', isVisible && '')}>
@@ -100,34 +98,42 @@ export function Home() {
               if (definition.opacity === 0) {
                 stopAndResetAll();
                 setTimeout(() => {
-                  window.electron.ipcRenderer.sendMessage('request-close-window');
+                  window.electron.ipcRenderer.sendMessage(
+                    'request-close-window',
+                  );
                 }, 100);
               } else {
-
                 setTimeout(() => {
                   logToMain('MIA : request-focus-window');
-                  window.electron.ipcRenderer.sendMessage('request-focus-window');
-                }, 100)
-
+                  window.electron.ipcRenderer.sendMessage(
+                    'request-focus-window',
+                  );
+                }, 100);
               }
             }}
           >
             <div className=" w-screen">
-              <div className='flex flex-col  items-center '>
-                <div id="ai-searchbar" className='w-96 interactive'>
+              <div className="flex flex-col  items-center ">
+                <div id="ai-searchbar" className="w-96 interactive">
                   <SearchBar
                     value={value}
                     onChange={setValue}
                     onSubmit={handleSubmit}
                   />
                 </div>
-                <div id="ai-response" className='interactive w-1/2'>
-                  {(isLoading || (streamedResponse && streamedResponse !== "")) &&
-                    <Response question={submitedPrompt} streamedResponse={streamedResponse} isLoading={isLoading} isStreamingFinished={isStreamingFinished} />}
+                <div id="ai-response" className="interactive w-1/2">
+                  {(isLoading ||
+                    (streamedResponse && streamedResponse !== '')) && (
+                    <Response
+                      question={submitedPrompt}
+                      streamedResponse={streamedResponse}
+                      isLoading={isLoading}
+                      isStreamingFinished={isStreamingFinished}
+                    />
+                  )}
                   {error && <Error errorMessage={error} />}
                 </div>
               </div>
-
             </div>
           </motion.div>
         )}
