@@ -28,12 +28,19 @@ export class EventListenersService {
     this.addBlurListener();
     this.addCopyTextToClipboardRequestListener();
     this.addCloseRequestListener();
+    this.addBlurRequestListener();
   }
 
   private addFocusRequestListener() {
     ipcMain.on('request-focus-window', () => {
       console.log('MIA main : FOCUSING');
       this.mainWindow?.focus();
+    });
+  }
+
+  private addBlurRequestListener() {
+    ipcMain.on('request-blur-window', () => {
+      this.mainWindow?.blur();
     });
   }
 

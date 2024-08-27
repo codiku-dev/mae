@@ -1,18 +1,23 @@
 import { AnimatePresence, motion } from 'framer-motion';
+import { Square } from 'lucide-react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { cn } from 'src/renderer/libs/utils';
+import { cn, logToMain } from 'src/renderer/libs/utils';
 import { InputProps } from './input';
 
 export function PlaceholdersAndVanishInput({
   placeholders,
   onChange,
   onSubmit,
+  isLoading,
   inputProps,
+  onClickStop,
 }: {
   placeholders: string[];
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   inputProps?: InputProps;
+  isLoading: boolean;
+  onClickStop: () => void;
 }) {
   const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
 
@@ -176,6 +181,64 @@ export function PlaceholdersAndVanishInput({
     vanishAndSubmit();
     onSubmit && onSubmit(e);
   };
+
+  const renderButtonSubmit = () => {
+    return isLoading ? (
+      <button
+        type="button"
+        onClick={(e) => {
+          logToMain('STOP');
+          e.preventDefault();
+          onClickStop();
+        }}
+        id="ai-stop-button"
+        className="interactive absolute right-2 top-1/2 z-50 -translate-y-1/2 h-8 w-8 rounded-full  bg-black    flex items-center justify-center"
+      >
+        <Square className="size-3  text-white" />
+      </button>
+    ) : (
+      <button
+        id="ai-submit-button"
+        type="submit"
+        className="interactive pointer absolute right-2 top-1/2 z-50 -translate-y-1/2 h-8 w-8 rounded-full  bg-black dark:bg-zinc-900  transition duration-200 flex items-center justify-center"
+        onClick={(e) => {
+          e.stopPropagation();
+        }}
+      >
+        <motion.svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="text-gray-300 h-4 w-4"
+        >
+          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+          <motion.path
+            d="M5 12l14 0"
+            initial={{
+              strokeDasharray: '50%',
+              strokeDashoffset: '50%',
+            }}
+            animate={{
+              strokeDashoffset: value ? 0 : '50%',
+            }}
+            transition={{
+              duration: 0.3,
+              ease: 'linear',
+            }}
+          />
+
+          <path d="M13 18l6 -6" />
+          <path d="M13 6l6 6" />
+        </motion.svg>
+      </button>
+    );
+  };
   return (
     <form
       className={cn(
@@ -204,56 +267,20 @@ export function PlaceholdersAndVanishInput({
         autoFocus={true}
         value={value}
         type="text"
+        onClick={() => {
+          console.log('request focus');
+          // window.electron.ipcRenderer.sendMessage('request-focus-window');
+          // inputRef.current?.focus();
+          logToMain('Click input');
+        }}
         className={cn(
           'interactive w-full relative text-sm sm:text-base z-50 border-none  bg-transparent pt-[0.85rem] text-black rounded-full focus:outline-none focus:ring-0 pl-4 sm:pl-10 pr-20',
           animating && 'text-transparent bg-transparent',
         )}
         {...inputProps}
       />
+      {renderButtonSubmit()}
 
-      <div>
-        <button
-          disabled={!value}
-          type="submit"
-          className="absolute right-2 top-1/2 z-50 -translate-y-1/2 h-8 w-8 rounded-full disabled:bg-gray-100 bg-black dark:bg-zinc-900 dark:disabled:bg-zinc-800 transition duration-200 flex items-center justify-center"
-        >
-          <motion.svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="text-gray-300 h-4 w-4"
-          >
-            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-            <motion.path
-              d="M5 12l14 0"
-              initial={{
-                strokeDasharray: '50%',
-                strokeDashoffset: '50%',
-              }}
-              animate={{
-                strokeDashoffset: value ? 0 : '50%',
-              }}
-              transition={{
-                duration: 0.3,
-                ease: 'linear',
-              }}
-            />
-
-            <path d="M13 18l6 -6" />
-            <path d="M13 6l6 6" />
-          </motion.svg>
-        </button>
-        <div
-          aria-disabled={!value}
-          className=" absolute  right-12  top-4 z-50 w-16  rounded-full    "
-        />
-      </div>
       <div className="absolute inset-0 flex items-center rounded-full pointer-events-none">
         <AnimatePresence mode="wait">
           {!value && (

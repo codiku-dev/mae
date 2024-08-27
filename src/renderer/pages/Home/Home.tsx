@@ -18,14 +18,15 @@ export function Home() {
   const [isStreamingFinished, setIsStreamingFinished] = useState(true);
   const [submitedPrompt, setSubmitedPrompt] = useState('');
   const [error, setError] = useState('');
+  const [isAIWorking, setIsAIWorking] = useState(false);
   const stopAndResetAll = () => {
     OllamaService.getInstance().abortAllRequests();
-    setIsVisible(false);
     setStreamedResponse('');
     setValue('');
     setError('');
     setIsLoading(false);
     setIsStreamingFinished(true);
+    setIsAIWorking(false);
   };
 
   useEffect(makeInteractiveClassClickable, []);
@@ -51,6 +52,7 @@ export function Home() {
 
   const handleSubmit = useCallback(async (submittedText: string) => {
     if (submittedText !== '') {
+      setIsAIWorking(true);
       setSubmitedPrompt(submittedText);
       setStreamedResponse('');
       setIsLoading(true);
@@ -65,6 +67,7 @@ export function Home() {
             setIsLoading(false);
           } else {
             setIsStreamingFinished(true);
+            setIsAIWorking(false);
             setIsLoading(false);
           }
         },
@@ -72,6 +75,7 @@ export function Home() {
           setError('Something went wrong...Make sur the LLM is started !');
           setIsLoading(false);
           setIsStreamingFinished(true);
+          setIsAIWorking(false);
         },
       );
     }
@@ -113,13 +117,15 @@ export function Home() {
               }
             }}
           >
-            <div className=" w-screen">
+            <div className="w-screen">
               <div className="flex flex-col  items-center ">
-                <div id="ai-searchbar" className="w-96 interactive">
+                <div id="ai-searchbar" className="w-96">
                   <SearchBar
                     value={value}
                     onChange={setValue}
                     onSubmit={handleSubmit}
+                    isLoading={isAIWorking}
+                    onClickStop={stopAndResetAll}
                   />
                 </div>
                 <div id="ai-response" className="interactive w-1/2">

@@ -11,7 +11,8 @@ export type Channels =
   | 'request-focus-window'
   | 'on-main-window-blur'
   | 'copy-text-to-clipboard-request'
-  | 'log-renderer';
+  | 'log-renderer'
+  | 'request-blur-window';
 
 const electronHandler = {
   ipcRenderer: {
