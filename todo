@@ -13,8 +13,13 @@ Core :
 - Md, latex, schema generation
 - Menu to select another model
 - Language selection
-- Preprompt
 - Support historic in the page
+
+Improvement :
+
+-Find all historics
+
+- Preprompt
 
 Uninstall:
 

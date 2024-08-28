@@ -65,12 +65,15 @@ export async function startOllama() {
 export async function stopOllama() {
   console.log('Mia: Stopping OLLAMA...');
   // Find the process ID (PID) using the port number
-
-  const { stdout } = await execAsync(`${BASE_BIN_PATH}/pkill -9 ollama Ollama`);
-  if (stdout) {
-    console.log('Mia: OLLAMA stopped successfully.');
-  } else {
-    console.error('Mia: OLLAMA failed to stop.');
+  try {
+    const { stdout } = await execAsync(
+      `${BASE_BIN_PATH}/pkill -9 ollama Ollama`,
+    );
+    if (stdout) {
+      console.log('Mia: OLLAMA stopped successfully.');
+    }
+  } catch (error) {
+    console.error('Mia: OLLAMA failed to stop. Probably already stopped.');
   }
 }
 

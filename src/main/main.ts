@@ -1,10 +1,9 @@
 import { app, BrowserWindow, shell } from 'electron';
 import log from 'electron-log';
 import { autoUpdater } from 'electron-updater';
-import { beforeStop } from '../scripts/before-stop';
-
 import { resolveHtmlPath } from '../libs/utils';
-import { startOllama } from '../scripts/ollama/ollama.commands';
+import { beforeStart } from '../scripts/before-start';
+import { beforeStop } from '../scripts/before-stop';
 import { initWindow } from './window';
 
 let mainWindow: BrowserWindow | null = null;
@@ -85,7 +84,8 @@ app.on('before-quit', async () => {
 app
   .whenReady()
   .then(async () => {
-    await startOllama();
+    await beforeStart();
+
     createWindow();
     app.on('activate', () => {
       // On macOS it's common to re-create a window in the app when the
