@@ -12,8 +12,8 @@ import logo from '../../assets/icon.png';
 import { Button } from '../ui/button';
 import { CodeRenderer } from '../ui/code-renderer';
 import { MarkdownRenderer } from '../ui/markdown-renderer';
-import { Skeleton } from '../ui/skeleton';
 
+import { Skeleton } from '../ui/skeleton';
 import {
   Tooltip,
   TooltipContent,
@@ -68,15 +68,22 @@ export const RichResponse = (p: {
   const renderAnswer = () => {
     return (
       <div className="flex flex-col gap-2 ">
-        <div className="flex items-center gap-2 mb-1">
+        <div className="flex items-center gap-2 mb-1 justify-end">
           <img src={logo} className="size-8 rounded-full" alt="AI Avatar" />
           <span className="text-sm text-gray-500">Mia</span>
         </div>
-        <div className="bg-blue-100 p-3 rounded-lg rounded-tr-none">
-          {blockMatches.map((blockMatch: any, index: number) => {
-            const Component = blockMatch.block.component;
-            return <Component key={index} blockMatch={blockMatch} />;
-          })}
+        <div className="bg-blue-400/20 p-3 rounded-lg rounded-tr-none">
+          {p.isStreamFinished && renderCopyButton()}
+          {p.isLoading ? (
+            <div className="w-full flex flex-col gap-1 mt-5">
+              <Skeleton className="w-full h-6" />
+            </div>
+          ) : (
+            blockMatches.map((blockMatch: any, index: number) => {
+              const Component = blockMatch.block.component;
+              return <Component key={index} blockMatch={blockMatch} />;
+            })
+          )}
         </div>
       </div>
     );
@@ -85,7 +92,7 @@ export const RichResponse = (p: {
   const renderQuestion = () => {
     return (
       <div className="flex flex-col gap-2 max-w-[80%]">
-        <div className="flex items-center gap-2 mb-1">
+        <div className="flex items-center gap-2 mb-1 ">
           <div className="bg-gray-200 size-8 rounded-full text-lg text-gray-600 flex items-center justify-center">
             {userName ? userName[0].toUpperCase() : 'U'}
           </div>
@@ -106,7 +113,7 @@ export const RichResponse = (p: {
               variant="ghost"
               size="icon"
               type="button"
-              className="absolute right-2 top-1 cursor-pointer ml-2 p-2 rounded-full hover:bg-gray-200"
+              className="absolute right-4 bottom-7 rounded-sm hover:bg-gray-50/10"
               onClick={handleClickCopyContent}
             >
               {hasCopiedRecently ? (
@@ -131,19 +138,12 @@ export const RichResponse = (p: {
       }}
       className="interactive mt-4 p-4 rounded-md bg-white animate-in flex flex-col gap-4 relative w-full"
     >
-      {p.isLoading ? (
-        <div className="w-full flex flex-col gap-1 mt-5">
-          <Skeleton className="w-full h-6" />
+      <>
+        <div className="mt-5 flex flex-col gap-4 max-h-[500px] overflow-y-auto">
+          {renderQuestion()}
+          {renderAnswer()}
         </div>
-      ) : (
-        <>
-          {p.isStreamFinished && renderCopyButton()}
-          <div className="mt-5 flex flex-col gap-4 max-h-[500px] overflow-y-auto">
-            {renderQuestion()}
-            {renderAnswer()}
-          </div>
-        </>
-      )}
+      </>
     </div>
   );
 };

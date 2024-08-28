@@ -1,14 +1,11 @@
 Bug :
 
+- Copier coller text brut et non markdown
 - Update modal seems stop the ollama server somtimes ?
-
-UI :
-
-- Avatar with letters for the user
-- Avatar Icon for assistant
 
 Core :
 
+- Scroll Auto
 - Splash during loading
 - Md, latex, schema generation
 - Menu to select another model
