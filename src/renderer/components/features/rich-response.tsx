@@ -67,27 +67,36 @@ export const RichResponse = (p: {
 
   const renderAnswer = () => {
     return (
-      <div className="flex gap-2 items-center">
-        <img src={logo} className="size-12" />
-        {blockMatches.map((blockMatch: any, index: number) => {
-          const Component = blockMatch.block.component;
-          return <Component key={index} blockMatch={blockMatch} />;
-        })}
+      <div className="flex flex-col gap-2 ">
+        <div className="flex items-center gap-2 mb-1">
+          <img src={logo} className="size-8 rounded-full" alt="AI Avatar" />
+          <span className="text-sm text-gray-500">Mia</span>
+        </div>
+        <div className="bg-blue-100 p-3 rounded-lg rounded-tr-none">
+          {blockMatches.map((blockMatch: any, index: number) => {
+            const Component = blockMatch.block.component;
+            return <Component key={index} blockMatch={blockMatch} />;
+          })}
+        </div>
       </div>
     );
   };
 
   const renderQuestion = () => {
     return (
-      <div className="ml-1 flex gap-2 items-center font-bold">
-        <div className="bg-blue-500 size-10 rounded-lg text-2xl text-white flex items-center justify-center">
-          C
+      <div className="flex flex-col gap-2 max-w-[80%]">
+        <div className="flex items-center gap-2 mb-1">
+          <div className="bg-gray-200 size-8 rounded-full text-lg text-gray-600 flex items-center justify-center">
+            {userName ? userName[0].toUpperCase() : 'U'}
+          </div>
+          <span className="text-sm text-gray-500">{userName || 'User'}</span>
         </div>
-        <p className="pl-1">{p.question}</p>
+        <div className="bg-gray-200 p-3 rounded-lg rounded-tl-none">
+          <p>{p.question}</p>
+        </div>
       </div>
     );
   };
-
   const renderCopyButton = () => {
     return (
       <TooltipProvider delayDuration={0}>
@@ -120,20 +129,20 @@ export const RichResponse = (p: {
         e.preventDefault();
         e.stopPropagation();
       }}
-      className="interactive mt-4 p-4 rounded-md bg-white animate-in flex justify-between items-start relative w-full"
+      className="interactive mt-4 p-4 rounded-md bg-white animate-in flex flex-col gap-4 relative w-full"
     >
       {p.isLoading ? (
         <div className="w-full flex flex-col gap-1 mt-5">
           <Skeleton className="w-full h-6" />
         </div>
       ) : (
-        <div className="flex">
+        <>
           {p.isStreamFinished && renderCopyButton()}
-          <div className="mt-5 flex flex-col gap-2 max-h-[500px] overflow-y-auto">
+          <div className="mt-5 flex flex-col gap-4 max-h-[500px] overflow-y-auto">
             {renderQuestion()}
             {renderAnswer()}
           </div>
-        </div>
+        </>
       )}
     </div>
   );
