@@ -72,7 +72,7 @@ async function updateModel() {
   if (response === 0) {
     console.log('Restarting Mia');
     app.relaunch();
-    app.exit();
+    app.quit();
   }
 }
 

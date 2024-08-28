@@ -1,4 +1,4 @@
-import { Copy, CopyCheck } from 'lucide-react';
+import { Clipboard, ClipboardCheck } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '../ui/button';
 import { Skeleton } from '../ui/skeleton';
@@ -55,9 +55,9 @@ export function Response(p: {
                     onClick={handleClickCopyContent}
                   >
                     {hasCopiedRecently ? (
-                      <CopyCheck size={16} />
+                      <ClipboardCheck size={16} />
                     ) : (
-                      <Copy size={16} />
+                      <Clipboard size={16} />
                     )}
                   </Button>
                 </TooltipTrigger>

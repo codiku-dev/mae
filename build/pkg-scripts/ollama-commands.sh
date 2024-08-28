@@ -97,8 +97,7 @@ restartOllama() {
 
 # Main execution logic
 if [ $# -eq 0 ]; then
-    echo "Mia: No command provided. Available commands: startOllama, stopOllama, restartOllama, or isOllamaRunning"
-    exit 0
+    echo "Mia: Only functions are imported , because you no command provided. Available commands: startOllama, stopOllama, restartOllama, or isOllamaRunning"
 fi
 
 command="$1"
@@ -122,8 +121,6 @@ case "$command" in
         ;;
     *)
         echo "Mia: Unknown command. Available commands: startOllama, stopOllama, restartOllama, or isOllamaRunning"
-        exit 0
         ;;
 esac
 
-exit 0
