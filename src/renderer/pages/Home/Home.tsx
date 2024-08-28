@@ -1,6 +1,6 @@
 import { OllamaService } from '@/main/services/ollama/ollama.service';
 import { Error } from '@/renderer/components/features/error';
-import { Response } from '@/renderer/components/features/response';
+import { RichResponse } from '@/renderer/components/features/rich-response';
 import {
   cn,
   logToMain,
@@ -131,12 +131,18 @@ export function Home() {
                 <div id="ai-response" className="interactive w-1/2">
                   {(isLoading ||
                     (streamedResponse && streamedResponse !== '')) && (
-                    <Response
+                    <RichResponse
+                      output={streamedResponse}
+                      isStreamFinished={isStreamingFinished}
                       question={submitedPrompt}
-                      streamedResponse={streamedResponse}
                       isLoading={isLoading}
-                      isStreamingFinished={isStreamingFinished}
                     />
+                    // <Response
+                    //   streamedResponse={streamedResponse}
+                    //   isStreamingFinished={isStreamingFinished}
+                    //   question={submitedPrompt}
+                    //   isLoading={isLoading}
+                    // />
                   )}
                   {error && <Error errorMessage={error} />}
                 </div>

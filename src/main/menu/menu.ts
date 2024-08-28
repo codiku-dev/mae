@@ -1,6 +1,7 @@
 import { getResourcesPath } from '@/libs/utils';
 import { BrowserWindow, Menu, Tray, app, dialog, nativeImage } from 'electron';
 import { pullOllamaModel } from '../../scripts/ollama/ollama.commands';
+import { OllamaConfig } from '../services/ollama/ollama.config';
 const MENU = {
   UPDATE_MODEL: 1,
   QUIT: 2,
@@ -60,7 +61,7 @@ async function updateModel() {
     MENU.UPDATE_MODEL,
     'Update AI model : (Update in progress...)',
   );
-  await pullOllamaModel('llama3.1');
+  await pullOllamaModel(OllamaConfig.baseModel);
 
   const response = dialog.showMessageBoxSync({
     type: 'info',

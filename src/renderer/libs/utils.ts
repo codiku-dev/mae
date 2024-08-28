@@ -18,7 +18,6 @@ export function makeInteractiveClassClickable() {
     interactiveElements.forEach((element) => {
       if (!element.hasAttribute('data-listeners-added')) {
         element.addEventListener('mouseenter', () => {
-          logToMain('enter ' + element.id);
           window.electron.ipcRenderer.sendMessage(
             'set-ignore-mouse-events',
             false,
@@ -26,7 +25,6 @@ export function makeInteractiveClassClickable() {
         });
 
         element.addEventListener('mouseleave', () => {
-          logToMain('leave ' + element.id);
           window.electron.ipcRenderer.sendMessage(
             'set-ignore-mouse-events',
             true,

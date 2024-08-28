@@ -3,6 +3,7 @@ import fs, { promises as fsPromises } from 'fs';
 import https from 'https';
 import path from 'path';
 import { promisify } from 'util';
+import { OllamaConfig } from '../../main/services/ollama/ollama.config';
 import {
   isOllamaInstalled,
   pullOllamaModel,
@@ -15,7 +16,7 @@ export async function installOllama() {
   await checkForOLLama();
   await addFirstRunDoneMetadata();
   await startOllama();
-  await pullOllamaModel('llama3.1');
+  await pullOllamaModel(OllamaConfig.baseModel);
   await stopOllama();
 }
 

@@ -1,8 +1,9 @@
 import { v4 as uuidv4 } from 'uuid';
 
+import { Ollama } from '@langchain/ollama';
 import { logToMain } from '../../../renderer/libs/utils';
 import { LLMMode } from './langchain.service.type';
-import { Ollama } from '@langchain/ollama';
+import { OllamaConfig } from './ollama.config';
 
 interface ControllerEntry {
   id: string;
@@ -118,7 +119,7 @@ export class OllamaService {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: 'llama3.1',
+          model: OllamaConfig.model,
           // prompt: promptString + prompt,
           messages: this.messages,
           // stream: true,

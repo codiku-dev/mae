@@ -12,7 +12,9 @@ export type Channels =
   | 'on-main-window-blur'
   | 'copy-text-to-clipboard-request'
   | 'log-renderer'
-  | 'request-blur-window';
+  | 'request-blur-window'
+  | 'user-info-request'
+  | 'user-info-reply';
 
 const electronHandler = {
   ipcRenderer: {

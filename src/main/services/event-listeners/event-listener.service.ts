@@ -1,5 +1,6 @@
 import { BrowserWindow, clipboard, globalShortcut, ipcMain } from 'electron';
 // import { logToRenderer } from '../../../libs/utils';
+import { username } from 'username';
 
 export class EventListenersService {
   private mainWindow: BrowserWindow | null = null;
@@ -29,6 +30,7 @@ export class EventListenersService {
     this.addCopyTextToClipboardRequestListener();
     this.addCloseRequestListener();
     this.addBlurRequestListener();
+    this.addUserInfoRequestListener();
   }
 
   private addFocusRequestListener() {
@@ -55,6 +57,13 @@ export class EventListenersService {
     });
   }
 
+  private addUserInfoRequestListener() {
+    ipcMain.on('user-info-request', async () => {
+      const user = await username();
+
+      this.mainWindow?.webContents.send('user-info-reply', user);
+    });
+  }
   private addIgnoreMouseEventListener() {
     ipcMain.on('set-ignore-mouse-events', (event, ignore, options) => {
       const win = BrowserWindow.fromWebContents(event.sender);
