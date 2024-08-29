@@ -29,12 +29,14 @@ export const RichResponse = (p: {
 }) => {
   const [hasCopiedRecently, setHasCopiedRecently] = useState(false);
   const [userName, setUsername] = useState<any>(null);
+
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('user-info-request');
     window.electron.ipcRenderer.on('user-info-reply', (username) => {
       setUsername(username);
     });
   }, []);
+
   const handleClickCopyContent = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
@@ -44,11 +46,11 @@ export const RichResponse = (p: {
     }, 3000);
     window.electron.ipcRenderer.sendMessage(
       'copy-text-to-clipboard-request',
-      p.output,
+      visibleText,
     );
   };
 
-  const { blockMatches } = useLLMOutput({
+  const { blockMatches, visibleText } = useLLMOutput({
     llmOutput: p.output,
     fallbackBlock: {
       component: MarkdownRenderer,
@@ -64,23 +66,35 @@ export const RichResponse = (p: {
     ],
     isStreamFinished: p.isStreamFinished,
   });
-
   const renderAnswer = () => {
     return (
-      <div className="flex flex-col gap-2 ">
+      <div className="flex flex-col gap-2">
         <div className="flex items-center gap-2 mb-1 justify-end">
           <img src={logo} className="size-8 rounded-full" alt="AI Avatar" />
-          <span className="text-sm text-gray-500">Mia</span>
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-500">Mia</span>
+            {p.isLoading && (
+              <div className="flex items-center gap-1">
+                <span className="text-xs text-gray-400">is thinking</span>
+                <div className="flex gap-0.5">
+                  <div className="w-1 h-1 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                  <div className="w-1 h-1 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                  <div className="w-1 h-1 bg-gray-400 rounded-full animate-bounce"></div>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
-        <div className="bg-blue-400/20 p-3 rounded-lg rounded-tr-none">
+        <div className="relative bg-blue-400/20 p-3 rounded-lg rounded-tr-none min-h-12">
           {p.isStreamFinished && renderCopyButton()}
           {p.isLoading ? (
-            <div className="w-full flex flex-col gap-1 mt-5">
+            <div className="w-full flex flex-col gap-1">
               <Skeleton className="w-full h-6" />
             </div>
           ) : (
             blockMatches.map((blockMatch: any, index: number) => {
               const Component = blockMatch.block.component;
+              console.log(blockMatches);
               return <Component key={index} blockMatch={blockMatch} />;
             })
           )}
@@ -113,7 +127,7 @@ export const RichResponse = (p: {
               variant="ghost"
               size="icon"
               type="button"
-              className="absolute right-4 bottom-7 rounded-sm hover:bg-gray-50/10"
+              className="absolute right-2 top-0 rounded-sm hover:bg-gray-50/10"
               onClick={handleClickCopyContent}
             >
               {hasCopiedRecently ? (
@@ -139,7 +153,7 @@ export const RichResponse = (p: {
       className="interactive mt-4 p-4 rounded-md bg-white animate-in flex flex-col gap-4 relative w-full"
     >
       <>
-        <div className="mt-5 flex flex-col gap-4 max-h-[500px] overflow-y-auto">
+        <div className=" flex flex-col gap-4 max-h-[500px] overflow-y-auto">
           {renderQuestion()}
           {renderAnswer()}
         </div>

@@ -4,16 +4,15 @@ import { start } from './start';
 
 export function initWindow() {
   // const { width, height } = screen.getPrimaryDisplay().workAreaSize;
-  const DEBUG = false;
-
+  global.DEBUG = true;
   let mainWindow = new BrowserWindow({
     height: screen.getPrimaryDisplay().workAreaSize.height,
     width: screen.getPrimaryDisplay().workAreaSize.width,
     x: 0,
     y: 0,
-    frame: DEBUG,
-    transparent: DEBUG ? false : true,
-    movable: DEBUG,
+    frame: global.DEBUG,
+    transparent: global.DEBUG ? false : true,
+    movable: global.DEBUG,
     hasShadow: false,
     show: false,
     visualEffectState: 'inactive',
@@ -21,7 +20,7 @@ export function initWindow() {
     alwaysOnTop: true,
     webPreferences: {
       // devTools: false,
-      devTools: DEBUG,
+      devTools: global.DEBUG,
       nodeIntegration: true,
       contextIsolation: true,
       preload: app.isPackaged
@@ -36,7 +35,7 @@ export function initWindow() {
 
   mainWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
   // mainWindow.setIgnoreMouseEvents(true);
-  global.ignoreMouseEvent = true;
+  global.ignoreMouseEvent = global.DEBUG ? false : true;
   // mainWindow.setAlwaysOnTop(true, 'screen-saver', 1);
 
   mainWindow.on('ready-to-show', () => {

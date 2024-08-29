@@ -137,12 +137,6 @@ export function Home() {
                       question={submitedPrompt}
                       isLoading={isLoading}
                     />
-                    // <Response
-                    //   streamedResponse={streamedResponse}
-                    //   isStreamingFinished={isStreamingFinished}
-                    //   question={submitedPrompt}
-                    //   isLoading={isLoading}
-                    // />
                   )}
                   {error && <Error errorMessage={error} />}
                 </div>
