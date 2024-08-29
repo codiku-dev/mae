@@ -50,7 +50,7 @@ export const RichResponse = (p: {
     );
   };
 
-  const { blockMatches, visibleText } = useLLMOutput({
+  const { blockMatches, visibleText, isFinished } = useLLMOutput({
     llmOutput: p.output,
     fallbackBlock: {
       component: MarkdownRenderer,
@@ -86,7 +86,7 @@ export const RichResponse = (p: {
           </div>
         </div>
         <div className="relative bg-blue-400/20 p-3 rounded-lg rounded-tr-none min-h-12">
-          {p.isStreamFinished && renderCopyButton()}
+          {isFinished && renderCopyButton()}
           {p.isLoading ? (
             <div className="w-full flex flex-col gap-1">
               <Skeleton className="w-full h-6" />
@@ -94,7 +94,6 @@ export const RichResponse = (p: {
           ) : (
             blockMatches.map((blockMatch: any, index: number) => {
               const Component = blockMatch.block.component;
-              console.log(blockMatches);
               return <Component key={index} blockMatch={blockMatch} />;
             })
           )}

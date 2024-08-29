@@ -1,50 +1,30 @@
 Bug :
 
-- Copier coller text brut et non markdown
-- Update modal seems stop the ollama server somtimes ?
+- # Update modal seems stop the ollama server somtimes ?
 
-Core :
+==============================================
 
-- Scroll Auto
-- Splash during loading
-- Md, latex, schema generation
-- Menu to select another model
-- Language selection
-- Support historic in the page
-- Support files and images
+V1
 
-Improvement :
+Verifier installation OK sur autre mac
+Scroll auto pendant génération
+Améliorer affichage du md et code ( padding etc ...)
+Splash screen loading démarrage initialisation
 
--Find all historics
+==============================================
 
-- Preprompt
+V2
 
-Uninstall:
+Language selector
+Choisir model
+Créer un mode a partir de preprompt
+Historique des chats
 
-- Uninstall ollama an model ( ask if possible or store i it was there at the begining)
+==============================================
 
-Icon :
+V3
 
-- Icon de couleur le temps du chargement
-
-Example of ModelFile
-
-FROM llama3.1
-
-# set the temperature to 1 [higher is more creative, lower is more coherent]
-
-PARAMETER temperature 1
-
-# set the system message
-
-SYSTEM """
-You are Mario from Super Mario Bros. Answer as Mario, the assistant, only.
-"""
-
-ollama create mario -f ./Modelfile
-ollama run mario
-
-> > > hi
-> > > Hello! It's your friend Mario.
-
-In CLI : ollama create mymodel -f ./Modelfile
+Rechercher sur internet
+Apprentissage à partir de lien
+Mémoire morte
+Envoyer fichier
