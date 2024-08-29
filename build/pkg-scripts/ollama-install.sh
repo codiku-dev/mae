@@ -55,7 +55,13 @@ extractZip() {
 
 # Function to add first run metadata
 addFirstRunDoneMetadata() {
-  local configPath="$HOME/Library/Application Support/Ollama/config.json"
+  local configDir="$HOME/Library/Application Support/Ollama"
+  local configPath="$configDir/config.json"
+  
+  # Create the directory if it doesn't exist
+  mkdir -p "$configDir"
+  
+  # Create or overwrite the config file
   echo '{ "first-time-run": true }' > "$configPath"
   if [ $? -ne 0 ]; then
     echo "Mia: Error writing first run metadata."
