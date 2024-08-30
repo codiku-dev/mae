@@ -7,7 +7,7 @@ import {
   makeInteractiveClassClickable,
 } from '@/renderer/libs/utils';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { SearchBar } from '../../components/features/searchbar';
 
 export function Home() {
@@ -35,7 +35,6 @@ export function Home() {
     window.electron.ipcRenderer.on('global-shortcut', (e) => {
       if (e.data.shortcut === 'CommandOrControl+Shift+P') {
         logToMain('CommandOrControl+Shift+P received');
-        console.log('CommandOrControl+Shift+P received');
         setIsVisible((prev) => {
           return !prev;
         });
@@ -43,14 +42,13 @@ export function Home() {
     });
     window.electron.ipcRenderer.on('global-shortcut', (e) => {
       if (e.data.shortcut === 'Escape') {
-        console.log('Escape received');
         setIsVisible(false);
       }
     });
     window.electron.ipcRenderer.on('on-main-window-blur', () => '');
   }, []);
 
-  const handleSubmit = useCallback(async (submittedText: string) => {
+  const handleSubmit = async (submittedText: string) => {
     if (submittedText !== '') {
       setIsAIWorking(true);
       setSubmitedPrompt(submittedText);
@@ -58,7 +56,6 @@ export function Home() {
       setIsLoading(true);
       setIsStreamingFinished(false);
       setError('');
-      console.log('submit...');
       OllamaService.getInstance().requestLlamaStream(
         submittedText,
         'question',
@@ -73,14 +70,14 @@ export function Home() {
           }
         },
         () => {
-          setError('Something went wrong...Make sur the LLM is started !');
+          setError('Something went wrong...');
           setIsLoading(false);
           setIsStreamingFinished(true);
           setIsAIWorking(false);
         },
       );
     }
-  }, []);
+  };
 
   return (
     <div id="container" className={cn('w-full h-full', isVisible && '')}>
@@ -133,6 +130,7 @@ export function Home() {
                   {(isLoading ||
                     (streamedResponse && streamedResponse !== '')) && (
                     <RichResponse
+                      key={submitedPrompt}
                       output={streamedResponse}
                       isStreamFinished={isStreamingFinished}
                       question={submitedPrompt}

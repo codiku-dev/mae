@@ -5,7 +5,9 @@ Bug :
 ==============================================
 
 V1
-Support link
+Fix bug multiple question not rendering
+Add a button to clear
+Support link (i should close the app when a link is clicked)
 Splash screen loading démarrage initialisation
 ==============================================
 

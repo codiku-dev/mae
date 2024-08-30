@@ -49,6 +49,11 @@ startOllama() {
   fi
 }
 
+createOllamaModelFromModelFile() {
+  echo "Mia: Creating model..."
+  "/usr/local/bin/ollama" create llama3.1:mia -f ./build/pkg-scripts/Modelfile
+  echo "Mia: Model created successfully."
+}
 # Function to stop OLLama
 stopOllama() {
   echo "Mia: Stopping OLLAMA..."
@@ -92,6 +97,9 @@ case "$command" in
         ;;
     restartOllama)
         restartOllama
+        ;;
+    createOllamaModelFromModelFile)
+        createOllamaModelFromModelFile
         ;;
     isOllamaRunning)
         if isOllamaRunning; then

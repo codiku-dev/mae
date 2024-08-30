@@ -23,7 +23,6 @@ export function initMenu(mainWindow: BrowserWindow) {
         mainWindow.webContents.send('global-shortcut', {
           data: { shortcut: 'CommandOrControl+Shift+P' },
         });
-        console.log('Start conversation');
       },
       commandId: MENU.OPEN_CLOSE,
     },
@@ -43,13 +42,11 @@ export function initMenu(mainWindow: BrowserWindow) {
 
   // listener to window visibility to update menu label
   mainWindow.on('show', () => {
-    console.log('show');
     console.log('update labl to Close Mia (⌘+⇧+p)');
 
     updateMenuLabel(MENU.OPEN_CLOSE, 'Close Mia (⌘+⇧+p)');
   });
   mainWindow.on('hide', () => {
-    console.log('hide');
     console.log('update labl to Open Mia (⌘+⇧+p)');
     updateMenuLabel(MENU.OPEN_CLOSE, 'Open Mia (⌘+⇧+p)');
   });

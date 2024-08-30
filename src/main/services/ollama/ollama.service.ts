@@ -154,7 +154,7 @@ export class OllamaService {
         } catch (error) {
           logToMain('Error during chunking ' + (error as Error).message);
           await reader.cancel();
-
+          console.log('Error during chunking ' + (error as Error).message);
           onError();
           break;
         }
@@ -165,6 +165,7 @@ export class OllamaService {
       if ((error as Error).name === 'AbortError') {
         this.messages.pop();
         logToMain('Aborting...');
+        console.log('Aborting...');
       } else {
         onError();
       }

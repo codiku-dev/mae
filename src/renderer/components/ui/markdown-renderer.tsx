@@ -24,7 +24,7 @@ export const MarkdownRenderer = (p: { blockMatch: any }) => {
         h1: ({ className, ...props }) => (
           <h1
             className={cn(
-              'scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl',
+              'scroll-m-20 text-2xl font-extrabold tracking-tight ',
               className,
             )}
             {...props}
@@ -33,7 +33,7 @@ export const MarkdownRenderer = (p: { blockMatch: any }) => {
         h2: ({ className, ...props }) => (
           <h2
             className={cn(
-              'scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0',
+              'scroll-m-20 border-b pb-2 text-xl font-semibold tracking-tight first:mt-0',
               className,
             )}
             {...props}
@@ -42,7 +42,7 @@ export const MarkdownRenderer = (p: { blockMatch: any }) => {
         h3: ({ className, ...props }) => (
           <h3
             className={cn(
-              'scroll-m-20 text-2xl font-semibold tracking-tight',
+              'scroll-m-20 text-lg font-semibold tracking-tight',
               className,
             )}
             {...props}

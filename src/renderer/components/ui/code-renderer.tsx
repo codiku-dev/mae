@@ -89,7 +89,7 @@ export const CodeRenderer: LLMOutputComponent = (p: { blockMatch: any }) => {
                 variant="ghost"
                 size="icon"
                 type="button"
-                className="absolute top-0 right-14 rounded-sm hover:bg-gray-50/10"
+                className="absolute top-0 right-12 rounded-sm hover:bg-gray-50/10"
                 onClick={handleCopyContent}
               >
                 {hasCopiedRecently ? (

@@ -29,16 +29,29 @@ export const RichResponse = (p: {
 }) => {
   const [hasCopiedRecently, setHasCopiedRecently] = useState(false);
   const [userName, setUsername] = useState<any>(null);
+  const [userHasScrolled, setUserHasScrolled] = useState(false);
 
   const scrollRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const handleScroll = () => {
+      if (scrollRef.current) {
+        const { scrollTop, scrollHeight, clientHeight } = scrollRef.current;
+        const isAtBottom = scrollTop + clientHeight >= scrollHeight - 10; // 10px threshold
+        setUserHasScrolled(!isAtBottom);
+      }
+    };
+
+    scrollRef.current?.addEventListener('scroll', handleScroll);
+    return () => scrollRef.current?.removeEventListener('scroll', handleScroll);
+  }, []);
 
   useEffect(
     function scrollToBotWhenTextGrow() {
-      if (scrollRef.current) {
+      if (scrollRef.current && !userHasScrolled) {
         scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
       }
     },
-    [p.output, p.isLoading],
+    [p.output, p.isLoading, userHasScrolled],
   );
 
   useEffect(() => {
@@ -77,6 +90,7 @@ export const RichResponse = (p: {
     ],
     isStreamFinished: p.isStreamFinished,
   });
+  console.log(blockMatches);
 
   const dotAnimation = (
     <div className="flex items-center gap-1">
