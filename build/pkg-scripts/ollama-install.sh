@@ -100,9 +100,6 @@ EOF
 # Main installation function
 installOllama() {
   checkForOLLama
-
-  # Function to create symlink with admin privileges
-  # Call the function to create the symlink
   createSymlink
   addFirstRunDoneMetadata
   startOllama
@@ -116,7 +113,8 @@ installOllama() {
     echo "Mia: Failed to build custom model llama3.1:mia."
   fi
   stopOllama
-  echo "Installation complete"
+  echo "Installation complete, you can close this window now"
+  exit 0
 }
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"

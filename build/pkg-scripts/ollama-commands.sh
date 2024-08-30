@@ -26,12 +26,7 @@ findOllamaPath() {
 pullOllamaModel() {
   echo "Mia: Pulling model..."
   local modelName="$1"
-  # local ollamaPath
-  # ollamaPath=$(/usr/bin/which ollama)
-  # if [ -z "$ollamaPath" ]; then
-  #   echo "Mia: 'ollama' command not found. Please ensure it is installed and in your PATH."
-  #   exit 1
-  # fi
+ 
   echo "Mia: Pulling $modelName model..."
   "/usr/local/bin/ollama" pull "$modelName" 
   echo "Mia: Model pulled successfully."
@@ -39,14 +34,7 @@ pullOllamaModel() {
 
 # Function to start OLLama
 startOllama() {
-  #local ollamaPath
-  #findOllamaPath
-  #ollamaPath=$(command -v ollama)
-  #echo "In startOllama, ollamaPath is $ollamaPath"
-  #if [ -z "$ollamaPath" ]; then
-  #  echo "Mia: 'ollama' command not found. Please ensure it is installed and in your PATH."
- #   exit 1
- # fi
+
   echo "Mia: Starting OLLAMA..."
   if ! isOllamaRunning; then
     "/usr/local/bin/ollama" serve &
