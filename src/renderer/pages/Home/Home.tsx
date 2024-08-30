@@ -101,7 +101,7 @@ export function Home() {
               y: number;
             }) => {
               if (definition.opacity === 0) {
-                stopAndResetAll();
+                //  stopAndResetAll();
                 setTimeout(() => {
                   window.electron.ipcRenderer.sendMessage(
                     'request-close-window',
@@ -128,7 +128,7 @@ export function Home() {
                     onClickStop={stopAndResetAll}
                   />
                 </div>
-                <div id="ai-response" className="interactive w-1/2">
+                <div id="ai-response" className="interactive w-3/5">
                   {(isLoading ||
                     (streamedResponse && streamedResponse !== '')) && (
                     <RichResponse

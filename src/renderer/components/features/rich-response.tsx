@@ -7,7 +7,7 @@ import { markdownLookBack } from '@llm-ui/markdown';
 //@ts-ignore
 import { useLLMOutput } from '@llm-ui/react';
 import { Clipboard, ClipboardCheck } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import logo from '../../assets/icon.png';
 import { Button } from '../ui/button';
 import { CodeRenderer } from '../ui/code-renderer';
@@ -29,6 +29,17 @@ export const RichResponse = (p: {
 }) => {
   const [hasCopiedRecently, setHasCopiedRecently] = useState(false);
   const [userName, setUsername] = useState<any>(null);
+
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(
+    function scrollToBotWhenTextGrow() {
+      if (scrollRef.current) {
+        scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+      }
+    },
+    [p.output, p.isLoading],
+  );
 
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('user-info-request');
@@ -137,7 +148,7 @@ export const RichResponse = (p: {
             </Button>
           </TooltipTrigger>
           <TooltipContent side="bottom" className="bg-black text-white">
-            <p>Copy</p>
+            <p>Copy whole response</p>
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
@@ -149,10 +160,13 @@ export const RichResponse = (p: {
         e.preventDefault();
         e.stopPropagation();
       }}
-      className="interactive mt-4 p-4 rounded-md bg-white animate-in flex flex-col gap-4 relative w-full"
+      className="interactive mt-4 p-4 rounded-md bg-white animate-in flex flex-col gap-4 relative w-full shadow-xl"
     >
       <>
-        <div className=" flex flex-col gap-4 max-h-[500px] overflow-y-auto">
+        <div
+          ref={scrollRef}
+          className="flex flex-col gap-4 max-h-[500px] overflow-y-auto py-"
+        >
           {renderQuestion()}
           {renderAnswer()}
         </div>
