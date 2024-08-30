@@ -3,7 +3,33 @@
 # Determine the directory of the script
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-# Run ollama-install.sh and redirect output to both log file and terminal
-"$SCRIPT_DIR/ollama-install.sh" 2>&1 | tee ~/Desktop/ollama-install.log
+# Create the log file in /tmp with correct permissions
+LOG_FILE="/tmp/ollama-install.log"
+touch "$LOG_FILE"
+chmod 666 "$LOG_FILE"
+
+# Create a temporary AppleScript file
+APPLESCRIPT_FILE="/tmp/ollama_install.scpt"
+cat << EOF > "$APPLESCRIPT_FILE"
+tell application "Terminal"
+    set installWindow to do script "\"$SCRIPT_DIR/ollama-install.sh\" 2>&1 | tee \"$LOG_FILE\"; echo \"Installation complete\" >> \"$LOG_FILE\"; sleep 3; exit"
+    activate
+end tell
+EOF
+
+# Run the AppleScript
+osascript "$APPLESCRIPT_FILE" &
+
+# Wait for the installation to complete
+while ! grep -q "Installation complete" "$LOG_FILE"; do
+    sleep 1
+done
+
+# Force quit Terminal
+pkill -x Terminal
+
+# Clean up
+rm "$LOG_FILE"
+rm "$APPLESCRIPT_FILE"
 
 exit 0

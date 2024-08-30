@@ -116,6 +116,7 @@ installOllama() {
     echo "Mia: Failed to build custom model llama3.1:mia."
   fi
   stopOllama
+  echo "Installation complete"
 }
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
