@@ -1,4 +1,10 @@
-import { BrowserWindow, clipboard, globalShortcut, ipcMain } from 'electron';
+import {
+  BrowserWindow,
+  clipboard,
+  globalShortcut,
+  ipcMain,
+  shell,
+} from 'electron';
 // import { logToRenderer } from '../../../libs/utils';
 import { username } from 'username';
 
@@ -33,6 +39,7 @@ export class EventListenersService {
     this.addCloseRequestListener();
     this.addBlurRequestListener();
     this.addUserInfoRequestListener();
+    this.addRequestOpenExternalLinkListener();
   }
 
   private addFocusRequestListener() {
@@ -76,6 +83,12 @@ export class EventListenersService {
   private addRendererLogListener() {
     ipcMain.on('log', (event, args) => {
       console.log('Log renderer : ', args);
+    });
+  }
+
+  private addRequestOpenExternalLinkListener() {
+    ipcMain.on('request-open-external-link', (event, link) => {
+      shell.openExternal(link);
     });
   }
 

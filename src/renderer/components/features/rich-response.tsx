@@ -77,27 +77,37 @@ export const RichResponse = (p: {
     ],
     isStreamFinished: p.isStreamFinished,
   });
+
+  const dotAnimation = (
+    <div className="flex items-center gap-1">
+      <span className="text-xs text-gray-400">is thinking</span>
+      <div className="flex gap-0.5">
+        <div className="w-1 h-1 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+        <div className="w-1 h-1 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+        <div className="w-1 h-1 bg-gray-400 rounded-full animate-bounce"></div>
+      </div>
+    </div>
+  );
+
+  const avatarAssistant = (
+    <div className="flex items-center gap-2 mb-1 justify-end">
+      <img src={logo} className="size-8 rounded-full" alt="AI Avatar" />
+      <div className="flex items-center gap-2">
+        <span className="text-sm text-gray-500">Mia</span>
+        {p.isLoading && dotAnimation}
+      </div>
+    </div>
+  );
+
   const renderAnswer = () => {
     return (
-      <div className="flex flex-col gap-2">
-        <div className="flex items-center gap-2 mb-1 justify-end">
-          <img src={logo} className="size-8 rounded-full" alt="AI Avatar" />
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-500">Mia</span>
-            {p.isLoading && (
-              <div className="flex items-center gap-1">
-                <span className="text-xs text-gray-400">is thinking</span>
-                <div className="flex gap-0.5">
-                  <div className="w-1 h-1 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-                  <div className="w-1 h-1 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-                  <div className="w-1 h-1 bg-gray-400 rounded-full animate-bounce"></div>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-        <div className="relative bg-blue-400/20 p-3 rounded-lg rounded-tr-none min-h-12">
-          {isFinished && renderCopyButton()}
+      <div className="flex flex-col gap-2 pb-4">
+        {avatarAssistant}
+        <div className="relative bg-sky-200/20 p-3 rounded-lg rounded-tr-none min-h-12">
+          {isFinished &&
+            p.isStreamFinished &&
+            !p.isLoading &&
+            renderCopyButton()}
           {p.isLoading ? (
             <div className="w-full flex flex-col gap-1">
               <Skeleton className="w-full h-6" />
@@ -165,7 +175,7 @@ export const RichResponse = (p: {
       <>
         <div
           ref={scrollRef}
-          className="flex flex-col gap-4 max-h-[500px] overflow-y-auto py-"
+          className="flex flex-col gap-4 max-h-[500px] overflow-y-auto py-2"
         >
           {renderQuestion()}
           {renderAnswer()}

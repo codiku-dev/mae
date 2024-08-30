@@ -14,7 +14,8 @@ export type Channels =
   | 'log-renderer'
   | 'request-blur-window'
   | 'user-info-request'
-  | 'user-info-reply';
+  | 'user-info-reply'
+  | 'request-open-external-link';
 
 const electronHandler = {
   ipcRenderer: {

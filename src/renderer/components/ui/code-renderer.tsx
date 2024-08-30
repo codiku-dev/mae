@@ -10,12 +10,13 @@ import {
 //@ts-ignore
 import { type LLMOutputComponent } from '@llm-ui/react';
 import parseHtml from 'html-react-parser';
-import { ClipboardCheck } from 'lucide-react';
-import { useState } from 'react';
+import { Clipboard, ClipboardCheck } from 'lucide-react';
+import { useCallback, useState } from 'react';
 import { getHighlighterCore } from 'shiki/core';
 import { bundledLanguagesInfo } from 'shiki/langs';
 import { bundledThemes } from 'shiki/themes';
 import getWasm from 'shiki/wasm';
+import { Button } from './button';
 import {
   Tooltip,
   TooltipContent,
@@ -46,6 +47,11 @@ export const CodeRenderer: LLMOutputComponent = (p: { blockMatch: any }) => {
     codeToHtmlOptions,
   });
 
+  const getLanguage = useCallback(() => {
+    const language = p.blockMatch.output.split('\n')[0];
+    return language.replace('```', '').trim();
+  }, [p.blockMatch.output]);
+
   const handleCopyContent = () => {
     setHasCopiedRecently(true);
     setTimeout(() => {
@@ -67,32 +73,45 @@ export const CodeRenderer: LLMOutputComponent = (p: { blockMatch: any }) => {
   }
 
   return (
-    <TooltipProvider delayDuration={0}>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <div
-            className="relative cursor-pointer my-2"
-            onClick={handleCopyContent}
-          >
-            <style>{`
+    <div className="relative my-2">
+      <style>{`
               pre {
                 padding: 15px;
-                border-radius: 10px 0 10px 10px;
+                border-radius: 0px 0px 10px 10px;
                 overflow-x: auto;
               }
             `}</style>
-            {parseHtml(html)}
-            {hasCopiedRecently && (
-              <div className="absolute right-2 top-2">
-                <ClipboardCheck size={16} className="text-green-500" />
-              </div>
-            )}
-          </div>
-        </TooltipTrigger>
-        <TooltipContent side="top" className="bg-black text-white">
-          <p>Click to copy code</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+      <div className="text-sm bg-black/90 py-2 px-3 text-gray-300 rounded-t-lg">
+        <TooltipProvider delayDuration={0}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                type="button"
+                className="absolute top-0 right-14 rounded-sm hover:bg-gray-50/10"
+                onClick={handleCopyContent}
+              >
+                {hasCopiedRecently ? (
+                  <span className="flex items-center gap-2">
+                    <ClipboardCheck size={16} /> Code copied
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-2">
+                    <Clipboard size={16} />
+                    Copy code
+                  </span>
+                )}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" className="bg-black text-white">
+              <p>Copy code</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+        {getLanguage()}
+      </div>
+      {parseHtml(html)}
+    </div>
   );
 };

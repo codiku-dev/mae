@@ -58,6 +58,7 @@ export function Home() {
       setIsLoading(true);
       setIsStreamingFinished(false);
       setError('');
+      console.log('submit...');
       OllamaService.getInstance().requestLlamaStream(
         submittedText,
         'question',
