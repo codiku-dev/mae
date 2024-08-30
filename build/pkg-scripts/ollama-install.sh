@@ -3,7 +3,7 @@
 # Function to check if OLLama is installed
 checkForOLLama() {
   if ! isOllamaInstalled; then
-    echo "Ollama is not installed, installing..."
+    echo "Ollama is not installed"
     downloadAndInstallOLLama
   else
     echo "Ollama is already installed, skipping Ollama installation."
@@ -50,6 +50,7 @@ extractZip() {
     exit 1
   fi
   echo "Mia: OLLama installed successfully."
+  chmod -R 755 /Applications/OLLama.app
   rm -f "$zipPath"
 }
 
@@ -58,24 +59,62 @@ addFirstRunDoneMetadata() {
   local configDir="$HOME/Library/Application Support/Ollama"
   local configPath="$configDir/config.json"
   
+  echo "Creating config directory: $configDir"
   # Create the directory if it doesn't exist
   mkdir -p "$configDir"
+  # Make the directory writable by the user
+  chmod 755 "$configDir"
   
+  echo "Add config into: $configPath"
   # Create or overwrite the config file
-  echo '{ "first-time-run": true }' > "$configPath"
+  echo '{
+         "first-time-run": true
+}' > "$configPath"
   if [ $? -ne 0 ]; then
     echo "Mia: Error writing first run metadata."
     exit 1
   fi
+  
+  # Set correct permissions for the config file
+  chmod 644 "$configPath"
+  
   echo "Mia: First run metadata added successfully."
 }
 
+# Function to create symlink with admin privileges
+createSymlink() {
+  local ollama="/Applications/Ollama.app/Contents/Resources/ollama"
+    local symlinkPath="/usr/local/bin/ollama"
+    # Create the symlink using osascript to gain admin privileges
+    osascript <<EOF
+do shell script "mkdir -p $(dirname "$symlinkPath") && ln -F -s '$ollama' '$symlinkPath'" with administrator privileges
+EOF
+
+    if [ $? -eq 0 ]; then
+      echo "Mia: Symlink created successfully."
+    else
+      echo "Mia: Failed to create symlink."
+      exit 1
+    fi
+  }
 # Main installation function
 installOllama() {
   checkForOLLama
+
+  # Function to create symlink with admin privileges
+  # Call the function to create the symlink
+  createSymlink
   addFirstRunDoneMetadata
   startOllama
   pullOllamaModel "llama3.1"
+  echo "Building custom model llama3.1:mia... located in $SCRIPT_DIR/Modelfile"
+
+  /usr/local/bin/ollama create llama3.1:mia -f "$SCRIPT_DIR/Modelfile"
+  if [ $? -eq 0 ]; then
+    echo "Mia: Custom model llama3.1:mia built successfully."
+  else
+    echo "Mia: Failed to build custom model llama3.1:mia."
+  fi
   stopOllama
 }
 

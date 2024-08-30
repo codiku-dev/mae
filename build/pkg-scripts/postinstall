@@ -3,6 +3,7 @@
 # Determine the directory of the script
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-# Source nvm script to ensure nvm is available
-"$SCRIPT_DIR/ollama-install.sh" > ~/Desktop/ollama-install.log 2>&1 | tee /dev/tty
+# Run ollama-install.sh and redirect output to both log file and terminal
+"$SCRIPT_DIR/ollama-install.sh" 2>&1 | tee ~/Desktop/ollama-install.log
+
 exit 0

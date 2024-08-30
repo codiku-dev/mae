@@ -24,37 +24,37 @@ findOllamaPath() {
 
 # Function to pull OLLama model
 pullOllamaModel() {
+  echo "Mia: Pulling model..."
   local modelName="$1"
-  local ollamaPath
-  ollamaPath=$(which ollama)
-  if [ -z "$ollamaPath" ]; then
-    echo "Mia: 'ollama' command not found. Please ensure it is installed and in your PATH."
-    exit 1
-  fi
+  # local ollamaPath
+  # ollamaPath=$(/usr/bin/which ollama)
+  # if [ -z "$ollamaPath" ]; then
+  #   echo "Mia: 'ollama' command not found. Please ensure it is installed and in your PATH."
+  #   exit 1
+  # fi
   echo "Mia: Pulling $modelName model..."
-  "$ollamaPath" pull "$modelName" 
+  "/usr/local/bin/ollama" pull "$modelName" 
   echo "Mia: Model pulled successfully."
 }
 
 # Function to start OLLama
 startOllama() {
-  local ollamaPath
-  findOllamaPath
-  ollamaPath=$(command -v ollama)
-  echo "In startOllama, ollamaPath is $ollamaPath"
-  if [ -z "$ollamaPath" ]; then
-    echo "Mia: 'ollama' command not found. Please ensure it is installed and in your PATH."
-    exit 1
-  fi
+  #local ollamaPath
+  #findOllamaPath
+  #ollamaPath=$(command -v ollama)
+  #echo "In startOllama, ollamaPath is $ollamaPath"
+  #if [ -z "$ollamaPath" ]; then
+  #  echo "Mia: 'ollama' command not found. Please ensure it is installed and in your PATH."
+ #   exit 1
+ # fi
   echo "Mia: Starting OLLAMA..."
   if ! isOllamaRunning; then
-    "$ollamaPath" serve &
-    sleep 5
+    "/usr/local/bin/ollama" serve &
+    sleep 9
     if isOllamaRunning; then
       echo "Mia: OLLAMA started successfully on port 11434."
     else
       echo "Mia: OLLAMA failed to start."
-      exit 1
     fi
   else
     echo "Mia: OLLAMA is already running on port 11434."
@@ -63,20 +63,13 @@ startOllama() {
 
 # Function to stop OLLama
 stopOllama() {
-  local ollamaPath
-  ollamaPath=$(which ollama)
-  if [ -z "$ollamaPath" ]; then
-    echo "Mia: 'ollama' command not found. Please ensure it is installed and in your PATH."
-    exit 1
-  fi
   echo "Mia: Stopping OLLAMA..."
   if isOllamaRunning; then
-    pkill -9 ollama
+    "/usr/bin/pkill" -9 ollama
     if [ $? -eq 0 ]; then
       echo "Mia: OLLAMA stopped successfully."
     else
       echo "Mia: OLLAMA failed to stop."
-      exit 1
     fi
   else
     echo "Mia: No OLLAMA process found running on port 11434."
@@ -85,7 +78,7 @@ stopOllama() {
 
 # Function to check if OLLama is running
 isOllamaRunning() {
-  lsof -i :11434 > /dev/null
+  /usr/sbin/lsof -i :11434 > /dev/null
   return $?
 }
 
