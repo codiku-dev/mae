@@ -1,12 +1,14 @@
 import { OllamaService } from '@/main/services/ollama/ollama.service';
 import { Error } from '@/renderer/components/features/error';
 import { RichResponse } from '@/renderer/components/features/rich-response';
+import { Button } from '@/renderer/components/ui/button';
 import {
   cn,
   logToMain,
   makeInteractiveClassClickable,
 } from '@/renderer/libs/utils';
 import { AnimatePresence, motion } from 'framer-motion';
+import { X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { SearchBar } from '../../components/features/searchbar';
 
@@ -129,6 +131,18 @@ export function Home() {
                   />
                 </div>
                 <div id="ai-response" className="interactive w-3/5">
+                  {streamedResponse && (
+                    <div className="flex justify-end">
+                      <Button
+                        onClick={stopAndResetAll}
+                        variant="ghost"
+                        size="sm"
+                      >
+                        <X className="h-4 w-4 mr-2" />
+                        Clear
+                      </Button>
+                    </div>
+                  )}
                   {(isLoading ||
                     (streamedResponse && streamedResponse !== '')) && (
                     <RichResponse
