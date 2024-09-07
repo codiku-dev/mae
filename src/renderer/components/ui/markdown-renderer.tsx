@@ -1,6 +1,6 @@
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { cn } from '../../libs/utils';
+import { cn, logToMain } from '../../libs/utils';
 
 // Import Shadcn components
 import { ScrollArea } from './scroll-area';
@@ -18,7 +18,7 @@ export const MarkdownRenderer = (p: { blockMatch: any }) => {
 
   return (
     <ReactMarkdown
-      className="text-sm leading-7"
+      className="text-sm leading-7 "
       remarkPlugins={[remarkGfm]}
       components={{
         h1: ({ className, ...props }) => (
@@ -65,11 +65,13 @@ export const MarkdownRenderer = (p: { blockMatch: any }) => {
         ),
         a: ({ className, href, children, ...props }) => (
           <a
+            id="ai-link"
             className={cn(
-              'font-medium text-primary underline underline-offset-4',
+              'interactive font-medium text-primary underline underline-offset-4',
               className,
             )}
             onClick={(e) => {
+              logToMain('a onClick');
               e.preventDefault();
               if (href)
                 window.electron.ipcRenderer.sendMessage(

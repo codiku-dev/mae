@@ -98,6 +98,9 @@ export class EventListenersService {
   private addRequestOpenExternalLinkListener() {
     ipcMain.on('request-open-external-link', (event, link) => {
       shell.openExternal(link);
+      this.mainWindow?.webContents.send('global-shortcut', {
+        data: { shortcut: 'CommandOrControl+Shift+P' },
+      });
     });
   }
 
