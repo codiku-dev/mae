@@ -172,7 +172,7 @@ export const RichResponse = (p: {
             </Button>
           </TooltipTrigger>
           <TooltipContent side="bottom" className="bg-black text-white">
-            <p>Copy whole response</p>
+            <p>Copy response</p>
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>

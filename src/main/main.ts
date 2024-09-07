@@ -2,7 +2,6 @@ import { app, BrowserWindow, shell } from 'electron';
 import log from 'electron-log';
 import { autoUpdater } from 'electron-updater';
 import { resolveHtmlPath } from '../libs/utils';
-import { beforeStart } from '../scripts/before-start';
 import { beforeStop } from '../scripts/before-stop';
 import { initWindow } from './window';
 
@@ -43,9 +42,9 @@ app.disableHardwareAcceleration();
 // };
 
 const createWindow = async () => {
-  if (isDebug) {
-    // await installExtensions();
-  }
+  // if (isDebug) {
+  // await installExtensions();
+  // }
   // await startOllama();
 
   mainWindow = initWindow();
@@ -77,15 +76,14 @@ app.on('window-all-closed', () => {
 
 app.on('before-quit', async () => {
   // if (process.env.NODE_ENV === 'production') {
+
   await beforeStop();
   // }
 });
 
 app
   .whenReady()
-  .then(async () => {
-    await beforeStart();
-
+  .then(() => {
     createWindow();
     app.on('activate', () => {
       // On macOS it's common to re-create a window in the app when the

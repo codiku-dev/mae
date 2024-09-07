@@ -1,3 +1,4 @@
+import { beforeStart } from '@/scripts/before-start';
 import {
   BrowserWindow,
   clipboard,
@@ -40,12 +41,20 @@ export class EventListenersService {
     this.addBlurRequestListener();
     this.addUserInfoRequestListener();
     this.addRequestOpenExternalLinkListener();
+    this.addBeforeStartRequestListener();
   }
 
   private addFocusRequestListener() {
     ipcMain.on('request-focus-window', () => {
       console.log('MIA main : FOCUSING');
       this.mainWindow?.focus();
+    });
+  }
+
+  private addBeforeStartRequestListener() {
+    ipcMain.on('request-before-start', async () => {
+      await beforeStart();
+      this.mainWindow?.webContents.send('before-start-reply');
     });
   }
 

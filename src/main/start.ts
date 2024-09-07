@@ -6,7 +6,9 @@ export async function start(mainWindow: BrowserWindow) {
   console.log('Mia: Set focusable to true');
   mainWindow.setFocusable(true);
   console.log('Mia: Open dev tools');
-  mainWindow.webContents.openDevTools();
+  if (global.DEBUG) {
+    mainWindow.webContents.openDevTools();
+  }
   console.log('Mia: Add main event listeners');
   const eventListenerService = new EventListenersService(mainWindow);
   eventListenerService.addMainEventListeners();

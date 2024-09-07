@@ -19,6 +19,7 @@ export function Home() {
   const [submitedPrompt, setSubmitedPrompt] = useState('');
   const [error, setError] = useState('');
   const [isAIWorking, setIsAIWorking] = useState(false);
+
   const stopAndResetAll = () => {
     OllamaService.getInstance().abortAllRequests();
     setStreamedResponse('');
@@ -55,6 +56,7 @@ export function Home() {
       setStreamedResponse('');
       setIsLoading(true);
       setIsStreamingFinished(false);
+      setValue('');
       setError('');
       OllamaService.getInstance().requestLlamaStream(
         submittedText,
@@ -80,7 +82,7 @@ export function Home() {
   };
 
   return (
-    <div id="container" className={cn('w-full h-full', isVisible && '')}>
+    <div id="container" className={cn('w-full h-full')}>
       <AnimatePresence>
         {isVisible && (
           <motion.div

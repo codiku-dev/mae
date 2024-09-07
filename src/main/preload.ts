@@ -15,8 +15,9 @@ export type Channels =
   | 'request-blur-window'
   | 'user-info-request'
   | 'user-info-reply'
-  | 'request-open-external-link';
-
+  | 'request-open-external-link'
+  | 'request-before-start'
+  | 'before-start-reply';
 const electronHandler = {
   ipcRenderer: {
     sendMessage(channel: Channels, ...args: any[]) {

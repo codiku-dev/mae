@@ -1,13 +1,16 @@
-import './App.css';
+import { Route, MemoryRouter as Router, Routes } from 'react-router-dom';
 import 'tailwindcss/tailwind.css';
-import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
+import './App.css';
+import { ROUTES } from './libs/routes';
 import { Home } from './pages/Home/Home';
+import { SplashScreen } from './pages/SplashScreen/SplashScreen';
 
 export default function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path={ROUTES.splash} element={<SplashScreen />} />
+        <Route path={ROUTES.home} element={<Home />} />
       </Routes>
     </Router>
   );

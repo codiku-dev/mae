@@ -4,7 +4,7 @@ import { start } from './start';
 
 export function initWindow() {
   // const { width, height } = screen.getPrimaryDisplay().workAreaSize;
-  global.DEBUG = true;
+  global.DEBUG = false;
   let mainWindow = new BrowserWindow({
     height: screen.getPrimaryDisplay().workAreaSize.height,
     width: screen.getPrimaryDisplay().workAreaSize.width,
@@ -14,7 +14,7 @@ export function initWindow() {
     transparent: global.DEBUG ? false : true,
     movable: global.DEBUG,
     hasShadow: false,
-    show: false,
+    show: true,
     visualEffectState: 'inactive',
     focusable: false,
     alwaysOnTop: true,
