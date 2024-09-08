@@ -1,7 +1,11 @@
-import { StoreType } from '@/main/services/event-listeners/event-listener.service';
+import { LANGUAGES } from '@/libs/languages';
 import { useEffect, useState } from 'react';
 
-export function usePeristentStore(): {
+export type StoreType = {
+  isAppLoading: boolean;
+  assistantLanguage: keyof typeof LANGUAGES;
+};
+export function usePersistentStore(): {
   getStore: () => StoreType;
   setStore: (key: keyof StoreType, value: any) => void;
 } {
@@ -12,8 +16,8 @@ export function usePeristentStore(): {
   useEffect(() => {
     window.electron.ipcRenderer.on(
       'electron-store-changed',
-      (event, store: StoreType) => {
-        setStore_(store);
+      (store: string) => {
+        setStore_(JSON.parse(store));
       },
     );
   }, []);

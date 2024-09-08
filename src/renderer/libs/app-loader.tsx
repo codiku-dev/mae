@@ -1,9 +1,10 @@
 import { useEffect } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { SplashScreen } from '../components/features/splash-screen';
+import { Toaster } from '../components/ui/toaster';
 import { useAppStore } from '../hooks/use-app-store';
 import { ROUTES } from './routes';
-import { logToMain, makeInteractiveClassClickable } from './utils';
+import { makeInteractiveClassClickable } from './utils';
 // TODO: Add a global listener to handle the navigate event
 
 export const AppLoader = () => {
@@ -11,7 +12,6 @@ export const AppLoader = () => {
   const { setIsAppLoading, isAppLoading } = useAppStore();
 
   useEffect(() => {
-    logToMain('MOUNTING APP LOADER');
     window.electron.ipcRenderer.sendMessage('request-before-start');
     const unsubscribeBeforeStartReply = window.electron.ipcRenderer.on(
       'before-start-reply',
@@ -46,5 +46,10 @@ export const AppLoader = () => {
   if (isAppLoading) {
     return <SplashScreen />;
   }
-  return <Outlet />;
+  return (
+    <>
+      <Toaster />
+      <Outlet />;
+    </>
+  );
 };

@@ -4,7 +4,7 @@ import { start } from './start';
 
 export function initWindow() {
   // const { width, height } = screen.getPrimaryDisplay().workAreaSize;
-  global.DEBUG = false;
+  global.DEBUG = true;
   let mainWindow = new BrowserWindow({
     height: screen.getPrimaryDisplay().workAreaSize.height,
     width: screen.getPrimaryDisplay().workAreaSize.width,
@@ -18,7 +18,8 @@ export function initWindow() {
     visualEffectState: 'inactive',
     resizable: global.DEBUG,
     focusable: false,
-    alwaysOnTop: true,
+    alwaysOnTop: !global.DEBUG,
+
     webPreferences: {
       // devTools: false,
       devTools: global.DEBUG,
@@ -34,7 +35,9 @@ export function initWindow() {
 
   app.commandLine.appendSwitch('disable-crash-reporter');
 
-  mainWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
+  if (!global.DEBUG) {
+    mainWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
+  }
   // mainWindow.setIgnoreMouseEvents(true);
   global.ignoreMouseEvent = global.DEBUG ? false : true;
   // mainWindow.setAlwaysOnTop(true, 'screen-saver', 1);

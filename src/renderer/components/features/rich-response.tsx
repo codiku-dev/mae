@@ -5,7 +5,7 @@ import {
 } from '@llm-ui/code';
 import { markdownLookBack } from '@llm-ui/markdown';
 //@ts-ignore
-import { useLLMOutput } from '@llm-ui/react';
+import { throttleBasic, useLLMOutput } from '@llm-ui/react';
 import { Clipboard, ClipboardCheck } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import logo from '../../assets/icon.png';
@@ -74,7 +74,16 @@ export const RichResponse = (p: {
     );
   };
 
+  const throttle = throttleBasic({
+    readAheadChars: 20,
+    targetBufferChars: 9,
+    adjustPercentage: 0.3,
+    frameLookBackMs: 10000,
+    windowLookBackMs: 2000,
+  });
+
   const { blockMatches, visibleText, isFinished } = useLLMOutput({
+    throttle: undefined,
     llmOutput: p.output,
     fallbackBlock: {
       component: MarkdownRenderer,
@@ -90,7 +99,6 @@ export const RichResponse = (p: {
     ],
     isStreamFinished: p.isStreamFinished,
   });
-  console.log(blockMatches);
 
   const dotAnimation = (
     <div className="flex items-center gap-1">

@@ -17,9 +17,9 @@ import {
   SelectValue,
 } from '@/renderer/components/ui/select';
 import { Switch } from '@/renderer/components/ui/switch';
+import { useToast } from '@/renderer/hooks/use-toast';
 import { Loader2, Trash2 } from 'lucide-react';
-import { forwardRef, useEffect, useState } from 'react';
-import { FixedSizeList as List } from 'react-window';
+import { useEffect, useMemo, useState } from 'react';
 
 // Mock data
 const allModels = ['GPT-3', 'GPT-4', 'DALL-E', 'Stable Diffusion', 'LLaMA'];
@@ -32,35 +32,16 @@ interface Model {
 }
 
 import { X } from 'lucide-react';
+import { usePersistentStore } from '../hooks/use-persistent-store';
 import { ROUTES } from '../libs/routes';
-import { logToMain } from '../libs/utils';
-
-const VirtualizedSelectContent = forwardRef<
-  HTMLDivElement,
-  React.ComponentPropsWithoutRef<typeof SelectContent>
->(({ children, ...props }, forwardedRef) => {
-  return (
-    <SelectContent {...props} ref={forwardedRef}>
-      <List height={300} itemCount={LANGUAGES.length} itemSize={35}>
-        {({ index, style }) => (
-          <SelectItem
-            key={LANGUAGES[index].code}
-            value={LANGUAGES[index].code}
-            style={style}
-          >
-            {LANGUAGES[index].name}
-          </SelectItem>
-        )}
-      </List>
-    </SelectContent>
-  );
-});
-
-VirtualizedSelectContent.displayName = 'VirtualizedSelectContent';
 
 export function SettingsPage() {
-  const [currentLanguage, setCurrentLanguage] = useState('en');
+  const persistentStore = usePersistentStore();
+  const { toast } = useToast();
 
+  const [currentLanguage, setCurrentLanguage] = useState(
+    persistentStore.getStore().assistantLanguage,
+  );
   const [installedModels, setInstalledModels] = useState<Model[]>([
     { id: '1', name: 'GPT-3', isActive: true },
     { id: '2', name: 'DALL-E', isActive: false },
@@ -74,6 +55,14 @@ export function SettingsPage() {
     });
   }, []);
 
+  const handleSubmit = (e: React.FormEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    persistentStore.setStore('assistantLanguage', currentLanguage);
+    toast({
+      title: 'Settings saved',
+      description: 'Your changes have been successfully applied.',
+    });
+  };
   const handleToggleModel = (id: string) => {
     setInstalledModels((models) =>
       models.map((model) =>
@@ -98,26 +87,48 @@ export function SettingsPage() {
     }, 2000);
   };
 
-  const languageSection = (
-    <Card>
-      <CardHeader>
-        <CardTitle>Language</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <Select value={currentLanguage} onValueChange={setCurrentLanguage}>
-          <SelectTrigger>
-            <SelectValue placeholder="Select language" />
-          </SelectTrigger>
-          <SelectContent>
-            {LANGUAGES.map((language) => (
-              <SelectItem key={language.code} value={language.code}>
-                {language.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </CardContent>
-    </Card>
+  const closeButton = (
+    <Button
+      variant="ghost"
+      type="button"
+      size="icon"
+      className="absolute top-4 right-4"
+      onClick={() => {
+        window.electron.ipcRenderer.sendMessage('navigate', ROUTES.home);
+      }}
+    >
+      <X className="h-6 w-6" />
+    </Button>
+  );
+  const languageSection = useMemo(
+    () => (
+      <Card>
+        <CardHeader>
+          <CardTitle>Language</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Select
+            value={currentLanguage}
+            onValueChange={(value) => {
+              console.log('you are slecting ', value);
+              setCurrentLanguage(value as keyof typeof LANGUAGES);
+            }}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select language" />
+            </SelectTrigger>
+            <SelectContent>
+              {Object.values(LANGUAGES).map((language) => (
+                <SelectItem key={language.code} value={language.code}>
+                  {language.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </CardContent>
+      </Card>
+    ),
+    [currentLanguage],
   );
 
   const modelSection = (
@@ -166,23 +177,13 @@ export function SettingsPage() {
   );
   return (
     <form className="h-screen w-screen p-4 space-y-6 bg-white relative">
-      <Button
-        variant="ghost"
-        type="button"
-        size="icon"
-        className="absolute top-4 right-4"
-        onClick={() => {
-          logToMain('TRYING TO NAV TO ' + ROUTES.home);
-          window.electron.ipcRenderer.sendMessage('navigate', ROUTES.home);
-        }}
-      >
-        <X className="h-6 w-6" />
-      </Button>
       <h1 className="text-2xl font-bold">MIA Settings</h1>
-
+      {closeButton}
       {modelSection}
       {languageSection}
-      <Button type="submit">Apply</Button>
+      <Button type="button" onClick={handleSubmit}>
+        Apply
+      </Button>
     </form>
   );
 }

@@ -1,4 +1,5 @@
 import { refreshMenuLabels } from '@/main/menu/menu';
+import { StoreType } from '@/renderer/hooks/use-persistent-store';
 import { ROUTES } from '@/renderer/libs/routes';
 import { beforeStart } from '@/scripts/before-start';
 import {
@@ -9,22 +10,23 @@ import {
   Menu,
   shell,
 } from 'electron';
+import ElectronStore from 'electron-store';
 // import { logToRenderer } from '../../../libs/utils';
-import Store from 'electron-store';
 import { username } from 'username';
-
-export type StoreType = {
-  isFirstAppRun: boolean;
-};
 
 export class EventListenersService {
   private mainWindow: BrowserWindow | null = null;
-  private persistentStore = new Store<StoreType>({ isFirstAppRun: true });
-  private contextMenu: Menu | null = null;
 
-  constructor(mainWindow: BrowserWindow | null, contextMenu: Menu) {
+  private contextMenu: Menu | null = null;
+  private persistentStore: ElectronStore<StoreType>;
+  constructor(
+    mainWindow: BrowserWindow | null,
+    contextMenu: Menu,
+    persistentStore: ElectronStore<StoreType>,
+  ) {
     this.mainWindow = mainWindow;
     this.contextMenu = contextMenu;
+    this.persistentStore = persistentStore;
   }
 
   // eslint-disable-next-line no-use-before-define
@@ -33,11 +35,13 @@ export class EventListenersService {
   public static getInstance(
     mainWindow: BrowserWindow | null,
     contextMenu: Menu,
+    persistentStore: ElectronStore<StoreType>,
   ): EventListenersService {
     if (!EventListenersService.instance) {
       EventListenersService.instance = new EventListenersService(
         mainWindow,
         contextMenu,
+        persistentStore,
       );
     }
     return EventListenersService.instance;
@@ -193,9 +197,12 @@ export class EventListenersService {
 
   private addElectronStoreChangeListener() {
     this.persistentStore.onDidAnyChange(() => {
-      ipcMain.on('electron-store-changed', (event, store) => {
-        return store.store;
-      });
+      console.log('onDidAnyChange()');
+      console.log(' new ', JSON.stringify(this.persistentStore.store));
+      this.mainWindow?.webContents.send(
+        'electron-store-changed',
+        JSON.stringify(this.persistentStore.store),
+      );
     });
   }
 
