@@ -18,7 +18,7 @@ import {
 } from '@/renderer/components/ui/select';
 import { Switch } from '@/renderer/components/ui/switch';
 import { Loader2, Trash2 } from 'lucide-react';
-import { forwardRef, useState } from 'react';
+import { forwardRef, useEffect, useState } from 'react';
 import { FixedSizeList as List } from 'react-window';
 
 // Mock data
@@ -33,6 +33,8 @@ interface Model {
 
 import { X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { ROUTES } from '../libs/routes';
+import { logToMain } from '../libs/utils';
 
 const VirtualizedSelectContent = forwardRef<
   HTMLDivElement,
@@ -72,6 +74,14 @@ export function SettingsPage() {
   ]);
   const [installingModel, setInstallingModel] = useState<string | null>(null);
 
+  useEffect(() => {
+    logToMain('MOUTING SETTING PAGE');
+    window.electron.ipcRenderer.sendMessage('request-open-window');
+    window.electron.ipcRenderer.sendMessage('set-ignore-mouse-events', false, {
+      forward: true,
+    });
+  }, []);
+
   const handleToggleModel = (id: string) => {
     setInstalledModels((models) =>
       models.map((model) =>
@@ -102,7 +112,9 @@ export function SettingsPage() {
         variant="ghost"
         size="icon"
         className="absolute top-4 right-4"
-        onClick={() => navigate('/')}
+        onClick={() =>
+          window.electron.ipcRenderer.sendMessage('navigate', ROUTES.home)
+        }
       >
         <X className="h-6 w-6" />
       </Button>

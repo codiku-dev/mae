@@ -52,11 +52,11 @@ export class EventListenersService {
     this.addUserInfoRequestListener();
     this.addRequestOpenExternalLinkListener();
     this.addBeforeStartRequestListener();
+    this.addNavigateRequestListener();
   }
 
   private addFocusRequestListener() {
     ipcMain.on('request-focus-window', () => {
-      console.log('MIA main : FOCUSING');
       this.mainWindow?.hide();
       this.mainWindow?.show();
       this.mainWindow?.focus();
@@ -67,6 +67,12 @@ export class EventListenersService {
     ipcMain.on('request-before-start', async () => {
       await beforeStart();
       this.mainWindow?.webContents.send('before-start-reply');
+    });
+  }
+
+  private addRequestOpenWindowListener() {
+    ipcMain.on('request-open-window', () => {
+      this.mainWindow?.show();
     });
   }
 
@@ -107,6 +113,14 @@ export class EventListenersService {
     });
   }
 
+  private addNavigateRequestListener() {
+    ipcMain.on('navigate', (event, path) => {
+      console.log('navigate to ', path);
+      global.path = path;
+      this.mainWindow?.webContents.send('navigate', path);
+    });
+  }
+
   private addRequestOpenExternalLinkListener() {
     ipcMain.on('request-open-external-link', (event, link) => {
       shell.openExternal(link);
@@ -131,9 +145,11 @@ export class EventListenersService {
         this.mainWindow?.webContents.send('global-shortcut', {
           data: { shortcut: 'CommandOrControl+Shift+P' },
         });
+        global.isSearchOpen = true;
       }
     });
     globalShortcut.register('Escape', () => {
+      global.isSearchOpen = false;
       this.mainWindow?.webContents.send('global-shortcut', {
         data: { shortcut: 'Escape' },
       });
@@ -167,7 +183,6 @@ export class EventListenersService {
   private addElectronStoreChangeListener() {
     this.persistentStore.onDidAnyChange(() => {
       ipcMain.on('electron-store-changed', (event, store) => {
-        console.log('MIA main : electron-store-changed', store);
         return store.store;
       });
     });

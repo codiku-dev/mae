@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { Square } from 'lucide-react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { cn, logToMain } from 'src/renderer/libs/utils';
+import { cn } from 'src/renderer/libs/utils';
 import { InputProps } from './input';
 
 export function PlaceholdersAndVanishInput({
@@ -187,7 +187,6 @@ export function PlaceholdersAndVanishInput({
       <button
         type="button"
         onClick={(e) => {
-          logToMain('STOP');
           e.preventDefault();
           onClickStop();
           inputRef.current?.focus();
@@ -273,7 +272,6 @@ export function PlaceholdersAndVanishInput({
           console.log('request focus');
           // window.electron.ipcRenderer.sendMessage('request-focus-window');
           // inputRef.current?.focus();
-          logToMain('Click input');
         }}
         className={cn(
           'interactive w-full relative text-sm sm:text-base z-50 border-none  bg-transparent pt-[0.85rem] text-black rounded-full focus:outline-none focus:ring-0 pl-4 sm:pl-10 pr-20',

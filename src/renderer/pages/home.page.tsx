@@ -2,7 +2,7 @@ import { OllamaService } from '@/main/services/ollama/ollama.service';
 import { Error } from '@/renderer/components/features/error';
 import { RichResponse } from '@/renderer/components/features/rich-response';
 import { Button } from '@/renderer/components/ui/button';
-import { cn, logToMain } from '@/renderer/libs/utils';
+import { cn } from '@/renderer/libs/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -50,7 +50,6 @@ export function HomePage() {
       'global-shortcut',
       (e) => {
         if (e.data.shortcut === 'CommandOrControl+Shift+P') {
-          logToMain('CommandOrControl+Shift+P received');
           setIsVisible((prev) => {
             return !prev;
           });
@@ -147,7 +146,6 @@ export function HomePage() {
                 }, 100);
               } else {
                 setTimeout(() => {
-                  logToMain('MIA : request-focus-window');
                   window.electron.ipcRenderer.sendMessage(
                     'request-focus-window',
                   );

@@ -31,12 +31,16 @@ export function initMenu(mainWindow: BrowserWindow) {
     {
       label: MENU.OPEN_CLOSE.label,
       click: () => {
-        if (!mainWindow.isVisible()) {
-          mainWindow.show();
-        }
-        mainWindow.webContents.send('global-shortcut', {
-          data: { shortcut: 'CommandOrControl+Shift+P' },
-        });
+        mainWindow.webContents.send('navigate', ROUTES.home);
+        setTimeout(() => {
+          if (!mainWindow.isVisible()) {
+            mainWindow.show();
+          }
+          mainWindow.webContents.send('global-shortcut', {
+            data: { shortcut: 'CommandOrControl+Shift+P' },
+          });
+          refreshMenuLabels(mainWindow);
+        }, 100);
       },
       commandId: MENU.OPEN_CLOSE.id,
     },
@@ -45,7 +49,9 @@ export function initMenu(mainWindow: BrowserWindow) {
       click: () => {
         mainWindow.webContents.send('navigate', ROUTES.settings);
         mainWindow.show();
-        mainWindow.setIgnoreMouseEvents(false);
+        setTimeout(() => {
+          refreshMenuLabels(mainWindow);
+        }, 100);
       },
       commandId: MENU.SETTINGS.id,
     },
@@ -132,6 +138,13 @@ function startIconWarningUpdate() {
     tray!.setImage(icon);
     isWarning = !isWarning;
   }, 800);
+}
+
+function refreshMenuLabels(mainWindow: BrowserWindow) {
+  updateMenuLabel(
+    MENU.OPEN_CLOSE.id,
+    global.isSearchOpen ? 'Close Mia (⌘+⇧+p)' : 'Open Mia (⌘+⇧+p)',
+  );
 }
 
 // function stopIconUpdate() {

@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { SplashScreen } from '../components/features/splash-screen';
 import { useAppStore } from '../hooks/use-app-store';
-import { makeInteractiveClassClickable } from './utils';
+import { logToMain, makeInteractiveClassClickable } from './utils';
 // TODO: Add a global listener to handle the navigate event
 
 export const AppLoader = () => {
@@ -26,6 +26,7 @@ export const AppLoader = () => {
     const unsubscribe = window.electron.ipcRenderer.on(
       'navigate',
       (path: string) => {
+        logToMain('navigate to ' + path);
         navigate(path);
       },
     );

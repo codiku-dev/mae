@@ -1,6 +1,6 @@
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { cn, logToMain } from '../../libs/utils';
+import { cn } from '../../libs/utils';
 
 // Import Shadcn components
 import { ScrollArea } from './scroll-area';
@@ -71,7 +71,6 @@ export const MarkdownRenderer = (p: { blockMatch: any }) => {
               className,
             )}
             onClick={(e) => {
-              logToMain('a onClick');
               e.preventDefault();
               if (href)
                 window.electron.ipcRenderer.sendMessage(
