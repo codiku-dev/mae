@@ -2,6 +2,7 @@ import { exec } from 'child_process';
 import { promises as fsPromises } from 'fs';
 import { promisify } from 'util';
 import { sleep } from '../../libs/utils';
+import { ModelFile } from '../../main/services/ollama/Modelfile';
 const execAsync = promisify(exec);
 
 const BASE_LOCAL_BIN_PATH = '/usr/local/bin';
@@ -97,4 +98,11 @@ export async function isOllamaRunning() {
 export async function restartOllama() {
   await stopOllama();
   await startOllama();
+}
+
+export async function generateOllamaModelFile(modelFile: ModelFile) {
+  await fsPromises.writeFile(
+    './build/pkg-scripts/Modelfile',
+    modelFile.toString(),
+  );
 }

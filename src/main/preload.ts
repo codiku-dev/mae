@@ -23,7 +23,8 @@ export type Channels =
   | 'electron-store-set'
   | 'electron-store-get'
   | 'electron-store-changed'
-  | 'on-searchbar-visibilty-change';
+  | 'on-searchbar-visibilty-change'
+  | 'ollama-create-model';
 
 const electronHandler = {
   ipcRenderer: {

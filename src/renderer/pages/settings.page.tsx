@@ -23,7 +23,6 @@ import { useEffect, useMemo, useState } from 'react';
 
 // Mock data
 const allModels = ['GPT-3', 'GPT-4', 'DALL-E', 'Stable Diffusion', 'LLaMA'];
-const languages = ['English', 'Spanish', 'French', 'German', 'Chinese'];
 
 interface Model {
   id: string;
@@ -31,6 +30,8 @@ interface Model {
   isActive: boolean;
 }
 
+import { ModelFile } from '@/main/services/ollama/Modelfile';
+import { OllamaService } from '@/main/services/ollama/ollama.service';
 import { X } from 'lucide-react';
 import { usePersistentStore } from '../hooks/use-persistent-store';
 import { ROUTES } from '../libs/routes';
@@ -55,9 +56,16 @@ export function SettingsPage() {
     });
   }, []);
 
-  const handleSubmit = (e: React.FormEvent<HTMLButtonElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLButtonElement>) => {
     e.preventDefault();
     persistentStore.setStore('assistantLanguage', currentLanguage);
+    const modelFile = new ModelFile();
+    modelFile.setLanguage(LANGUAGES[currentLanguage].name);
+    const response =
+      await OllamaService.getInstance().createOllamaModelFromModelFile(
+        modelFile,
+      );
+    console.log('response', response);
     toast({
       title: 'Settings saved',
       description: 'Your changes have been successfully applied.',
@@ -104,7 +112,7 @@ export function SettingsPage() {
     () => (
       <Card>
         <CardHeader>
-          <CardTitle>Language</CardTitle>
+          <CardTitle>Assistant language</CardTitle>
         </CardHeader>
         <CardContent>
           <Select

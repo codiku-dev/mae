@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { Ollama } from '@langchain/ollama';
 import { logToMain } from '../../../renderer/libs/utils';
+import { ModelFile } from './Modelfile';
 import { OllamaConfig } from './ollama.config';
 
 interface ControllerEntry {
@@ -138,5 +139,32 @@ export class OllamaService {
 
     // Remove the controller after the request is done
     this.removeAbortController(id);
+  }
+  async createOllamaModelFromModelFile(modelFile: ModelFile) {
+    const modelFileContent = modelFile.toString();
+    console.log('Creating model with Modelfile:', modelFileContent);
+
+    try {
+      const response = await fetch('http://localhost:11434/api/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: OllamaConfig.model,
+          modelfile: modelFileContent,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const responseText = await response.text();
+
+      return { status: 'success', response: responseText };
+    } catch (error) {
+      console.error('Error creating model:', error);
+      throw error;
+    }
   }
 }
