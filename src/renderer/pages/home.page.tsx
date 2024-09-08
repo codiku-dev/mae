@@ -127,7 +127,7 @@ export function HomePage() {
   );
 
   return (
-    <div id="container" className={cn('w-full h-full')}>
+    <div id="container" className={cn(' ')}>
       <AnimatePresence>
         {isVisible && (
           <motion.div

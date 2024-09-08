@@ -132,7 +132,6 @@ export class EventListenersService {
       const path = pathValue || pathEvent;
       global.path = path;
       if (path !== ROUTES.home) {
-        console.log('search is now closed');
         global.isSearchOpen = false;
       }
       this.mainWindow?.webContents.send('navigate', path);
@@ -197,8 +196,6 @@ export class EventListenersService {
 
   private addElectronStoreChangeListener() {
     this.persistentStore.onDidAnyChange(() => {
-      console.log('onDidAnyChange()');
-      console.log(' new ', JSON.stringify(this.persistentStore.store));
       this.mainWindow?.webContents.send(
         'electron-store-changed',
         JSON.stringify(this.persistentStore.store),
