@@ -29,7 +29,6 @@ export const AppLoader = () => {
     const unsubscribe = window.electron.ipcRenderer.on(
       'navigate',
       (path: string) => {
-        logToMain('navigate to ' + path);
         navigate(path);
       },
     );

@@ -126,7 +126,6 @@ export class EventListenersService {
   private addNavigateRequestListener() {
     ipcMain.on('navigate', (pathEvent, pathValue) => {
       const path = pathValue || pathEvent;
-      console.log('addNavigateRequestListener() navigate to ', path);
       global.path = path;
       if (path !== ROUTES.home) {
         console.log('search is now closed');
@@ -150,15 +149,12 @@ export class EventListenersService {
     const debounceTime = 500; // Prevent spam
 
     globalShortcut.register('CommandOrControl+Shift+P', () => {
-      console.log('CommandOrControl+Shift+P');
-      // logToRenderer(this.mainWindow, 'CommandOrControl+Shift+P');
       if (this.mainWindow?.isVisible() === false) {
         this.mainWindow?.show();
       }
       const currentTime = Date.now();
       if (currentTime - lastCallTime >= debounceTime) {
         lastCallTime = currentTime;
-        console.log('EMIT SHORTCUT');
         this.mainWindow?.webContents.send('global-shortcut', {
           data: { shortcut: 'CommandOrControl+Shift+P' },
         });
@@ -206,7 +202,6 @@ export class EventListenersService {
   private addOnSearchbarVisibiltyChangeRequestListener() {
     ipcMain.on('on-searchbar-visibilty-change', (event, isVisible) => {
       global.isSearchOpen = isVisible;
-      console.log('isSearchOpen', global.isSearchOpen);
       refreshMenuLabels();
     });
   }
