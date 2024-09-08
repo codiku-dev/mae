@@ -4,10 +4,10 @@ V2
 - [x] Fix menu should close settings and open the correct
 - [x] virtualize list language
 - [x]Page de settings
-- [] Language selector
+- [x] Language selector
+- Retirer model par défaut lors de install
 - Choisir model
 - Ajouter un menu de gestion des models
-- Retirer model par défaut lors de install
 - Checker si model existant au démarrage
 - Si pas de model
 - afficher page de gestion des models
