@@ -1,9 +1,12 @@
+import { refreshMenuLabels } from '@/main/menu/menu';
+import { ROUTES } from '@/renderer/libs/routes';
 import { beforeStart } from '@/scripts/before-start';
 import {
   BrowserWindow,
   clipboard,
   globalShortcut,
   ipcMain,
+  Menu,
   shell,
 } from 'electron';
 // import { logToRenderer } from '../../../libs/utils';
@@ -17,9 +20,11 @@ export type StoreType = {
 export class EventListenersService {
   private mainWindow: BrowserWindow | null = null;
   private persistentStore = new Store<StoreType>({ isFirstAppRun: true });
+  private contextMenu: Menu | null = null;
 
-  constructor(mainWindow: BrowserWindow | null) {
+  constructor(mainWindow: BrowserWindow | null, contextMenu: Menu) {
     this.mainWindow = mainWindow;
+    this.contextMenu = contextMenu;
   }
 
   // eslint-disable-next-line no-use-before-define
@@ -27,9 +32,13 @@ export class EventListenersService {
 
   public static getInstance(
     mainWindow: BrowserWindow | null,
+    contextMenu: Menu,
   ): EventListenersService {
     if (!EventListenersService.instance) {
-      EventListenersService.instance = new EventListenersService(mainWindow);
+      EventListenersService.instance = new EventListenersService(
+        mainWindow,
+        contextMenu,
+      );
     }
     return EventListenersService.instance;
   }
@@ -53,6 +62,7 @@ export class EventListenersService {
     this.addRequestOpenExternalLinkListener();
     this.addBeforeStartRequestListener();
     this.addNavigateRequestListener();
+    this.addOnSearchbarVisibiltyChangeRequestListener();
   }
 
   private addFocusRequestListener() {
@@ -114,9 +124,14 @@ export class EventListenersService {
   }
 
   private addNavigateRequestListener() {
-    ipcMain.on('navigate', (event, path) => {
-      console.log('navigate to ', path);
+    ipcMain.on('navigate', (pathEvent, pathValue) => {
+      const path = pathValue || pathEvent;
+      console.log('addNavigateRequestListener() navigate to ', path);
       global.path = path;
+      if (path !== ROUTES.home) {
+        console.log('search is now closed');
+        global.isSearchOpen = false;
+      }
       this.mainWindow?.webContents.send('navigate', path);
     });
   }
@@ -135,6 +150,7 @@ export class EventListenersService {
     const debounceTime = 500; // Prevent spam
 
     globalShortcut.register('CommandOrControl+Shift+P', () => {
+      console.log('CommandOrControl+Shift+P');
       // logToRenderer(this.mainWindow, 'CommandOrControl+Shift+P');
       if (this.mainWindow?.isVisible() === false) {
         this.mainWindow?.show();
@@ -142,14 +158,13 @@ export class EventListenersService {
       const currentTime = Date.now();
       if (currentTime - lastCallTime >= debounceTime) {
         lastCallTime = currentTime;
+        console.log('EMIT SHORTCUT');
         this.mainWindow?.webContents.send('global-shortcut', {
           data: { shortcut: 'CommandOrControl+Shift+P' },
         });
-        global.isSearchOpen = true;
       }
     });
     globalShortcut.register('Escape', () => {
-      global.isSearchOpen = false;
       this.mainWindow?.webContents.send('global-shortcut', {
         data: { shortcut: 'Escape' },
       });
@@ -185,6 +200,14 @@ export class EventListenersService {
       ipcMain.on('electron-store-changed', (event, store) => {
         return store.store;
       });
+    });
+  }
+
+  private addOnSearchbarVisibiltyChangeRequestListener() {
+    ipcMain.on('on-searchbar-visibilty-change', (event, isVisible) => {
+      global.isSearchOpen = isVisible;
+      console.log('isSearchOpen', global.isSearchOpen);
+      refreshMenuLabels();
     });
   }
 }

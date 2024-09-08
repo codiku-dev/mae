@@ -10,9 +10,13 @@ export async function start(mainWindow: BrowserWindow) {
     mainWindow.webContents.openDevTools();
   }
   console.log('Mia: Add main event listeners');
-  const eventListenerService = new EventListenersService(mainWindow);
+  const contextMenu = initMenu(mainWindow);
+
+  const eventListenerService = new EventListenersService(
+    mainWindow,
+    contextMenu,
+  );
   eventListenerService.addMainEventListeners();
   console.log('Mia: Init menu');
-  initMenu(mainWindow);
   console.log('Mia: Mia fully started');
 }

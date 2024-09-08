@@ -16,6 +16,7 @@ export function initWindow() {
     hasShadow: false,
     show: true,
     visualEffectState: 'inactive',
+    resizable: global.DEBUG,
     focusable: false,
     alwaysOnTop: true,
     webPreferences: {
@@ -37,14 +38,13 @@ export function initWindow() {
   // mainWindow.setIgnoreMouseEvents(true);
   global.ignoreMouseEvent = global.DEBUG ? false : true;
   // mainWindow.setAlwaysOnTop(true, 'screen-saver', 1);
-
+  start(mainWindow);
   mainWindow.on('ready-to-show', () => {
     if (!mainWindow) {
       throw new Error('mainWindow" is not defined');
     }
-
-    start(mainWindow);
   });
+
   mainWindow.on('closed', () => {
     mainWindow = null;
   });

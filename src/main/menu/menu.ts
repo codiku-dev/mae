@@ -1,5 +1,5 @@
 import { getResourcesPath } from '@/libs/utils';
-import { BrowserWindow, Menu, Tray, app, nativeImage } from 'electron';
+import { BrowserWindow, Menu, Tray, app, ipcMain, nativeImage } from 'electron';
 import { ROUTES } from '../../renderer/libs/routes';
 
 const MENU = {
@@ -25,21 +25,23 @@ let tray: Tray | null = null;
 let contextMenu: Menu;
 let iconUpdateInterval: NodeJS.Timeout | null = null;
 
-export function initMenu(mainWindow: BrowserWindow) {
+export function initMenu(mainWindow: BrowserWindow): Menu {
   setIcon();
   contextMenu = Menu.buildFromTemplate([
     {
       label: MENU.OPEN_CLOSE.label,
       click: () => {
-        mainWindow.webContents.send('navigate', ROUTES.home);
+        ipcMain.emit('navigate', ROUTES.home);
+        if (!mainWindow.isVisible()) {
+          mainWindow.show();
+        }
         setTimeout(() => {
-          if (!mainWindow.isVisible()) {
-            mainWindow.show();
-          }
           mainWindow.webContents.send('global-shortcut', {
             data: { shortcut: 'CommandOrControl+Shift+P' },
           });
-          refreshMenuLabels(mainWindow);
+
+          console.log('TOGGLE SEARCH  ');
+          refreshMenuLabels();
         }, 100);
       },
       commandId: MENU.OPEN_CLOSE.id,
@@ -47,10 +49,10 @@ export function initMenu(mainWindow: BrowserWindow) {
     {
       label: MENU.SETTINGS.label,
       click: () => {
-        mainWindow.webContents.send('navigate', ROUTES.settings);
+        ipcMain.emit('navigate', ROUTES.settings);
         mainWindow.show();
         setTimeout(() => {
-          refreshMenuLabels(mainWindow);
+          refreshMenuLabels();
         }, 100);
       },
       commandId: MENU.SETTINGS.id,
@@ -69,15 +71,9 @@ export function initMenu(mainWindow: BrowserWindow) {
     },
   ]);
 
-  // listener to window visibility to update menu label
-  mainWindow.on('show', () => {
-    updateMenuLabel(MENU.OPEN_CLOSE.id, 'Close Mia (⌘+⇧+p)');
-  });
-
-  mainWindow.on('hide', () => {
-    updateMenuLabel(MENU.OPEN_CLOSE.id, 'Open Mia (⌘+⇧+p)');
-  });
   tray!.setContextMenu(contextMenu);
+
+  return contextMenu;
 }
 
 // async function updateModel() {
@@ -140,10 +136,10 @@ function startIconWarningUpdate() {
   }, 800);
 }
 
-function refreshMenuLabels(mainWindow: BrowserWindow) {
+export function refreshMenuLabels() {
   updateMenuLabel(
     MENU.OPEN_CLOSE.id,
-    global.isSearchOpen ? 'Close Mia (⌘+⇧+p)' : 'Open Mia (⌘+⇧+p)',
+    global.isSearchOpen === true ? 'Close Mia (⌘+⇧+p)' : 'Open Mia (⌘+⇧+p)',
   );
 }
 

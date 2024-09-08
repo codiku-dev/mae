@@ -10,7 +10,7 @@ export default function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<AppLoader />}>
+        <Route path={ROUTES.root} Component={AppLoader}>
           <Route path={ROUTES.home} Component={HomePage} />
           <Route path={ROUTES.settings} Component={SettingsPage} />
         </Route>

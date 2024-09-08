@@ -1,10 +1,10 @@
 V2
 
 - [x] visual lag when buton clear appears
-- [] Fix menu should close settings and open the correct
+- [x] Fix menu should close settings and open the correct
 - [x] virtualize list language
-- Page de settings
-- Language selector
+- [x]Page de settings
+- [] Language selector
 - Choisir model
 - Ajouter un menu de gestion des models
 - Retirer model par défaut lors de install

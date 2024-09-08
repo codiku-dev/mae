@@ -22,7 +22,8 @@ export type Channels =
   | 'navigate'
   | 'electron-store-set'
   | 'electron-store-get'
-  | 'electron-store-changed';
+  | 'electron-store-changed'
+  | 'on-searchbar-visibilty-change';
 
 const electronHandler = {
   ipcRenderer: {

@@ -1,4 +1,5 @@
 export const ROUTES = Object.freeze({
-  home: '/',
+  root: '/',
+  home: '/home',
   settings: '/settings',
 });

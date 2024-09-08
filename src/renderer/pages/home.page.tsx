@@ -2,7 +2,7 @@ import { OllamaService } from '@/main/services/ollama/ollama.service';
 import { Error } from '@/renderer/components/features/error';
 import { RichResponse } from '@/renderer/components/features/rich-response';
 import { Button } from '@/renderer/components/ui/button';
-import { cn } from '@/renderer/libs/utils';
+import { cn, logToMain } from '@/renderer/libs/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -38,6 +38,13 @@ export function HomePage() {
   };
 
   useEffect(() => {
+    window.electron.ipcRenderer.sendMessage(
+      'on-searchbar-visibilty-change',
+      isVisible,
+    );
+  }, [isVisible]);
+
+  useEffect(() => {
     window.electron.ipcRenderer.sendMessage('set-ignore-mouse-events', true, {
       forward: true,
     });
@@ -45,12 +52,15 @@ export function HomePage() {
 
   useEffect(function addOpenCloseListener() {
     // requestFocus
+    logToMain('addOpenCloseListener()');
 
     const unsubscribeGlobalShortcut = window.electron.ipcRenderer.on(
       'global-shortcut',
       (e) => {
+        logToMain('GLOBAL SHORTCUT ');
         if (e.data.shortcut === 'CommandOrControl+Shift+P') {
           setIsVisible((prev) => {
+            logToMain('UPDATE VISIBILITY');
             return !prev;
           });
         }
