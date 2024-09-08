@@ -2,7 +2,6 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { Ollama } from '@langchain/ollama';
 import { logToMain } from '../../../renderer/libs/utils';
-import { LLMMode } from './langchain.service.type';
 import { OllamaConfig } from './ollama.config';
 
 interface ControllerEntry {
@@ -67,44 +66,14 @@ export class OllamaService {
     );
   }
 
-  // async *requestLLM(input: string, mode: LLMMode) {
-  //   const id = uuidv4();
-  //   const controller = new AbortController();
-  //   try {
-  //     const promptString = PROMPT_TEMPLATES[mode];
-
-  //     OllamaService.abortControllers.push({ id, controller });
-  //     const stream = await OllamaService.llm.stream(promptString + input, {
-  //       signal: controller.signal,
-  //     });
-
-  //     for await (const chunk of stream) {
-  //       try {
-  //         yield chunk;
-  //       } catch (error) {
-  //         logToMain(
-  //           'Error reading the little chunk: ' + (error as Error).message,
-  //         );
-  //       }
-  //     }
-  //     this.removeAbortController(id);
-  //   } catch (error) {
-  //     this.removeAbortController(id);
-  //     logToMain('Error in requestLLM: ' + (error as Error).message);
-  //     // Propagate the error to the consumer of the generator
-  //     throw error;
-  //   } finally {
-  //     this.removeAbortController(id);
-  //   }
-  // }
-
   async requestLlamaStream(
     prompt: string,
-    mode: LLMMode,
     onData: (chunk: ChatResponseChunk) => void,
     onError: () => void,
   ) {
     const controller = new AbortController();
+    let fullResponse = '';
+
     const signal = controller.signal;
     const id = uuidv4(); // Generate a random ID for the controller
     // const promptString = PROMPT_TEMPLATES[mode];
@@ -133,7 +102,6 @@ export class OllamaService {
       const reader = response.body.getReader();
       const decoder = new TextDecoder('utf-8');
       let done = false;
-      let fullResponse = '';
       while (!done) {
         try {
           const { value, done: doneReading } = await reader.read();
@@ -147,14 +115,11 @@ export class OllamaService {
             }
             onData(chunk);
           } else {
-            // Remove last message
             reader.cancel();
             break;
           }
         } catch (error) {
-          logToMain('Error during chunking ' + (error as Error).message);
           await reader.cancel();
-          console.log('Error during chunking ' + (error as Error).message);
           onError();
           break;
         }
@@ -163,9 +128,9 @@ export class OllamaService {
     } catch (error) {
       logToMain('Error during fetch: ' + (error as Error).message);
       if ((error as Error).name === 'AbortError') {
-        this.messages.pop();
+        // this.messages.pop();
         logToMain('Aborting...');
-        console.log('Aborting...');
+        this.messages.push({ role: 'assistant', content: fullResponse });
       } else {
         onError();
       }

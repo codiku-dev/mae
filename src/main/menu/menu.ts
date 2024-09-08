@@ -1,12 +1,12 @@
 import { getResourcesPath } from '@/libs/utils';
-import { BrowserWindow, Menu, Tray, app, dialog, nativeImage } from 'electron';
-import { pullOllamaModel } from '../../scripts/ollama/ollama.commands';
-import { OllamaConfig } from '../services/ollama/ollama.config';
+import { BrowserWindow, Menu, Tray, app, nativeImage } from 'electron';
+import { ROUTES } from '../../renderer/libs/routes';
+
 const MENU = {
-  UPDATE_MODEL: {
-    id: 1,
-    label: 'Update AI model',
-  },
+  // UPDATE_MODEL: {
+  //   id: 1,
+  //   label: 'Update AI model',
+  // },
   QUIT: {
     id: 2,
     label: 'Quit',
@@ -15,9 +15,13 @@ const MENU = {
     id: 3,
     label: 'Open Mia (⌘+⇧+p)',
   },
+  SETTINGS: {
+    id: 4,
+    label: 'Settings',
+  },
 };
 
-let tray: Tray = null;
+let tray: Tray | null = null;
 let contextMenu: Menu;
 let iconUpdateInterval: NodeJS.Timeout | null = null;
 
@@ -37,12 +41,21 @@ export function initMenu(mainWindow: BrowserWindow) {
       commandId: MENU.OPEN_CLOSE.id,
     },
     {
-      label: MENU.UPDATE_MODEL.label,
-      click: updateModel,
-      commandId: MENU.UPDATE_MODEL.id,
+      label: MENU.SETTINGS.label,
+      click: () => {
+        mainWindow.webContents.send('navigate', ROUTES.settings);
+        mainWindow.show();
+        mainWindow.setIgnoreMouseEvents(false);
+      },
+      commandId: MENU.SETTINGS.id,
     },
+    // {
+    //   label: MENU.UPDATE_MODEL.label,
+    //   click: updateModel,
+    //   commandId: MENU.UPDATE_MODEL.id,
+    // },
     {
-      label: 'Quit',
+      label: MENU.QUIT.label,
       click: () => {
         app.quit();
       },
@@ -58,34 +71,34 @@ export function initMenu(mainWindow: BrowserWindow) {
   mainWindow.on('hide', () => {
     updateMenuLabel(MENU.OPEN_CLOSE.id, 'Open Mia (⌘+⇧+p)');
   });
-  tray.setContextMenu(contextMenu);
+  tray!.setContextMenu(contextMenu);
 }
 
-async function updateModel() {
-  updateMenuLabel(
-    MENU.UPDATE_MODEL.id,
-    'Update AI model : (Update in progress...)',
-  );
-  startIconWarningUpdate();
-  await pullOllamaModel(OllamaConfig.baseModel);
-  stopIconUpdate();
-  setIcon();
+// async function updateModel() {
+//   updateMenuLabel(
+//     MENU.UPDATE_MODEL.id,
+//     'Update AI model : (Update in progress...)',
+//   );
+//   startIconWarningUpdate();
+//   await pullOllamaModel(OllamaConfig.baseModel);
+//   stopIconUpdate();
+//   setIcon();
 
-  updateMenuLabel(MENU.UPDATE_MODEL.id, 'Update AI model');
+//   updateMenuLabel(MENU.UPDATE_MODEL.id, 'Update AI model');
 
-  const response = dialog.showMessageBoxSync({
-    type: 'info',
-    buttons: ['Restart Mia'],
-    title: 'Restart Required',
-    message: 'Please restart the application to apply the updates.',
-  });
+//   const response = dialog.showMessageBoxSync({
+//     type: 'info',
+//     buttons: ['Restart Mia'],
+//     title: 'Restart Required',
+//     message: 'Please restart the application to apply the updates.',
+//   });
 
-  if (response === 0) {
-    console.log('Restarting Mia');
-    app.relaunch();
-    app.quit();
-  }
-}
+//   if (response === 0) {
+//     console.log('Restarting Mia');
+//     app.relaunch();
+//     app.quit();
+//   }
+// }
 
 function updateMenuLabel(commandId: number, newLabel: string) {
   const menuItem = contextMenu.items.find(
@@ -94,7 +107,7 @@ function updateMenuLabel(commandId: number, newLabel: string) {
   if (menuItem) {
     menuItem.label = newLabel;
     contextMenu = Menu.buildFromTemplate(contextMenu.items);
-    tray.setContextMenu(contextMenu);
+    tray!.setContextMenu(contextMenu);
   }
 }
 
@@ -116,14 +129,14 @@ function startIconWarningUpdate() {
       ? getResourcesPath('/assets/icons/16x16-warning.png')
       : getResourcesPath('/assets/icons/16x16.png');
     const icon = nativeImage.createFromPath(iconPath);
-    tray.setImage(icon);
+    tray!.setImage(icon);
     isWarning = !isWarning;
   }, 800);
 }
 
-function stopIconUpdate() {
-  if (iconUpdateInterval) {
-    clearInterval(iconUpdateInterval);
-    iconUpdateInterval = null;
-  }
-}
+// function stopIconUpdate() {
+//   if (iconUpdateInterval) {
+//     clearInterval(iconUpdateInterval);
+//     iconUpdateInterval = null;
+//   }
+// }

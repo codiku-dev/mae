@@ -1,6 +1,7 @@
 // Disable no-unused-vars, broken for spread args
 /* eslint no-unused-vars: off */
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
+import { StoreType } from './services/event-listeners/event-listener.service';
 
 export type Channels =
   | 'global-shortcut'
@@ -17,7 +18,12 @@ export type Channels =
   | 'user-info-reply'
   | 'request-open-external-link'
   | 'request-before-start'
-  | 'before-start-reply';
+  | 'before-start-reply'
+  | 'navigate'
+  | 'electron-store-set'
+  | 'electron-store-get'
+  | 'electron-store-changed';
+
 const electronHandler = {
   ipcRenderer: {
     sendMessage(channel: Channels, ...args: any[]) {
@@ -35,6 +41,18 @@ const electronHandler = {
     once(channel: Channels, func: (...args: any[]) => void) {
       ipcRenderer.once(channel, (_event, ...args) => func(...args));
     },
+  },
+  store: {
+    get<T extends keyof StoreType>(key: T): StoreType[T] {
+      return ipcRenderer.sendSync('electron-store-get', key);
+    },
+    set(property: string, val: any) {
+      ipcRenderer.send('electron-store-set', property, val);
+    },
+    getAll(): string {
+      return ipcRenderer.sendSync('electron-store-get-all');
+    },
+    // Other method you want to add like has(), reset(), etc.
   },
 };
 

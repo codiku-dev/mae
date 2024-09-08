@@ -1,27 +1,8 @@
-import { cn, logToMain } from '@/renderer/libs/utils';
+import { cn } from '@/renderer/libs/utils';
 import { AnimatePresence, motion } from 'framer-motion';
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React from 'react';
 import icon from '../../assets/icon.png';
 export const SplashScreen: React.FC = () => {
-  const [isLoading, setIsLoading] = useState(true);
-  const navigate = useNavigate();
-  useEffect(() => {
-    logToMain('Mia: SplashScreen mounted');
-    const handleBeforeStartReply = () => {
-      setIsLoading(false);
-      logToMain('Mia: Navigating to home');
-      navigate('/home');
-    };
-
-    logToMain('Mia: Sending request before start');
-    window.electron.ipcRenderer.sendMessage('request-before-start');
-    window.electron.ipcRenderer.on(
-      'before-start-reply',
-      handleBeforeStartReply,
-    );
-  }, []);
-
   return (
     <div
       className={cn(

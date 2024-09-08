@@ -1,20 +1,18 @@
-Bug :
-
-- # Update modal seems stop the ollama server somtimes ?
-
-==============================================
-
-V1
-Fix bug multiple question not rendering
-Add a button to clear
-Support link (i should close the app when a link is clicked)
-X - Splash screen loading démarrage initialisation
-==============================================
-
 V2
 
+visual lag when buton clear appears
+Page de settings
 Language selector
 Choisir model
+Ajouter un menu de gestion des models
+Retirer model par défaut lors de install
+Checker si model existant au démarrage
+Si pas de model
+afficher page de gestion des models
+Selectionner parmis les models
+Installer un model
+Supprimer un model
+Afficher chargement penant install model
 Créer un mode a partir de preprompt
 Historique des chats
 
@@ -22,6 +20,7 @@ Historique des chats
 
 V3
 
+Changer le raccourcis
 Rechercher sur internet
 Apprentissage à partir de lien
 Mémoire morte

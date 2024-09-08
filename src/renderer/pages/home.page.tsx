@@ -2,21 +2,17 @@ import { OllamaService } from '@/main/services/ollama/ollama.service';
 import { Error } from '@/renderer/components/features/error';
 import { RichResponse } from '@/renderer/components/features/rich-response';
 import { Button } from '@/renderer/components/ui/button';
-import {
-  cn,
-  logToMain,
-  makeInteractiveClassClickable,
-} from '@/renderer/libs/utils';
+import { cn, logToMain } from '@/renderer/libs/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { SearchBar } from '../../components/features/searchbar';
+import { SearchBar } from '../components/features/searchbar';
 
-export function Home() {
+export function HomePage() {
   const [value, setValue] = useState<string>('');
   const [streamedResponse, setStreamedResponse] = useState<string>('');
   const [isVisible, setIsVisible] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isStreamingFinished, setIsStreamingFinished] = useState(true);
   const [submitedPrompt, setSubmitedPrompt] = useState('');
   const [error, setError] = useState('');
@@ -32,23 +28,48 @@ export function Home() {
     setIsAIWorking(false);
   };
 
-  useEffect(makeInteractiveClassClickable, []);
+  const handleStopStream = () => {
+    OllamaService.getInstance().abortAllRequests();
+    setValue('');
+    setError('');
+    setIsLoading(false);
+    setIsStreamingFinished(true);
+    setIsAIWorking(false);
+  };
+
+  useEffect(() => {
+    window.electron.ipcRenderer.sendMessage('set-ignore-mouse-events', true, {
+      forward: true,
+    });
+  }, []);
 
   useEffect(function addOpenCloseListener() {
-    window.electron.ipcRenderer.on('global-shortcut', (e) => {
-      if (e.data.shortcut === 'CommandOrControl+Shift+P') {
-        logToMain('CommandOrControl+Shift+P received');
-        setIsVisible((prev) => {
-          return !prev;
-        });
-      }
-    });
-    window.electron.ipcRenderer.on('global-shortcut', (e) => {
-      if (e.data.shortcut === 'Escape') {
-        setIsVisible(false);
-      }
-    });
-    window.electron.ipcRenderer.on('on-main-window-blur', () => '');
+    // requestFocus
+
+    const unsubscribeGlobalShortcut = window.electron.ipcRenderer.on(
+      'global-shortcut',
+      (e) => {
+        if (e.data.shortcut === 'CommandOrControl+Shift+P') {
+          logToMain('CommandOrControl+Shift+P received');
+          setIsVisible((prev) => {
+            return !prev;
+          });
+        }
+      },
+    );
+    const unsubscribeEscapeShortcut = window.electron.ipcRenderer.on(
+      'global-shortcut',
+      (e) => {
+        if (e.data.shortcut === 'Escape') {
+          setIsVisible(false);
+        }
+      },
+    );
+    // window.electron.ipcRenderer.on('on-main-window-blur', () => '');
+    return () => {
+      unsubscribeGlobalShortcut();
+      unsubscribeEscapeShortcut();
+    };
   }, []);
 
   const handleSubmit = async (submittedText: string) => {
@@ -62,7 +83,6 @@ export function Home() {
       setError('');
       OllamaService.getInstance().requestLlamaStream(
         submittedText,
-        'question',
         (chunk) => {
           if (chunk.done === false) {
             setStreamedResponse((prev) => prev + chunk.message.content);
@@ -82,6 +102,23 @@ export function Home() {
       );
     }
   };
+
+  const clearButton = (
+    <div className="flex justify-end h-6">
+      {streamedResponse && (
+        <Button
+          id="ai-clear-button"
+          className="interactive"
+          onClick={stopAndResetAll}
+          size="sm"
+          variant={'outline'}
+        >
+          <X className="h-4 w-4 mr-2" />
+          Clear
+        </Button>
+      )}
+    </div>
+  );
 
   return (
     <div id="container" className={cn('w-full h-full')}>
@@ -103,7 +140,6 @@ export function Home() {
               y: number;
             }) => {
               if (definition.opacity === 0) {
-                //  stopAndResetAll();
                 setTimeout(() => {
                   window.electron.ipcRenderer.sendMessage(
                     'request-close-window',
@@ -127,22 +163,11 @@ export function Home() {
                     onChange={setValue}
                     onSubmit={handleSubmit}
                     isLoading={isAIWorking}
-                    onClickStop={stopAndResetAll}
+                    onClickStop={handleStopStream}
                   />
                 </div>
                 <div id="ai-response" className="interactive w-3/5">
-                  {streamedResponse && (
-                    <div className="flex justify-end">
-                      <Button
-                        onClick={stopAndResetAll}
-                        variant="ghost"
-                        size="sm"
-                      >
-                        <X className="h-4 w-4 mr-2" />
-                        Clear
-                      </Button>
-                    </div>
-                  )}
+                  {clearButton}
                   {(isLoading ||
                     (streamedResponse && streamedResponse !== '')) && (
                     <RichResponse
