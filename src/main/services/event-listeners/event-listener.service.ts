@@ -8,6 +8,7 @@ import {
   globalShortcut,
   ipcMain,
   Menu,
+  net,
   shell,
 } from 'electron';
 import ElectronStore from 'electron-store';
@@ -67,6 +68,8 @@ export class EventListenersService {
     this.addBeforeStartRequestListener();
     this.addNavigateRequestListener();
     this.addOnSearchbarVisibiltyChangeRequestListener();
+    this.addMakeHttpRequestListener();
+    this.addElectronStoreClearRequestListener();
   }
 
   private addFocusRequestListener() {
@@ -203,10 +206,23 @@ export class EventListenersService {
     });
   }
 
+  private addElectronStoreClearRequestListener() {
+    ipcMain.on('electron-store-clear', () => {
+      this.persistentStore.clear();
+    });
+  }
+
   private addOnSearchbarVisibiltyChangeRequestListener() {
     ipcMain.on('on-searchbar-visibilty-change', (event, isVisible) => {
       global.isSearchOpen = isVisible;
       refreshMenuLabels();
+    });
+  }
+  private addMakeHttpRequestListener() {
+    ipcMain.handle('make-http-request', async (event, url) => {
+      const response = await net.fetch(url);
+      const text = await response.text();
+      return text;
     });
   }
 }

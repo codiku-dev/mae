@@ -11,7 +11,7 @@ const useAppStore = create(
     subscribeWithSelector<Store>((set, get) => ({
       //STATE
       isAppLoading: true,
-      // SYNCHRONOUS ACTIONS
+
       setIsAppLoading: (isAppLoading: boolean) => {
         set({ isAppLoading });
       },

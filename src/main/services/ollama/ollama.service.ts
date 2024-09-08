@@ -1,10 +1,10 @@
 import { v4 as uuidv4 } from 'uuid';
 
 import { Ollama } from '@langchain/ollama';
+import * as cheerio from 'cheerio';
 import { logToMain } from '../../../renderer/libs/utils';
 import { ModelFile } from './Modelfile';
 import { OllamaConfig } from './ollama.config';
-
 interface ControllerEntry {
   id: string;
   controller: AbortController;
@@ -163,6 +163,38 @@ export class OllamaService {
       return { status: 'success', response: responseText };
     } catch (error) {
       console.error('Error creating model:', error);
+      throw error;
+    }
+  }
+
+  async fetchAvailableModels(): Promise<string[]> {
+    try {
+      const html = await window.electron.ipcRenderer.invoke(
+        'make-http-request',
+        'https://ollama.com/library',
+      );
+      const $ = cheerio.load(html);
+
+      // CSS selector for the first model
+      const firstSelector =
+        '#repo > ul > li:nth-child(1) > a > div.flex.items-center.mb-3 > h2 > span';
+
+      // Extract the first model name
+      const firstModelName = $(firstSelector).text().trim();
+      const modelNames = [firstModelName];
+
+      // Generate CSS selectors for subsequent models
+      const liCount = $('#repo > ul > li').length;
+      for (let i = 2; i <= liCount; i++) {
+        const selector = `#repo > ul > li:nth-child(${i}) > a > div.flex.items-center.mb-3 > h2 > span`;
+        const modelName = $(selector).text().trim();
+        modelNames.push(modelName);
+      }
+      //olrder alhra
+
+      return modelNames.sort();
+    } catch (error) {
+      console.error('Error fetching available models:', error);
       throw error;
     }
   }

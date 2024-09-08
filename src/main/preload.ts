@@ -24,7 +24,9 @@ export type Channels =
   | 'electron-store-get'
   | 'electron-store-changed'
   | 'on-searchbar-visibilty-change'
-  | 'ollama-create-model';
+  | 'ollama-create-model'
+  | 'make-http-request'
+  | 'electron-store-clear';
 
 const electronHandler = {
   ipcRenderer: {
@@ -42,6 +44,9 @@ const electronHandler = {
     },
     once(channel: Channels, func: (...args: any[]) => void) {
       ipcRenderer.once(channel, (_event, ...args) => func(...args));
+    },
+    invoke(channel: Channels, ...args: any[]) {
+      return ipcRenderer.invoke(channel, ...args);
     },
   },
   store: {

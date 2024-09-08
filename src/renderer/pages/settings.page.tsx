@@ -19,10 +19,9 @@ import {
 import { Switch } from '@/renderer/components/ui/switch';
 import { useToast } from '@/renderer/hooks/use-toast';
 import { Loader2, Trash2 } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 // Mock data
-const allModels = ['GPT-3', 'GPT-4', 'DALL-E', 'Stable Diffusion', 'LLaMA'];
 
 interface Model {
   id: string;
@@ -39,14 +38,11 @@ import { ROUTES } from '../libs/routes';
 export function SettingsPage() {
   const persistentStore = usePersistentStore();
   const { toast } = useToast();
-
   const [currentLanguage, setCurrentLanguage] = useState(
     persistentStore.getStore().assistantLanguage,
   );
-  const [installedModels, setInstalledModels] = useState<Model[]>([
-    { id: '1', name: 'GPT-3', isActive: true },
-    { id: '2', name: 'DALL-E', isActive: false },
-  ]);
+  const [availableModels, setAvailableModels] = useState<Model[]>([]);
+  const [installedModels, setInstalledModels] = useState<Model[]>([]);
   const [installingModel, setInstallingModel] = useState<string | null>(null);
 
   useEffect(() => {
@@ -54,6 +50,44 @@ export function SettingsPage() {
     window.electron.ipcRenderer.sendMessage('set-ignore-mouse-events', false, {
       forward: true,
     });
+  }, []);
+
+  useEffect(function fetchAndScrapAvailableModel() {
+    const shouldFetch =
+      persistentStore.getStore().lastFetchAvailableModelsISODate === '' ||
+      new Date().getTime() -
+        new Date(
+          persistentStore.getStore().lastFetchAvailableModelsISODate,
+        ).getTime() >
+        7 * 24 * 60 * 60 * 1000;
+
+    if (shouldFetch) {
+      console.log('fetching from ollama');
+      OllamaService.getInstance()
+        .fetchAvailableModels()
+        .then((modelsName) => {
+          setAvailableModels(
+            modelsName.map((model) => ({
+              id: model,
+              name: model,
+              isActive: false,
+            })),
+          );
+          persistentStore.setStore(
+            'lastFetchAvailableModelsISODate',
+            new Date().toISOString(),
+          );
+          persistentStore.setStore('availableModels', modelsName);
+        });
+    } else {
+      setAvailableModels(
+        persistentStore.getStore().availableModels.map((model) => ({
+          id: model,
+          name: model,
+          isActive: false,
+        })),
+      );
+    }
   }, []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLButtonElement>) => {
@@ -65,7 +99,6 @@ export function SettingsPage() {
       await OllamaService.getInstance().createOllamaModelFromModelFile(
         modelFile,
       );
-    console.log('response', response);
     toast({
       title: 'Settings saved',
       description: 'Your changes have been successfully applied.',
@@ -168,12 +201,14 @@ export function SettingsPage() {
             <SelectValue placeholder="Add new model" />
           </SelectTrigger>
           <SelectContent>
-            {allModels
-              .filter((model) => !installedModels.some((m) => m.name === model))
+            {availableModels
+              .filter(
+                (model) => !installedModels.some((m) => m.name === model.name),
+              )
               .map((model) => (
-                <SelectItem key={model} value={model}>
-                  {model}
-                  {installingModel === model && (
+                <SelectItem key={model.name} value={model.name}>
+                  {model.name}
+                  {installingModel === model.name && (
                     <Loader2 className="ml-2 h-4 w-4 animate-spin" />
                   )}
                 </SelectItem>

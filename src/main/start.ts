@@ -16,6 +16,15 @@ export async function start(mainWindow: BrowserWindow) {
         type: 'string',
         default: LANGUAGES.en.code,
       },
+
+      availableModels: {
+        type: 'array',
+        default: [],
+      },
+      lastFetchAvailableModelsISODate: {
+        type: 'string',
+        default: '',
+      },
     },
   });
 

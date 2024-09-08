@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 export type StoreType = {
   isAppLoading: boolean;
   assistantLanguage: keyof typeof LANGUAGES;
+  availableModels: string[];
+  lastFetchAvailableModelsISODate: string;
 };
 export function usePersistentStore(): {
   getStore: () => StoreType;
