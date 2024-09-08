@@ -1,20 +1,22 @@
 V2
 
-visual lag when buton clear appears
-Page de settings
-Language selector
-Choisir model
-Ajouter un menu de gestion des models
-Retirer model par défaut lors de install
-Checker si model existant au démarrage
-Si pas de model
-afficher page de gestion des models
-Selectionner parmis les models
-Installer un model
-Supprimer un model
-Afficher chargement penant install model
-Créer un mode a partir de preprompt
-Historique des chats
+- [x] visual lag when buton clear appears
+- [] Fix menu should close settings and open the correct
+- [x] virtualize list language
+- Page de settings
+- Language selector
+- Choisir model
+- Ajouter un menu de gestion des models
+- Retirer model par défaut lors de install
+- Checker si model existant au démarrage
+- Si pas de model
+- afficher page de gestion des models
+- Selectionner parmis les models
+- Installer un model
+- Supprimer un model
+- Afficher chargement penant install model
+- Créer un mode a partir de preprompt
+- Historique des chats
 
 ==============================================
 

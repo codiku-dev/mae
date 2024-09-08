@@ -18,7 +18,8 @@ import {
 } from '@/renderer/components/ui/select';
 import { Switch } from '@/renderer/components/ui/switch';
 import { Loader2, Trash2 } from 'lucide-react';
-import { useState } from 'react';
+import { forwardRef, useState } from 'react';
+import { FixedSizeList as List } from 'react-window';
 
 // Mock data
 const allModels = ['GPT-3', 'GPT-4', 'DALL-E', 'Stable Diffusion', 'LLaMA'];
@@ -32,6 +33,34 @@ interface Model {
 
 import { X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+
+const VirtualizedSelectContent = forwardRef<
+  HTMLDivElement,
+  React.ComponentPropsWithoutRef<typeof SelectContent>
+>(({ children, ...props }, forwardedRef) => {
+  return (
+    <SelectContent {...props} ref={forwardedRef}>
+      <List
+        height={350}
+        itemCount={LANGUAGES.length}
+        itemSize={35}
+        width="100%"
+      >
+        {({ index, style }) => (
+          <SelectItem
+            key={LANGUAGES[index].code}
+            value={LANGUAGES[index].code}
+            style={style}
+          >
+            {LANGUAGES[index].name}
+          </SelectItem>
+        )}
+      </List>
+    </SelectContent>
+  );
+});
+
+VirtualizedSelectContent.displayName = 'VirtualizedSelectContent';
 
 export function SettingsPage() {
   const navigate = useNavigate();
@@ -133,13 +162,9 @@ export function SettingsPage() {
             <SelectTrigger>
               <SelectValue placeholder="Select language" />
             </SelectTrigger>
-            <SelectContent>
-              {LANGUAGES.map((language) => (
-                <SelectItem key={language.code} value={language.code}>
-                  {language.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
+            <VirtualizedSelectContent>
+              {/* The content is now rendered by the List component */}
+            </VirtualizedSelectContent>
           </Select>
         </CardContent>
       </Card>
