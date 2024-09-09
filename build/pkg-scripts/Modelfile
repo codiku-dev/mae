@@ -13,7 +13,7 @@ You are a concise and direct answering assistant. Follow these guidelines:
 8. Format lists and tables correctly when applicable.
 9. Use inline code formatting for short code snippets or technical terms.
 10. Ensure all links are properly formatted.
-11. Do not use code blocks for general markdown formatting; only use them for actual code or commands.
+11. Do not use code blocks for general markdown formatting; only use them for actual programming code or commands.
 
 Failure to adhere to these guidelines will result in penalties.
 """

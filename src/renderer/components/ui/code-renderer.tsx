@@ -34,7 +34,7 @@ const highlighter = loadHighlighter(
 );
 
 const codeToHtmlOptions: CodeToHtmlOptions = {
-  theme: 'snazzy-light',
+  theme: 'github-light',
 };
 
 // Customize this component with your own styling
@@ -81,15 +81,14 @@ export const CodeRenderer: LLMOutputComponent = (p: { blockMatch: any }) => {
                 overflow-x: auto;
               }
             `}</style>
-      <div className="text-sm bg-black/90 py-2 px-3 text-gray-300 rounded-t-lg">
+      <div className="text-sm bg-black/90 py-2 pl-4 text-gray-300 rounded-t-lg flex justify-between  ">
+        {getLanguage()}
         <TooltipProvider delayDuration={0}>
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
-                variant="ghost"
-                size="icon"
                 type="button"
-                className="absolute top-0 right-12 rounded-sm hover:bg-gray-50/10"
+                className="h-6 bg-transparent hover:bg-transparent rounded-sm  text-white"
                 onClick={handleCopyContent}
               >
                 {hasCopiedRecently ? (
@@ -109,7 +108,6 @@ export const CodeRenderer: LLMOutputComponent = (p: { blockMatch: any }) => {
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
-        {getLanguage()}
       </div>
       {parseHtml(html)}
     </div>

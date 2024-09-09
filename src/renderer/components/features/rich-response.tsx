@@ -5,21 +5,13 @@ import {
 } from '@llm-ui/code';
 import { markdownLookBack } from '@llm-ui/markdown';
 //@ts-ignore
-import { throttleBasic, useLLMOutput } from '@llm-ui/react';
-import { Clipboard, ClipboardCheck } from 'lucide-react';
+import { useLLMOutput } from '@llm-ui/react';
 import { useEffect, useRef, useState } from 'react';
 import logo from '../../assets/icon.png';
-import { Button } from '../ui/button';
 import { CodeRenderer } from '../ui/code-renderer';
 import { MarkdownRenderer } from '../ui/markdown-renderer';
 
 import { Skeleton } from '../ui/skeleton';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '../ui/tooltip';
 
 export const RichResponse = (p: {
   question: string;
@@ -27,7 +19,6 @@ export const RichResponse = (p: {
   isLoading: boolean;
   isStreamFinished: boolean;
 }) => {
-  const [hasCopiedRecently, setHasCopiedRecently] = useState(false);
   const [userName, setUsername] = useState<any>(null);
   const [userHasScrolled, setUserHasScrolled] = useState(false);
 
@@ -36,7 +27,7 @@ export const RichResponse = (p: {
     const handleScroll = () => {
       if (scrollRef.current) {
         const { scrollTop, scrollHeight, clientHeight } = scrollRef.current;
-        const isAtBottom = scrollTop + clientHeight >= scrollHeight - 10; // 10px threshold
+        const isAtBottom = scrollTop + clientHeight >= scrollHeight; // 10px threshold
         setUserHasScrolled(!isAtBottom);
       }
     };
