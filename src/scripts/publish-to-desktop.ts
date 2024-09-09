@@ -11,7 +11,7 @@ const packageJsonRelease = JSON.parse(
   readFileSync(path.join(__dirname, '../../release/app/package.json'), 'utf8'),
 );
 
-const fileName = `${packageJsonRoot.build.productName}-${packageJsonRelease.version}.pkg`;
+const fileName = `${packageJsonRoot.build.productName}-${packageJsonRelease.version}${process.arch === 'arm64' ? '-arm64' : ''}.pkg`;
 
 function publishToDesktop() {
   //copy pkg to desktop

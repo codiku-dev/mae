@@ -5,8 +5,6 @@ V2
 - [x] virtualize list language
 - [x]Page de settings
 - [x] Language selector
-- Own server with cron to get the ollama models and return them
-- Retirer model par défaut lors de install
 - Choisir model
 - Ajouter un menu de gestion des models
 - Checker si model existant au démarrage
@@ -29,3 +27,6 @@ Apprentissage à partir de lien
 Mémoire morte
 Envoyer fichier
 Make the app signed
+
+- Own server with cron to get the ollama models and return them
+- Retirer model par défaut lors de install

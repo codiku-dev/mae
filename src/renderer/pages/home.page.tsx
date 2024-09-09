@@ -87,6 +87,7 @@ export function HomePage() {
       setIsStreamingFinished(false);
       setValue('');
       setError('');
+
       OllamaService.getInstance().requestLlamaStream(
         submittedText,
         (chunk) => {
@@ -107,6 +108,7 @@ export function HomePage() {
         },
       );
     }
+    console.timeEnd('start submit');
   };
 
   const clearButton = (

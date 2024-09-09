@@ -96,7 +96,8 @@ export class OllamaService {
         }),
         signal: signal, // Add the signal to the fetch request
       });
-
+      console.timeEnd('Ollama fetch api/chat');
+      console.time('time to first chunk after fetch');
       if (response.body === null) {
         throw new Error('Failed to fetch response');
       }
@@ -114,6 +115,7 @@ export class OllamaService {
             if (chunk.done === false) {
               fullResponse += chunk.message.content;
             }
+            console.timeEnd('time to first chunk after fetch');
             onData(chunk);
           } else {
             reader.cancel();
@@ -135,6 +137,8 @@ export class OllamaService {
       } else {
         onError();
       }
+    } finally {
+      console.timeEnd('end requestLlamaStream');
     }
 
     // Remove the controller after the request is done

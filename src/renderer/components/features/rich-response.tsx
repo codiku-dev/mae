@@ -61,27 +61,6 @@ export const RichResponse = (p: {
     });
   }, []);
 
-  const handleClickCopyContent = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setHasCopiedRecently(true);
-    setTimeout(() => {
-      setHasCopiedRecently(false);
-    }, 3000);
-    window.electron.ipcRenderer.sendMessage(
-      'copy-text-to-clipboard-request',
-      visibleText,
-    );
-  };
-
-  const throttle = throttleBasic({
-    readAheadChars: 20,
-    targetBufferChars: 9,
-    adjustPercentage: 0.3,
-    frameLookBackMs: 10000,
-    windowLookBackMs: 2000,
-  });
-
   const { blockMatches, visibleText, isFinished } = useLLMOutput({
     throttle: undefined,
     llmOutput: p.output,
@@ -123,13 +102,9 @@ export const RichResponse = (p: {
 
   const renderAnswer = () => {
     return (
-      <div className="flex flex-col gap-2 pb-4">
+      <div className="flex flex-col gap-2">
         {avatarAssistant}
         <div className="relative bg-sky-200/20 p-3 rounded-lg rounded-tr-none min-h-12">
-          {isFinished &&
-            p.isStreamFinished &&
-            !p.isLoading &&
-            renderCopyButton()}
           {p.isLoading ? (
             <div className="w-full flex flex-col gap-1">
               <Skeleton className="w-full h-6" />
@@ -160,32 +135,7 @@ export const RichResponse = (p: {
       </div>
     );
   };
-  const renderCopyButton = () => {
-    return (
-      <TooltipProvider delayDuration={0}>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              type="button"
-              className="absolute right-2 top-0 rounded-sm hover:bg-gray-50/10"
-              onClick={handleClickCopyContent}
-            >
-              {hasCopiedRecently ? (
-                <ClipboardCheck size={16} />
-              ) : (
-                <Clipboard size={16} />
-              )}
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="bottom" className="bg-black text-white">
-            <p>Copy response</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-    );
-  };
+
   return (
     <div
       onClick={(e) => {
@@ -206,3 +156,50 @@ export const RichResponse = (p: {
     </div>
   );
 };
+
+// const handleClickCopyContent = (e: React.MouseEvent<HTMLButtonElement>) => {
+//   e.preventDefault();
+//   e.stopPropagation();
+//   setHasCopiedRecently(true);
+//   setTimeout(() => {
+//     setHasCopiedRecently(false);
+//   }, 3000);
+//   window.electron.ipcRenderer.sendMessage(
+//     'copy-text-to-clipboard-request',
+//     visibleText,
+//   );
+// };
+
+// const throttle = throttleBasic({
+//   readAheadChars: 0,
+//   targetBufferChars: 0,
+//   adjustPercentage: 0,
+//   frameLookBackMs: 0,
+//   windowLookBackMs: 0,
+// });
+// const renderCopyButton = () => {
+//   return (
+//     <TooltipProvider delayDuration={0}>
+//       <Tooltip>
+//         <TooltipTrigger asChild>
+//           <Button
+//             variant="ghost"
+//             size="icon"
+//             type="button"
+//             className="absolute right-2 top-0 rounded-sm hover:bg-gray-50/10"
+//             onClick={handleClickCopyContent}
+//           >
+//             {hasCopiedRecently ? (
+//               <ClipboardCheck size={16} />
+//             ) : (
+//               <Clipboard size={16} />
+//             )}
+//           </Button>
+//         </TooltipTrigger>
+//         <TooltipContent side="bottom" className="bg-black text-white">
+//           <p>Copy response</p>
+//         </TooltipContent>
+//       </Tooltip>
+//     </TooltipProvider>
+//   );
+// };
