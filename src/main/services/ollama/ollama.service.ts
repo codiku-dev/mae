@@ -72,6 +72,7 @@ export class OllamaService {
     onData: (chunk: ChatResponseChunk) => void,
     onError: () => void,
   ) {
+    console.time('start requestLlamaStream');
     const controller = new AbortController();
     let fullResponse = '';
 
@@ -83,6 +84,8 @@ export class OllamaService {
 
     try {
       this.messages.push({ role: 'user', content: prompt });
+      console.timeEnd('start requestLlamaStream');
+      console.time('Ollama fetch api/chat');
       const response = await fetch('http://localhost:11434/api/chat', {
         method: 'POST',
         headers: {
