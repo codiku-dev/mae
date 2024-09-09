@@ -97,11 +97,25 @@ EOF
       exit 1
     fi
   }
+
+ setRightsForModelFolder() {
+  echo "Setting rights for model folder"
+  # Use osascript to run the chmod command with admin privileges
+  osascript <<EOF
+    do shell script "chmod -R 777 '$HOME/.ollama'" with administrator privileges
+EOF
+  if [ $? -eq 0 ]; then
+    echo "Rights set for model folder"
+  else
+    echo "Failed to set rights for model folder"
+    exit 1
+  fi
+}
 # Main installation function
 installOllama() {
   checkForOLLama
+  setRightsForModelFolder
   createSymlink
-  addFirstRunDoneMetadata
   startOllama
   pullOllamaModel "llama3.1"
   echo "Building custom model llama3.1:mia... located in $SCRIPT_DIR/Modelfile"

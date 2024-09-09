@@ -149,8 +149,10 @@ export class OllamaService {
   }
   async createOllamaModelFromModelFile(modelFile: ModelFile) {
     const modelFileContent = modelFile.toString();
-
+    console.log(modelFileContent);
     try {
+      // delete the mode first
+
       const response = await fetch('http://localhost:11434/api/create', {
         method: 'POST',
         headers: {

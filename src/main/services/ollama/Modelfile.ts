@@ -1,11 +1,8 @@
-import { LANGUAGES } from '@/libs/languages';
-
 export class ModelFile {
   private from: string;
   private prefix: string;
   private suffix: string;
   private rules: string[];
-  private language: (typeof LANGUAGES)[keyof typeof LANGUAGES]['name'];
 
   constructor() {
     this.from = 'llama3.1';
@@ -26,7 +23,6 @@ export class ModelFile {
       'Ensure all links are properly formatted.',
       'Do not use code blocks for general markdown formatting; only use them for actual code or commands.',
     ];
-    this.language = LANGUAGES.en.name;
   }
 
   setFrom(from: string): void {
@@ -39,12 +35,6 @@ export class ModelFile {
 
   setSuffix(suffix: string): void {
     this.suffix = suffix;
-  }
-
-  setLanguage(
-    language: (typeof LANGUAGES)[keyof typeof LANGUAGES]['name'],
-  ): void {
-    this.language = language;
   }
 
   setRules(rules: string[]): void {
@@ -73,7 +63,6 @@ export class ModelFile {
   
    ${rulesString}
   
-   You will answer the following language: ${this.language}.
 
    ${this.suffix}
   """`;
