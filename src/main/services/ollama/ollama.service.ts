@@ -149,7 +149,6 @@ export class OllamaService {
   }
   async createOllamaModelFromModelFile(modelFile: ModelFile) {
     const modelFileContent = modelFile.toString();
-    console.log(modelFileContent);
     try {
       // delete the mode first
 
