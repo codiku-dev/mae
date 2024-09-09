@@ -80,7 +80,7 @@ export function SettingsPage() {
       variant="ghost"
       type="button"
       size="icon"
-      className="absolute top-4 right-4"
+      className=""
       onClick={() => {
         window.electron.ipcRenderer.sendMessage('navigate', ROUTES.home);
       }}
@@ -91,8 +91,10 @@ export function SettingsPage() {
 
   return (
     <form className="h-screen w-screen p-4 space-y-6 bg-white relative">
-      <h1 className="text-2xl font-bold">MIA Settings</h1>
-      {closeButton}
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-bold">MIA Settings</h1>
+        {closeButton}
+      </div>
       <ModelSelection />
       <LanguageSelection
         currentLanguage={currentLanguage}
