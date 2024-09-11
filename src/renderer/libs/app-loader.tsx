@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
-import { SplashScreen } from '../components/features/splash-screen';
 import { Toaster } from '../components/ui/toaster';
 import { useAppStore } from '../hooks/use-app-store';
 import { ROUTES } from './routes';
@@ -44,7 +43,7 @@ export const AppLoader = () => {
   }, []);
 
   if (isAppLoading) {
-    return <SplashScreen />;
+    return null;
   }
   return (
     <>
