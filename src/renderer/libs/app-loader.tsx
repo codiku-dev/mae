@@ -1,7 +1,9 @@
 import { useEffect } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
+import { SplashScreen } from '../components/features/splash-screen';
 import { Toaster } from '../components/ui/toaster';
 import { useAppStore } from '../hooks/use-app-store';
+import { usePersistentStore } from '../hooks/use-persistent-store';
 import { ROUTES } from './routes';
 import { makeInteractiveClassClickable } from './utils';
 // TODO: Add a global listener to handle the navigate event
@@ -9,6 +11,7 @@ import { makeInteractiveClassClickable } from './utils';
 export const AppLoader = () => {
   const navigate = useNavigate();
   const { setIsAppLoading, isAppLoading } = useAppStore();
+  const persistentStore = usePersistentStore();
 
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('request-before-start');
@@ -43,8 +46,11 @@ export const AppLoader = () => {
   }, []);
 
   if (isAppLoading) {
-    return null;
+    return persistentStore.getStore().isLaunchedOnStartup ? null : (
+      <SplashScreen />
+    );
   }
+
   return (
     <>
       <Toaster />

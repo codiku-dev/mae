@@ -46,8 +46,18 @@ export function SettingsPage() {
     setIsLoading(true);
     e.preventDefault();
 
+    console.log(
+      'store is ',
+      persistentStore.getStore().isLaunchedOnStartup,
+      ' and ',
+      formValues.isLaunchedOnStartup,
+    );
     if (hasFieldChanged('isLaunchedOnStartup')) {
       console.log('Mia: set-app-auto-launch', formValues.isLaunchedOnStartup);
+      console.log(
+        'Mia:  formValues.isLaunchedOnStartup',
+        formValues.isLaunchedOnStartup,
+      );
       window.electron.ipcRenderer.invoke(
         'set-app-auto-launch',
         formValues.isLaunchedOnStartup,

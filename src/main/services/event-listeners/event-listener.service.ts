@@ -230,13 +230,16 @@ export class EventListenersService {
   private addAutoLaunchListener() {
     ipcMain.handle('set-app-auto-launch', (event, isLaunchedOnStartup) => {
       console.log('Mia: set-app-auto-launch', isLaunchedOnStartup);
+      this.persistentStore.set('isLaunchedOnStartup', isLaunchedOnStartup);
       var minecraftAutoLauncher = new AutoLaunch({
         name: 'Mia',
         path: '/Applications/Mia.app',
       });
       if (isLaunchedOnStartup) {
+        console.log('Mia: enabling auto launch');
         minecraftAutoLauncher.enable();
       } else {
+        console.log('Mia: disabling auto launch');
         minecraftAutoLauncher.disable();
       }
     });
