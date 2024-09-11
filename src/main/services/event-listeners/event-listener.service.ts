@@ -1,5 +1,5 @@
 import { refreshMenuLabels } from '@/main/menu/menu';
-import { StoreType } from '@/renderer/hooks/use-persistent-store';
+import { PeristentStore } from '@/main/store';
 import { ROUTES } from '@/renderer/libs/routes';
 import { beforeStart } from '@/scripts/before-start';
 import {
@@ -11,7 +11,6 @@ import {
   net,
   shell,
 } from 'electron';
-import ElectronStore from 'electron-store';
 // import { logToRenderer } from '../../../libs/utils';
 import { username } from 'username';
 
@@ -19,11 +18,11 @@ export class EventListenersService {
   private mainWindow: BrowserWindow | null = null;
 
   private contextMenu: Menu | null = null;
-  private persistentStore: ElectronStore<StoreType>;
+  private persistentStore: PeristentStore;
   constructor(
     mainWindow: BrowserWindow | null,
     contextMenu: Menu,
-    persistentStore: ElectronStore<StoreType>,
+    persistentStore: PeristentStore,
   ) {
     this.mainWindow = mainWindow;
     this.contextMenu = contextMenu;
@@ -36,7 +35,7 @@ export class EventListenersService {
   public static getInstance(
     mainWindow: BrowserWindow | null,
     contextMenu: Menu,
-    persistentStore: ElectronStore<StoreType>,
+    persistentStore: PeristentStore,
   ): EventListenersService {
     if (!EventListenersService.instance) {
       EventListenersService.instance = new EventListenersService(

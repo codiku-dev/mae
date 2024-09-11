@@ -1,33 +1,9 @@
-import { LANGUAGES } from '@/libs/languages';
-import { StoreType } from '@/renderer/hooks/use-persistent-store';
-import { BrowserWindow } from 'electron';
-import ElectronStore from 'electron-store';
+import { app, BrowserWindow, ipcMain } from 'electron';
 import { initMenu } from './menu/menu';
 import { EventListenersService } from './services/event-listeners/event-listener.service';
+import { persistentStore } from './store';
 
 export async function start(mainWindow: BrowserWindow) {
-  const persistentStore = new ElectronStore<StoreType>({
-    schema: {
-      isAppLoading: {
-        type: 'boolean',
-        default: true,
-      },
-      assistantLanguage: {
-        type: 'string',
-        default: LANGUAGES.en.code,
-      },
-
-      availableModels: {
-        type: 'array',
-        default: [],
-      },
-      lastFetchAvailableModelsISODate: {
-        type: 'string',
-        default: '',
-      },
-    },
-  });
-
   mainWindow.setFocusable(true);
   if (global.DEBUG) {
     mainWindow.webContents.openDevTools();
@@ -42,3 +18,21 @@ export async function start(mainWindow: BrowserWindow) {
   eventListenerService.addMainEventListeners();
   console.log('Mia: Mia fully started');
 }
+
+app.whenReady().then(() => {
+  // Set up auto-launch
+  const isLaunchedOnStartup = persistentStore.get('isLaunchedOnStartup');
+  app.setLoginItemSettings({
+    openAtLogin: isLaunchedOnStartup,
+    path: app.getPath('exe'),
+  });
+
+  // Update login item settings whenever it changes
+  ipcMain.on('update-launch-on-startup', (_, value: boolean) => {
+    persistentStore.set('isLaunchedOnStartup', value);
+    app.setLoginItemSettings({
+      openAtLogin: value,
+      path: app.getPath('exe'),
+    });
+  });
+});

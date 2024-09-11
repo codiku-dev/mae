@@ -5,7 +5,23 @@ V2
 - [x] virtualize list language
 - [x]Page de settings
 - [x] Language selector
-- Bug handle mutliple code block of different languages
+- launch on Startup
+- Créer un mode a partir de preprompt
+- Historique des chats
+
+==============================================
+
+V3
+
+Rechercher sur internet
+Apprentissage à partir de lien
+Mémoire morte
+Envoyer fichier
+Make the app signed
+
+- Own server with cron to get the ollama models and return them
+- Retirer model par défaut lors de install
+
 - Choisir model
 - Ajouter un menu de gestion des models
 - Checker si model existant au démarrage
@@ -15,19 +31,4 @@ V2
 - Installer un model
 - Supprimer un model
 - Afficher chargement penant install model
-- Créer un mode a partir de preprompt
-- Historique des chats
-
-==============================================
-
-V3
-
-Changer le raccourcis
-Rechercher sur internet
-Apprentissage à partir de lien
-Mémoire morte
-Envoyer fichier
-Make the app signed
-
-- Own server with cron to get the ollama models and return them
-- Retirer model par défaut lors de install
+  Changer le raccourcis

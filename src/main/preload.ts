@@ -1,7 +1,7 @@
 // Disable no-unused-vars, broken for spread args
 /* eslint no-unused-vars: off */
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
-import { StoreType } from './services/event-listeners/event-listener.service';
+import { StoreType } from './store';
 
 export type Channels =
   | 'global-shortcut'
@@ -26,7 +26,8 @@ export type Channels =
   | 'on-searchbar-visibilty-change'
   | 'ollama-create-model'
   | 'make-http-request'
-  | 'electron-store-clear';
+  | 'electron-store-clear'
+  | 'update-launch-on-startup';
 
 const electronHandler = {
   ipcRenderer: {

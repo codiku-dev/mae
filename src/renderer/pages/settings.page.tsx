@@ -2,24 +2,9 @@
 
 import { LANGUAGES } from '@/libs/languages';
 import { Button } from '@/renderer/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@/renderer/components/ui/card';
-import { Label } from '@/renderer/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/renderer/components/ui/select';
-import { Switch } from '@/renderer/components/ui/switch';
+import { Checkbox } from '@/renderer/components/ui/checkbox';
 import { useToast } from '@/renderer/hooks/use-toast';
-import { Loader2, Trash2 } from 'lucide-react';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 // Mock data
 
@@ -32,16 +17,18 @@ export interface Model {
 import { ModelFile } from '@/main/services/ollama/Modelfile';
 import { OllamaService } from '@/main/services/ollama/ollama.service';
 import { X } from 'lucide-react';
+import { LanguageSelection } from '../components/features/settings/language-selection';
 import { usePersistentStore } from '../hooks/use-persistent-store';
 import { ROUTES } from '../libs/routes';
-import { ModelSelection } from '../components/features/settings/model-selection';
-import { LanguageSelection } from '../components/features/settings/language-selection';
 
 export function SettingsPage() {
   const persistentStore = usePersistentStore();
   const { toast } = useToast();
   const [currentLanguage, setCurrentLanguage] = useState(
     persistentStore.getStore().assistantLanguage,
+  );
+  const [isLaunchedOnStartup, setIsLaunchedOnStartup] = useState(
+    persistentStore.getStore().isLaunchedOnStartup,
   );
 
   useEffect(() => {
@@ -54,6 +41,7 @@ export function SettingsPage() {
   const handleSubmit = async (e: React.FormEvent<HTMLButtonElement>) => {
     e.preventDefault();
     persistentStore.setStore('assistantLanguage', currentLanguage);
+    persistentStore.setStore('isLaunchedOnStartup', isLaunchedOnStartup);
     const modelFile = new ModelFile();
 
     modelFile.addRule(
@@ -89,19 +77,42 @@ export function SettingsPage() {
     </Button>
   );
 
+  const handleLaunchOnStartupChange = (value: boolean) => {
+    persistentStore.setStore('isLaunchedOnStartup', value);
+    window.electron.ipcRenderer.invoke('update-launch-on-startup', value);
+  };
+  const lancheOnStartCheckbox = (
+    <div className="flex items-center space-x-2">
+      <Checkbox
+        id="isLaunchedOnStartup"
+        checked={isLaunchedOnStartup}
+        onCheckedChange={(checked) =>
+          handleLaunchOnStartupChange(checked as boolean)
+        }
+      />
+      <label
+        htmlFor="isLaunchedOnStartup"
+        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+      >
+        Launch on startup
+      </label>
+    </div>
+  );
+
   return (
     <form className="h-screen w-screen p-4 space-y-6 bg-white relative">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">MIA Settings</h1>
         {closeButton}
       </div>
-      <ModelSelection />
+
       <LanguageSelection
         currentLanguage={currentLanguage}
         onChange={(language) => {
           setCurrentLanguage(language);
         }}
       />
+      {lancheOnStartCheckbox}
       <Button type="button" onClick={handleSubmit}>
         Apply
       </Button>
