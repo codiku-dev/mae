@@ -1,8 +1,11 @@
-import { refreshMenuLabels } from '@/main/menu/menu';
+import { initMenu, refreshMenuLabels } from '@/main/menu/menu';
 import { PeristentStore } from '@/main/store';
 import { ROUTES } from '@/renderer/libs/routes';
 import { beforeStart } from '@/scripts/before-start';
+var AutoLaunch = require('auto-launch');
+
 import {
+  App,
   BrowserWindow,
   clipboard,
   globalShortcut,
@@ -17,6 +20,7 @@ export class EventListenersService {
   private mainWindow: BrowserWindow | null = null;
   private persistentStore: PeristentStore;
   constructor(
+    private app: App,
     mainWindow: BrowserWindow | null,
     persistentStore: PeristentStore,
   ) {
@@ -30,9 +34,11 @@ export class EventListenersService {
   public static getInstance(
     mainWindow: BrowserWindow | null,
     persistentStore: PeristentStore,
+    app: App,
   ): EventListenersService {
     if (!EventListenersService.instance) {
       EventListenersService.instance = new EventListenersService(
+        app,
         mainWindow,
         persistentStore,
       );
@@ -62,6 +68,7 @@ export class EventListenersService {
     this.addOnSearchbarVisibiltyChangeRequestListener();
     this.addMakeHttpRequestListener();
     this.addElectronStoreClearRequestListener();
+    this.addAutoLaunchListener();
   }
 
   private addFocusRequestListener() {
@@ -75,6 +82,8 @@ export class EventListenersService {
   private addBeforeStartRequestListener() {
     ipcMain.on('request-before-start', async () => {
       await beforeStart();
+      initMenu(this.mainWindow!);
+      console.log('Mia: finished pre start actions');
       this.mainWindow?.webContents.send('before-start-reply');
     });
   }
@@ -215,6 +224,21 @@ export class EventListenersService {
       const response = await net.fetch(url);
       const text = await response.text();
       return text;
+    });
+  }
+
+  private addAutoLaunchListener() {
+    ipcMain.handle('set-app-auto-launch', (event, isLaunchedOnStartup) => {
+      console.log('Mia: set-app-auto-launch', isLaunchedOnStartup);
+      var minecraftAutoLauncher = new AutoLaunch({
+        name: 'Mia',
+        path: '/Applications/Mia.app',
+      });
+      if (isLaunchedOnStartup) {
+        minecraftAutoLauncher.enable();
+      } else {
+        minecraftAutoLauncher.disable();
+      }
     });
   }
 }

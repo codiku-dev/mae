@@ -1,28 +1,18 @@
-import { app, BrowserWindow } from 'electron';
-import { initMenu } from './menu/menu';
+import { App, BrowserWindow } from 'electron';
 import { EventListenersService } from './services/event-listeners/event-listener.service';
 import { persistentStore } from './store';
 
-export async function start(mainWindow: BrowserWindow) {
+export async function start(app: App, mainWindow: BrowserWindow) {
   mainWindow.setFocusable(true);
   if (global.DEBUG) {
     mainWindow.webContents.openDevTools();
   }
-  initMenu(mainWindow);
 
   const eventListenerService = new EventListenersService(
+    app,
     mainWindow,
     persistentStore,
   );
   eventListenerService.addMainEventListeners();
-  console.log('Mia: Mia fully started');
+  console.log('Mia: Starting window.');
 }
-
-app.whenReady().then(() => {
-  // Set up auto-launch
-  const isLaunchedOnStartup = persistentStore.get('isLaunchedOnStartup');
-  app.setLoginItemSettings({
-    openAtLogin: isLaunchedOnStartup,
-    path: app.getPath('exe'),
-  });
-});

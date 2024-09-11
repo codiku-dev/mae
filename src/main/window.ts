@@ -4,7 +4,7 @@ import { start } from './start';
 
 export function initWindow() {
   // const { width, height } = screen.getPrimaryDisplay().workAreaSize;
-  global.DEBUG = true;
+  global.DEBUG = !app.isPackaged;
   let mainWindow: BrowserWindow | null = new BrowserWindow({
     height: screen.getPrimaryDisplay().workAreaSize.height,
     width: screen.getPrimaryDisplay().workAreaSize.width,
@@ -41,7 +41,7 @@ export function initWindow() {
   // mainWindow.setIgnoreMouseEvents(true);
   global.ignoreMouseEvent = global.DEBUG ? false : true;
   // mainWindow.setAlwaysOnTop(true, 'screen-saver', 1);
-  start(mainWindow);
+  start(app, mainWindow);
   mainWindow.on('ready-to-show', () => {
     if (!mainWindow) {
       throw new Error('mainWindow" is not defined');

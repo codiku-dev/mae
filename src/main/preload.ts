@@ -26,7 +26,8 @@ export type Channels =
   | 'on-searchbar-visibilty-change'
   | 'ollama-create-model'
   | 'make-http-request'
-  | 'electron-store-clear';
+  | 'electron-store-clear'
+  | 'set-app-auto-launch';
 
 const electronHandler = {
   ipcRenderer: {
