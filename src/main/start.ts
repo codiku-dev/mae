@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserWindow } from 'electron';
 import { initMenu } from './menu/menu';
 import { EventListenersService } from './services/event-listeners/event-listener.service';
 import { persistentStore } from './store';
@@ -8,11 +8,10 @@ export async function start(mainWindow: BrowserWindow) {
   if (global.DEBUG) {
     mainWindow.webContents.openDevTools();
   }
-  const contextMenu = initMenu(mainWindow);
+  initMenu(mainWindow);
 
   const eventListenerService = new EventListenersService(
     mainWindow,
-    contextMenu,
     persistentStore,
   );
   eventListenerService.addMainEventListeners();
@@ -25,14 +24,5 @@ app.whenReady().then(() => {
   app.setLoginItemSettings({
     openAtLogin: isLaunchedOnStartup,
     path: app.getPath('exe'),
-  });
-
-  // Update login item settings whenever it changes
-  ipcMain.on('update-launch-on-startup', (_, value: boolean) => {
-    persistentStore.set('isLaunchedOnStartup', value);
-    app.setLoginItemSettings({
-      openAtLogin: value,
-      path: app.getPath('exe'),
-    });
   });
 });

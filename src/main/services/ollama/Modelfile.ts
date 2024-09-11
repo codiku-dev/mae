@@ -63,7 +63,6 @@ export class ModelFile {
   
    ${rulesString}
   
-
    ${this.suffix}
   """`;
   }

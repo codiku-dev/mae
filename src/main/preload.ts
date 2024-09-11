@@ -26,8 +26,7 @@ export type Channels =
   | 'on-searchbar-visibilty-change'
   | 'ollama-create-model'
   | 'make-http-request'
-  | 'electron-store-clear'
-  | 'update-launch-on-startup';
+  | 'electron-store-clear';
 
 const electronHandler = {
   ipcRenderer: {
@@ -60,7 +59,6 @@ const electronHandler = {
     getAll(): string {
       return ipcRenderer.sendSync('electron-store-get-all');
     },
-    // Other method you want to add like has(), reset(), etc.
   },
 };
 

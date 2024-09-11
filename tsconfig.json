@@ -5,7 +5,8 @@
     "module": "commonjs",
     "lib": [
       "dom",
-      "es2022"
+      "es2022",
+      "dom.iterable"
     ],
     "jsx": "react-jsx",
     "strict": true,

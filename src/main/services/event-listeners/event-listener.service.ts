@@ -7,7 +7,6 @@ import {
   clipboard,
   globalShortcut,
   ipcMain,
-  Menu,
   net,
   shell,
 } from 'electron';
@@ -16,16 +15,12 @@ import { username } from 'username';
 
 export class EventListenersService {
   private mainWindow: BrowserWindow | null = null;
-
-  private contextMenu: Menu | null = null;
   private persistentStore: PeristentStore;
   constructor(
     mainWindow: BrowserWindow | null,
-    contextMenu: Menu,
     persistentStore: PeristentStore,
   ) {
     this.mainWindow = mainWindow;
-    this.contextMenu = contextMenu;
     this.persistentStore = persistentStore;
   }
 
@@ -34,13 +29,11 @@ export class EventListenersService {
 
   public static getInstance(
     mainWindow: BrowserWindow | null,
-    contextMenu: Menu,
     persistentStore: PeristentStore,
   ): EventListenersService {
     if (!EventListenersService.instance) {
       EventListenersService.instance = new EventListenersService(
         mainWindow,
-        contextMenu,
         persistentStore,
       );
     }

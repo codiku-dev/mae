@@ -12,8 +12,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/renderer/components/ui/select';
-import { usePersistentStore } from '@/renderer/hooks/use-persistent-store';
-import { useMemo, useState } from 'react';
 export const LanguageSelection = (p: {
   currentLanguage: keyof typeof LANGUAGES;
   onChange: (language: keyof typeof LANGUAGES) => void;
@@ -25,6 +23,7 @@ export const LanguageSelection = (p: {
       </CardHeader>
       <CardContent>
         <Select
+          name="assistantLanguage"
           value={p.currentLanguage}
           onValueChange={(value) => {
             p.onChange(value as keyof typeof LANGUAGES);

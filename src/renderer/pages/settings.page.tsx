@@ -8,6 +8,10 @@ import React, { useEffect, useState } from 'react';
 
 // Mock data
 
+type FormValues = {
+  assistantLanguage: (typeof LANGUAGES)[keyof typeof LANGUAGES]['code'];
+  isLaunchedOnStartup: boolean;
+};
 export interface Model {
   id: string;
   name: string;
@@ -23,13 +27,10 @@ import { ROUTES } from '../libs/routes';
 
 export function SettingsPage() {
   const persistentStore = usePersistentStore();
-  const { toast } = useToast();
-  const [currentLanguage, setCurrentLanguage] = useState(
+  const [assistantLanguageFormValue, setAssistantLanguageFormValue] = useState(
     persistentStore.getStore().assistantLanguage,
   );
-  const [isLaunchedOnStartup, setIsLaunchedOnStartup] = useState(
-    persistentStore.getStore().isLaunchedOnStartup,
-  );
+  const { toast } = useToast();
 
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('request-open-window');
@@ -38,14 +39,26 @@ export function SettingsPage() {
     });
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLButtonElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    persistentStore.setStore('assistantLanguage', currentLanguage);
-    persistentStore.setStore('isLaunchedOnStartup', isLaunchedOnStartup);
+    const formData = new FormData(e.currentTarget);
+    const formValues: FormValues = {
+      assistantLanguage: formData.get(
+        'assistantLanguage',
+      ) as keyof typeof LANGUAGES,
+      isLaunchedOnStartup: formData.get('isLaunchedOnStartup') === 'on',
+    };
+
+    persistentStore.setStore('assistantLanguage', formValues.assistantLanguage);
+    persistentStore.setStore(
+      'isLaunchedOnStartup',
+      formValues.isLaunchedOnStartup,
+    );
+
     const modelFile = new ModelFile();
 
     modelFile.addRule(
-      `You will answer the user exclusively with the following language: ${LANGUAGES[currentLanguage].name}. Do not provide extra translations in your answers.`,
+      `You will answer the user exclusively with the following language: ${LANGUAGES[formValues.assistantLanguage].name}. Even if the user is speaking another language than the one you are answering in, you will answer in the language you are speaking in.`,
     );
     try {
       await OllamaService.getInstance().createOllamaModelFromModelFile(
@@ -79,20 +92,20 @@ export function SettingsPage() {
 
   const handleLaunchOnStartupChange = (value: boolean) => {
     persistentStore.setStore('isLaunchedOnStartup', value);
-    window.electron.ipcRenderer.invoke('update-launch-on-startup', value);
   };
   const lancheOnStartCheckbox = (
     <div className="flex items-center space-x-2">
       <Checkbox
         id="isLaunchedOnStartup"
-        checked={isLaunchedOnStartup}
+        name="isLaunchedOnStartup"
+        checked={persistentStore.getStore().isLaunchedOnStartup}
         onCheckedChange={(checked) =>
           handleLaunchOnStartupChange(checked as boolean)
         }
       />
       <label
         htmlFor="isLaunchedOnStartup"
-        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        className="cursor-pointer text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
       >
         Launch on startup
       </label>
@@ -100,22 +113,23 @@ export function SettingsPage() {
   );
 
   return (
-    <form className="h-screen w-screen p-4 space-y-6 bg-white relative">
+    <form
+      className="h-screen w-screen p-4 space-y-6 bg-white relative"
+      onSubmit={handleSubmit}
+    >
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">MIA Settings</h1>
         {closeButton}
       </div>
 
       <LanguageSelection
-        currentLanguage={currentLanguage}
+        currentLanguage={assistantLanguageFormValue}
         onChange={(language) => {
-          setCurrentLanguage(language);
+          setAssistantLanguageFormValue(language);
         }}
       />
       {lancheOnStartCheckbox}
-      <Button type="button" onClick={handleSubmit}>
-        Apply
-      </Button>
+      <Button type="submit">Apply</Button>
     </form>
   );
 }

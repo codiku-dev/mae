@@ -36,7 +36,7 @@ export const persistentStore = new ElectronStore<StoreType>({
 }) as unknown as PeristentStore;
 
 export type PeristentStore = {
-  get: (key: keyof StoreType) => StoreType[keyof StoreType];
+  get: <K extends keyof StoreType>(key: K) => StoreType[K];
   set: (key: keyof StoreType, value: StoreType[keyof StoreType]) => void;
   store: StoreType;
   onDidAnyChange: (callback: () => void) => void;
