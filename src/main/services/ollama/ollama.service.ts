@@ -5,6 +5,8 @@ import * as cheerio from 'cheerio';
 import { logToMain } from '../../../renderer/libs/utils';
 import { ModelFile } from './Modelfile';
 import { OllamaConfig } from './ollama.config';
+import { LLMConversationHistory, LLMMessage } from './ollama-type';
+import { conversationHistoryManager } from './ollama-history';
 interface ControllerEntry {
   id: string;
   controller: AbortController;
@@ -23,35 +25,31 @@ type ChatResponseChunk = {
 // @ExposableToRenderer()
 export class OllamaService {
   // eslint-disable-next-line no-use-before-define
+  private conversationHistory: LLMConversationHistory | null = null;
   private static instance: OllamaService | null = null;
-  private messages: any[] = [];
+
   static llm: Ollama;
 
   public static abortControllers: ControllerEntry[] = [];
 
-  constructor() {}
+  constructor() {
+    this.initConversationHistory();
+  }
+
+  async initConversationHistory() {
+    await conversationHistoryManager.loadConversationHistoryList();
+  }
 
   public static getInstance(): OllamaService {
     if (OllamaService.instance === null) {
       OllamaService.instance = new OllamaService();
+    } else {
     }
     return OllamaService.instance;
   }
 
   async abortAllRequests() {
     OllamaService.abortControllers.forEach((entry) => {
-      logToMain(
-        'aborting for' +
-          entry.id +
-          ' at ' +
-          new Date().toLocaleTimeString('en-US', {
-            hour12: false,
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            fractionalSecondDigits: 3,
-          }),
-      );
       entry.controller.abort();
     });
     await new Promise((resolve) => {
@@ -69,12 +67,11 @@ export class OllamaService {
 
   async requestLlamaStream(
     prompt: string,
+    previousMessages: LLMMessage[],
     onData: (chunk: ChatResponseChunk) => void,
     onError: () => void,
   ) {
-    console.time('start requestLlamaStream');
     const controller = new AbortController();
-    let fullResponse = '';
 
     const signal = controller.signal;
     const id = uuidv4(); // Generate a random ID for the controller
@@ -83,9 +80,6 @@ export class OllamaService {
     OllamaService.abortControllers.push({ id, controller });
 
     try {
-      this.messages.push({ role: 'user', content: prompt });
-      console.timeEnd('start requestLlamaStream');
-      console.time('Ollama fetch api/chat');
       const response = await fetch('http://localhost:11434/api/chat', {
         method: 'POST',
         headers: {
@@ -93,14 +87,11 @@ export class OllamaService {
         },
         body: JSON.stringify({
           model: OllamaConfig.model,
-          // prompt: promptString + prompt,
-          messages: this.messages,
-          // stream: true,
+          messages: [...previousMessages, { role: 'user', content: prompt }],
+          stream: true,
         }),
         signal: signal, // Add the signal to the fetch request
       });
-      console.timeEnd('Ollama fetch api/chat');
-      console.time('time to first chunk after fetch');
       if (response.body === null) {
         throw new Error('Failed to fetch response');
       }
@@ -110,15 +101,13 @@ export class OllamaService {
       while (!done) {
         try {
           const { value, done: doneReading } = await reader.read();
+
           done = doneReading;
           if (!done) {
             const chunk: ChatResponseChunk = JSON.parse(
               decoder.decode(value, { stream: !done }),
             );
-            if (chunk.done === false) {
-              fullResponse += chunk.message.content;
-            }
-            console.timeEnd('time to first chunk after fetch');
+
             onData(chunk);
           } else {
             reader.cancel();
@@ -130,18 +119,13 @@ export class OllamaService {
           break;
         }
       }
-      this.messages.push({ role: 'assistant', content: fullResponse });
     } catch (error) {
       logToMain('Error during fetch: ' + (error as Error).message);
       if ((error as Error).name === 'AbortError') {
-        // this.messages.pop();
-        logToMain('Aborting...');
-        this.messages.push({ role: 'assistant', content: fullResponse });
       } else {
         onError();
       }
     } finally {
-      console.timeEnd('end requestLlamaStream');
     }
 
     // Remove the controller after the request is done
@@ -150,8 +134,6 @@ export class OllamaService {
   async createOllamaModelFromModelFile(modelFile: ModelFile) {
     const modelFileContent = modelFile.toString();
     try {
-      // delete the mode first
-
       const response = await fetch('http://localhost:11434/api/create', {
         method: 'POST',
         headers: {
@@ -207,3 +189,5 @@ export class OllamaService {
     }
   }
 }
+
+export const ollamaService = OllamaService.getInstance();

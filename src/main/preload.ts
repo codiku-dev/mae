@@ -1,7 +1,7 @@
 // Disable no-unused-vars, broken for spread args
 /* eslint no-unused-vars: off */
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
-import { StoreType } from './store';
+import { StoreType } from './store/store-type';
 
 export type Channels =
   | 'global-shortcut'
@@ -51,14 +51,17 @@ const electronHandler = {
     },
   },
   store: {
-    get<T extends keyof StoreType>(key: T): StoreType[T] {
-      return ipcRenderer.sendSync('electron-store-get', key);
+    async get<K extends keyof StoreType>(key: K) {
+      return await ipcRenderer.invoke('electron-store-get', key);
     },
-    set(property: string, val: any) {
-      ipcRenderer.send('electron-store-set', property, val);
+    async set(key: keyof StoreType, value: StoreType[keyof StoreType]) {
+      ipcRenderer.invoke('electron-store-set', key, value);
     },
-    getAll(): string {
-      return ipcRenderer.sendSync('electron-store-get-all');
+    async getAll(): Promise<string> {
+      return await ipcRenderer.invoke('electron-store-get-all');
+    },
+    async clear(key: keyof StoreType) {
+      ipcRenderer.invoke('electron-store-clear', key);
     },
   },
 };

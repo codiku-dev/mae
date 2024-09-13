@@ -1,5 +1,5 @@
 import { initMenu, refreshMenuLabels } from '@/main/menu/menu';
-import { PeristentStore } from '@/main/store';
+import { PeristentStore } from '@/main/store/store-type';
 import { ROUTES } from '@/renderer/libs/routes';
 import { beforeStart } from '@/scripts/before-start';
 var AutoLaunch = require('auto-launch');
@@ -88,10 +88,8 @@ export class EventListenersService {
     });
   }
 
-  private addRequestOpenWindowListener() {
-    ipcMain.on('request-open-window', () => {
-      this.mainWindow?.show();
-    });
+  private addLLMMessageToMemoryListener() {
+    ipcMain.on('request-add-llm-message-to-memory', (event, message) => {});
   }
 
   private addBlurRequestListener() {
@@ -181,20 +179,20 @@ export class EventListenersService {
   }
 
   private addElectronStoreGetRequestListener() {
-    ipcMain.on('electron-store-get', async (event, val) => {
-      event.returnValue = this.persistentStore.get(val);
+    ipcMain.handle('electron-store-get', async (event, val) => {
+      return await this.persistentStore.get(val);
     });
   }
 
   private addElectronStoreSetRequestListener() {
-    ipcMain.on('electron-store-set', (event, key, value) => {
+    ipcMain.handle('electron-store-set', (event, key, value) => {
       this.persistentStore.set(key, value);
     });
   }
 
   private addElectronStoreGetAllRequestListener() {
-    ipcMain.on('electron-store-get-all', (event) => {
-      event.returnValue = JSON.stringify(this.persistentStore.store);
+    ipcMain.handle('electron-store-get-all', (event) => {
+      return JSON.stringify(this.persistentStore.store);
     });
   }
 
@@ -208,7 +206,7 @@ export class EventListenersService {
   }
 
   private addElectronStoreClearRequestListener() {
-    ipcMain.on('electron-store-clear', () => {
+    ipcMain.handle('electron-store-clear', () => {
       this.persistentStore.clear();
     });
   }
@@ -229,7 +227,6 @@ export class EventListenersService {
 
   private addAutoLaunchListener() {
     ipcMain.handle('set-app-auto-launch', (event, isLaunchedOnStartup) => {
-      console.log('Mia: set-app-auto-launch', isLaunchedOnStartup);
       this.persistentStore.set('isLaunchedOnStartup', isLaunchedOnStartup);
       var minecraftAutoLauncher = new AutoLaunch({
         name: 'Mia',

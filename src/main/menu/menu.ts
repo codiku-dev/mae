@@ -76,32 +76,6 @@ export function initMenu(mainWindow: BrowserWindow): Menu {
   return contextMenu;
 }
 
-// async function updateModel() {
-//   updateMenuLabel(
-//     MENU.UPDATE_MODEL.id,
-//     'Update AI model : (Update in progress...)',
-//   );
-//   startIconWarningUpdate();
-//   await pullOllamaModel(OllamaConfig.baseModel);
-//   stopIconUpdate();
-//   setIcon();
-
-//   updateMenuLabel(MENU.UPDATE_MODEL.id, 'Update AI model');
-
-//   const response = dialog.showMessageBoxSync({
-//     type: 'info',
-//     buttons: ['Restart Mia'],
-//     title: 'Restart Required',
-//     message: 'Please restart the application to apply the updates.',
-//   });
-
-//   if (response === 0) {
-//     console.log('Restarting Mia');
-//     app.relaunch();
-//     app.quit();
-//   }
-// }
-
 function updateMenuLabel(commandId: number, newLabel: string) {
   const menuItem = contextMenu.items.find(
     (item) => item.commandId === commandId,

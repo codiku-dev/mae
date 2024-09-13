@@ -10,6 +10,8 @@ import { useEffect, useRef, useState } from 'react';
 import logo from '../../assets/icon.png';
 import { CodeRenderer } from '../ui/code-renderer';
 import { MarkdownRenderer } from '../ui/markdown-renderer';
+//@ts-ignore
+import { throttleBasic } from '@llm-ui/react';
 
 import { Skeleton } from '../ui/skeleton';
 
@@ -52,8 +54,15 @@ export const RichResponse = (p: {
     });
   }, []);
 
-  const { blockMatches, visibleText, isFinished } = useLLMOutput({
-    throttle: undefined,
+  const throttle = throttleBasic({
+    readAheadChars: 10,
+    targetBufferChars: 7,
+    adjustPercentage: 0.35,
+    frameLookBackMs: 1000,
+    windowLookBackMs: 1000,
+  });
+  const { blockMatches } = useLLMOutput({
+    throttle,
     llmOutput: p.output,
     fallbackBlock: {
       component: MarkdownRenderer,

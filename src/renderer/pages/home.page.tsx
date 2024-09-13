@@ -1,4 +1,7 @@
-import { OllamaService } from '@/main/services/ollama/ollama.service';
+import {
+  ollamaService,
+  OllamaService,
+} from '@/main/services/ollama/ollama.service';
 import { Error } from '@/renderer/components/features/error';
 import { RichResponse } from '@/renderer/components/features/rich-response';
 import { Button } from '@/renderer/components/ui/button';
@@ -7,6 +10,8 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { SearchBar } from '../components/features/searchbar';
+import { LLMConversationHistory } from '@/main/services/ollama/ollama-type';
+import { useAppStore } from '../hooks/use-app-store';
 
 export function HomePage() {
   const [value, setValue] = useState<string>('');
@@ -17,9 +22,16 @@ export function HomePage() {
   const [submitedPrompt, setSubmitedPrompt] = useState('');
   const [error, setError] = useState('');
   const [isAIWorking, setIsAIWorking] = useState(false);
-
+  const {
+    conversationHistory,
+    addMessageToCurrentConversation,
+    getCurrentConversation,
+    createNewConversation,
+    setCurrentConversationTitle,
+  } = useAppStore();
+  console.log('conversationHistory', conversationHistory);
   const stopAndResetAll = () => {
-    OllamaService.getInstance().abortAllRequests();
+    ollamaService.abortAllRequests();
     setStreamedResponse('');
     setValue('');
     setError('');
@@ -29,7 +41,7 @@ export function HomePage() {
   };
 
   const handleStopStream = () => {
-    OllamaService.getInstance().abortAllRequests();
+    ollamaService.abortAllRequests();
     setValue('');
     setError('');
     setIsLoading(false);
@@ -80,6 +92,7 @@ export function HomePage() {
 
   const handleSubmit = async (submittedText: string) => {
     if (submittedText !== '') {
+      let responseContent = '';
       setIsAIWorking(true);
       setSubmitedPrompt(submittedText);
       setStreamedResponse('');
@@ -87,10 +100,20 @@ export function HomePage() {
       setIsStreamingFinished(false);
       setValue('');
       setError('');
+      if (!getCurrentConversation()) {
+        await createNewConversation(submittedText.slice(0, 30) + '...');
+      }
 
-      OllamaService.getInstance().requestLlamaStream(
+      addMessageToCurrentConversation({
+        role: 'user',
+        content: submittedText,
+      });
+
+      ollamaService.requestLlamaStream(
         submittedText,
+        [],
         (chunk) => {
+          responseContent += chunk.message.content;
           if (chunk.done === false) {
             setStreamedResponse((prev) => prev + chunk.message.content);
             setIsLoading(false);
@@ -98,9 +121,17 @@ export function HomePage() {
             setIsStreamingFinished(true);
             setIsAIWorking(false);
             setIsLoading(false);
+            addMessageToCurrentConversation({
+              role: 'assistant',
+              content: responseContent,
+            });
           }
         },
         () => {
+          addMessageToCurrentConversation({
+            role: 'assistant',
+            content: responseContent,
+          });
           setError('Something went wrong...');
           setIsLoading(false);
           setIsStreamingFinished(true);
@@ -108,7 +139,6 @@ export function HomePage() {
         },
       );
     }
-    console.timeEnd('start submit');
   };
 
   const clearButton = (

@@ -4,7 +4,7 @@ import { restartOllama } from './ollama/ollama.commands';
 export async function beforeStart() {
   console.log('[Before start script starting...]');
   await restartOllama();
-  console.log('Preloading model');
+  console.log('Mia: Preloading model');
   try {
     await fetch('http://localhost:11434/api/chat', {
       method: 'POST',
@@ -18,8 +18,8 @@ export async function beforeStart() {
       }),
     });
   } catch (error) {
-    console.error('Error preloading model:', error);
+    console.error('Mia: Error preloading model:', error);
   }
-  console.log('Preloading model done.');
+  console.log('Mia: Preloading model done.');
   console.log('[Before start scripts executed successfully.]');
 }

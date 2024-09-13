@@ -6,13 +6,15 @@ import { useAppStore } from '../hooks/use-app-store';
 import { usePersistentStore } from '../hooks/use-persistent-store';
 import { ROUTES } from './routes';
 import { makeInteractiveClassClickable } from './utils';
+
+import { conversationHistoryManager } from '@/main/services/ollama/ollama-history';
 // TODO: Add a global listener to handle the navigate event
 
 export const AppLoader = () => {
   const navigate = useNavigate();
   const { setIsAppLoading, isAppLoading } = useAppStore();
   const persistentStore = usePersistentStore();
-
+  const { clearAllHistory } = useAppStore();
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('request-before-start');
     const unsubscribeBeforeStartReply = window.electron.ipcRenderer.on(
@@ -20,6 +22,7 @@ export const AppLoader = () => {
       () => {
         setIsAppLoading(false);
         window.electron.ipcRenderer.sendMessage('navigate', ROUTES.home);
+        // clearAllHistory();
       },
     );
     return () => {
@@ -42,11 +45,11 @@ export const AppLoader = () => {
 
   useEffect(() => {
     const unsubscribe = makeInteractiveClassClickable();
-    return () => unsubscribe();
+    return unsubscribe;
   }, []);
 
   if (isAppLoading) {
-    return persistentStore.getStore().isLaunchedOnStartup ? null : (
+    return persistentStore.getStore()?.isLaunchedOnStartup ? null : (
       <SplashScreen />
     );
   }

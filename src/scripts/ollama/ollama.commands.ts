@@ -14,7 +14,6 @@ export async function pullOllamaModel(modelName: string) {
     const { stdout, stderr } = await execAsync(
       `${BASE_LOCAL_BIN_PATH}/ollama pull ${modelName}`,
     );
-    console.log('Command output:', stdout);
     if (stderr) {
       console.error('Command error output:', stderr);
     }

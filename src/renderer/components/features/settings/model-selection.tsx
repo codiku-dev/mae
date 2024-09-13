@@ -19,7 +19,10 @@ import { useToast } from '@/renderer/hooks/use-toast';
 import { Loader2, Trash2 } from 'lucide-react';
 import React, { useEffect, useMemo, useState } from 'react';
 import { usePersistentStore } from '@/renderer/hooks/use-persistent-store';
-import { OllamaService } from '@/main/services/ollama/ollama.service';
+import {
+  ollamaService,
+  OllamaService,
+} from '@/main/services/ollama/ollama.service';
 import { Model } from '@/renderer/pages/settings.page';
 
 export const ModelSelection = () => {
@@ -38,23 +41,20 @@ export const ModelSelection = () => {
         7 * 24 * 60 * 60 * 1000;
 
     if (shouldFetch) {
-      console.log('fetching from ollama');
-      OllamaService.getInstance()
-        .fetchAvailableModels()
-        .then((modelsName) => {
-          setAvailableModels(
-            modelsName.map((model) => ({
-              id: model,
-              name: model,
-              isActive: false,
-            })),
-          );
-          persistentStore.setStore(
-            'lastFetchAvailableModelsISODate',
-            new Date().toISOString(),
-          );
-          persistentStore.setStore('availableModels', modelsName);
-        });
+      ollamaService.fetchAvailableModels().then((modelsName) => {
+        setAvailableModels(
+          modelsName.map((model) => ({
+            id: model,
+            name: model,
+            isActive: false,
+          })),
+        );
+        persistentStore.setStore(
+          'lastFetchAvailableModelsISODate',
+          new Date().toISOString(),
+        );
+        persistentStore.setStore('availableModels', modelsName);
+      });
     } else {
       setAvailableModels(
         persistentStore.getStore().availableModels.map((model) => ({
