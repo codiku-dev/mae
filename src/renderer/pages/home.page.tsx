@@ -56,7 +56,7 @@ export function HomePage() {
   }, []);
 
   useEffect(() => {
-    // webScraperService.scrapRelevantHtml('https://ui.shadcn.com/docs');
+    //   webScraperService.scrapRelevantHtml('https://ui.shadcn.com/docs');
   }, []);
   useEffect(function addOpenCloseListener() {
     // requestFocus

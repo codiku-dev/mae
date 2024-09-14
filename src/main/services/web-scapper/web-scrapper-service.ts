@@ -31,56 +31,6 @@ export class WebScraperService {
       WebScraperService.abortControllers.filter((entry) => entry.id !== id);
   }
 
-  async scrapeAllText(url: string) {
-    const controller = new AbortController();
-    const signal = controller.signal;
-    const id = uuidv4();
-    await this.abortAllRequests();
-    WebScraperService.abortControllers.push({ id, controller });
-    const textNodes: string[] = [];
-    try {
-      let html = await window.electron.ipcRenderer.invoke(
-        'make-http-request',
-        url,
-      );
-      const $ = cheerio.load(html);
-
-      // Remove unwanted tags that don't contain human-readable text
-      $('script, style, meta, link, noscript, iframe, object').remove();
-
-      // Extract text content from the remaining elements
-
-      $('body')
-        .find('*')
-        .each((_, el) => {
-          // Get text content from the element
-          const text = $(el)
-            .contents()
-            .filter(function () {
-              // Only keep text nodes (nodeType === 3) and non-empty
-              return this.nodeType === 3 && $(this).text().trim() !== '';
-            })
-            .text();
-
-          // Collect human-readable text
-          if (text) {
-            textNodes.push(text.trim());
-          }
-        });
-
-      // Join all text nodes with space, trim excess whitespace
-    } catch (error) {
-      if ((error as Error).name === 'AbortError') {
-      } else {
-        console.log('error', error);
-      }
-    } finally {
-      this.removeAbortController(id);
-      const nodes = textNodes.join(' ').replace(/\s+/g, ' ').trim();
-      console.log('nodes', nodes);
-      return nodes;
-    }
-  }
   async fetchSublinks(url: string): Promise<string[]> {
     try {
       let html = await window.electron.ipcRenderer.invoke(
@@ -112,7 +62,6 @@ export class WebScraperService {
         }
       });
 
-      console.log('sublinks', sublinks);
       return [...new Set(sublinks)].sort();
     } catch (error) {
       if (error instanceof TypeError && error.message.includes('CORS')) {
@@ -123,7 +72,8 @@ export class WebScraperService {
       throw error;
     }
   }
-  async scrapRelevantHtml(url: string): Promise<string> {
+  // keeps only the body of the html and only the node that have text
+  async scrapMinimalHtml(url: string): Promise<string> {
     try {
       // Fetch HTML from the provided URL
       let html = await window.electron.ipcRenderer.invoke(

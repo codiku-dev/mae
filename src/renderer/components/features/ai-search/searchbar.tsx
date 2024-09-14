@@ -1,24 +1,18 @@
-import { ChangeEvent, FormEvent, useEffect, useRef, useState } from 'react';
+import {
+  ChangeEvent,
+  FormEvent,
+  KeyboardEvent,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { PlaceholdersAndVanishInput } from '../../ui/placeholders-and-vanish-input';
-import { SearchSuggestions } from './search-suggestions';
-import { SearchSuggestion, useAppStore } from '@/renderer/hooks/use-app-store';
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-} from '@radix-ui/react-dropdown-menu';
-import { DropdownMenuContent } from '../../ui/dropdown-menu';
-import { Badge } from '../../ui/badge';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from '../../ui/dialog';
-import { Input } from '../../ui/input';
-import { Button } from '../../ui/button';
+import { SearchSuggestionTag } from '@/renderer/hooks/use-app-store';
 import { v4 as uuidv4 } from 'uuid';
-import { X } from 'lucide-react'; // Add this import at the top of the file
+import { DialogLinkInput } from './dialog-link-input';
+
+import { BadgeSuggestionList } from './badge-suggestion-list';
+import { SuggestionAutoCompleter } from './suggestion-autocompleter';
 
 // cmd + shift + P to toggle
 const placeholders = [
@@ -29,6 +23,12 @@ const formatLinkForDisplay = (link: string) => {
   return link.replace(/^(https?:\/\/)?(www\.)?/, '').slice(0, 10) + '...';
 };
 
+const suggestions: SearchSuggestionTag[] = ['doc', 'web'];
+export type SearchSuggestion = {
+  id: string;
+  suggestion: SearchSuggestionTag;
+  link: string;
+};
 export function SearchBar(p: {
   value: string;
   onChange: (value: string) => void;
@@ -37,83 +37,144 @@ export function SearchBar(p: {
   onClickStop: () => void;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
-  const suggestionRef = useRef<HTMLButtonElement>(null);
   const [showSuggestions, setShowSuggestions] = useState(false);
-
-  const [linksToLearnFrom, setLinksToLearnFrom] = useState<
-    {
-      id: string;
-      link: string;
-      suggestion: SearchSuggestion;
-    }[]
-  >([]);
+  const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(0);
+  const [linksToLearnFrom, setLinksToLearnFrom] = useState<SearchSuggestion[]>(
+    [],
+  );
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [linkInput, setLinkInput] = useState('');
   const [currentSuggestion, setCurrentSuggestion] =
-    useState<SearchSuggestion | null>(null);
+    useState<SearchSuggestionTag>();
+  const [filteredSuggestions, setFilteredSuggestions] = useState<
+    SearchSuggestionTag[]
+  >([]);
+
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, [linksToLearnFrom]);
+
+  useEffect(() => {
+    if (!isDialogOpen) {
+      inputRef.current?.focus();
+    }
+  }, [isDialogOpen]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
+    const cursorPosition = e.target.selectionStart || 0;
     p.onChange(newValue);
 
-    if (newValue[newValue.length - 1] === '@') {
+    const textBeforeCursor = newValue.slice(0, cursorPosition);
+    const textAfterCursor = newValue.slice(cursorPosition);
+
+    const wordsBeforeCursor = textBeforeCursor.split(/\s+/);
+    const lastWordBeforeCursor =
+      wordsBeforeCursor[wordsBeforeCursor.length - 1];
+
+    const isTypingAtSymbol = lastWordBeforeCursor.includes('@');
+    const hasSpaceAfterCursor = /^\s/.test(textAfterCursor);
+
+    if (isTypingAtSymbol && (hasSpaceAfterCursor || textAfterCursor === '')) {
+      const atSymbolIndex = lastWordBeforeCursor.lastIndexOf('@');
+      const textAfterAtSymbol = lastWordBeforeCursor.slice(atSymbolIndex + 1);
       setShowSuggestions(true);
+
+      // Update filtered suggestions
+      const filtered = suggestions.filter((suggestion) =>
+        suggestion.toLowerCase().startsWith(textAfterAtSymbol.toLowerCase()),
+      );
+      setFilteredSuggestions(filtered);
+      setSelectedSuggestionIndex(0);
+    } else {
+      setShowSuggestions(false);
     }
-  };
-  const focusInput = () => {
-    setTimeout(() => {
-      inputRef.current?.focus();
-    }, 200);
   };
 
-  useEffect(focusInput, [linksToLearnFrom]);
-  useEffect(() => {
-    if (!showSuggestions || !isDialogOpen) {
-      console.log('is not dialog open anymore');
-      focusInput();
-    }
-  }, [showSuggestions, isDialogOpen]);
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      console.log('handleKeyDown', e.key);
-      if (e.key === 'Backspace' && showSuggestions) {
-        setShowSuggestions(false);
-        const newValue = p.value.slice(0, -1);
-        p.onChange(newValue);
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (showSuggestions) {
+      switch (e.key) {
+        case 'ArrowUp':
+          e.preventDefault();
+          setSelectedSuggestionIndex((prev) =>
+            prev > 0 ? prev - 1 : filteredSuggestions.length - 1,
+          );
+          break;
+        case 'ArrowDown':
+          e.preventDefault();
+          setSelectedSuggestionIndex((prev) =>
+            prev < filteredSuggestions.length - 1 ? prev + 1 : 0,
+          );
+          break;
+        case 'Enter':
+          e.preventDefault();
+          if (filteredSuggestions.length > 0) {
+            submitSuggestion(filteredSuggestions[selectedSuggestionIndex]);
+          }
+          break;
+        case 'Escape':
+          setShowSuggestions(false);
+          break;
       }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [showSuggestions]);
+    }
+  };
 
   const onSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     p.onSubmit(p.value);
   };
 
-  const selectSuggestion = (suggestion: SearchSuggestion) => {
-    setShowSuggestions(false);
-    setCurrentSuggestion(suggestion);
-    setIsDialogOpen(true);
+  const handleDialogClose = () => {
+    setIsDialogOpen(false);
+    setCurrentSuggestion(undefined);
   };
 
-  const handleDialogSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    if (currentSuggestion && linkInput) {
+  const handleDialogSubmit = (link: string) => {
+    if (currentSuggestion) {
+      // first add the "@suggestion" to the input
       setLinksToLearnFrom([
         ...linksToLearnFrom,
-        { link: linkInput, suggestion: currentSuggestion, id: uuidv4() },
+        {
+          id: uuidv4(),
+          link,
+          suggestion: currentSuggestion,
+        },
       ]);
-      setIsDialogOpen(false);
-      setLinkInput('');
-      setCurrentSuggestion(null);
-      const newValue = p.value.replace(/@$/, '').trim();
+      // Remove any word starting with "@" from the input
+      const newValue = p.value.replace(/@\S+\s?/, '').trim();
       p.onChange(newValue);
     }
+    handleDialogClose();
+  };
+
+  const injectSuggestionInput = (pickedSuggestion: SearchSuggestionTag) => {
+    const inputElement = inputRef.current;
+    if (inputElement) {
+      const cursorPosition = inputElement.selectionStart || 0;
+      const textBeforeCursor = p.value.slice(0, cursorPosition);
+      const textAfterCursor = p.value.slice(cursorPosition);
+
+      // Find the start of the current @mention
+      const lastAtIndex = textBeforeCursor.lastIndexOf('@');
+      const newTextBeforeCursor = textBeforeCursor.slice(0, lastAtIndex);
+
+      // Construct the new value
+      const newValue = `${newTextBeforeCursor}@${pickedSuggestion} ${textAfterCursor}`;
+      p.onChange(newValue);
+
+      // Set cursor position after the inserted suggestion
+      setTimeout(() => {
+        const newCursorPosition =
+          newTextBeforeCursor.length + pickedSuggestion.length + 2; // +2 for @ and space
+        inputElement.setSelectionRange(newCursorPosition, newCursorPosition);
+      }, 0);
+    }
+  };
+
+  const submitSuggestion = (pickedSuggestion: SearchSuggestionTag) => {
+    setShowSuggestions(false);
+    injectSuggestionInput(pickedSuggestion);
+    setIsDialogOpen(true);
+    setCurrentSuggestion(pickedSuggestion);
   };
 
   const removeLink = (id: string) => {
@@ -121,72 +182,43 @@ export function SearchBar(p: {
   };
 
   return (
-    <div>
-      <DropdownMenu open={showSuggestions}>
-        <PlaceholdersAndVanishInput
-          value={p.value}
-          onChangeValue={p.onChange}
-          onClickStop={p.onClickStop}
-          placeholders={placeholders}
-          onChange={handleChange}
-          onSubmit={onSubmit}
-          inputProps={{
-            autoFocus: true,
-          }}
-          ref={inputRef}
-          isLoading={p.isLoading}
-        >
-          <DropdownMenuTrigger asChild>
-            <button className="invisible">hi</button>
-          </DropdownMenuTrigger>
-        </PlaceholdersAndVanishInput>
+    <div className="relative">
+      <PlaceholdersAndVanishInput
+        value={p.value}
+        onChangeValue={p.onChange}
+        onClickStop={p.onClickStop}
+        placeholders={placeholders}
+        onChange={handleChange}
+        onSubmit={onSubmit}
+        inputProps={{
+          autoFocus: true,
+          onKeyDown: handleKeyDown,
+        }}
+        ref={inputRef}
+        isLoading={p.isLoading}
+      />
 
-        <DropdownMenuContent className="-mt-2 ml-28">
-          <SearchSuggestions
-            show={showSuggestions}
-            onSelect={selectSuggestion}
-            ref={suggestionRef}
-          />
-        </DropdownMenuContent>
-      </DropdownMenu>
-      {linksToLearnFrom.length > 0 && (
-        <div className="mt-2 flex flex-wrap gap-2">
-          {linksToLearnFrom.map((link) => (
-            <Badge key={link.id} className="pr-1 flex items-center">
-              <span>
-                {link.suggestion} {formatLinkForDisplay(link.link)}
-              </span>
-              <button
-                onClick={() => removeLink(link.id)}
-                className="ml-1 text-xs hover:text-red-500 focus:outline-none"
-                aria-label="Remove link"
-              >
-                <X size={12} />
-              </button>
-            </Badge>
-          ))}
-        </div>
+      {showSuggestions && filteredSuggestions.length > 0 && (
+        <SuggestionAutoCompleter
+          filteredSuggestions={filteredSuggestions}
+          selectedSuggestionIndex={selectedSuggestionIndex}
+          onSubmit={submitSuggestion}
+        />
       )}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
-              Enter a {currentSuggestion} link to learn from
-            </DialogTitle>
-          </DialogHeader>
-          <form onSubmit={handleDialogSubmit}>
-            <Input
-              value={linkInput}
-              onChange={(e) => setLinkInput(e.target.value)}
-              placeholder="https://super-documentation.com"
-              className="mt-4"
-            />
-            <DialogFooter className="mt-4">
-              <Button type="submit">Train from link</Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
+
+      <BadgeSuggestionList
+        linksToLearnFrom={linksToLearnFrom}
+        removeLink={removeLink}
+        formatLinkForDisplay={formatLinkForDisplay}
+      />
+      {currentSuggestion && (
+        <DialogLinkInput
+          isOpen={isDialogOpen}
+          onClose={handleDialogClose}
+          onSubmit={handleDialogSubmit}
+          currentSuggestion={currentSuggestion}
+        />
+      )}
     </div>
   );
 }

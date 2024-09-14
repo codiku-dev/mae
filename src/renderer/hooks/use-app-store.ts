@@ -7,6 +7,7 @@ import {
 import { v4 as uuidv4 } from 'uuid';
 import { LanguageCode, LANGUAGES } from '@/libs/languages';
 import { Model } from '@/types/model-type';
+import { SearchSuggestion } from '../components/features/ai-search/searchbar';
 
 const KEYS_TO_NOT_STORE = [
   'isAppLoading',
@@ -14,7 +15,7 @@ const KEYS_TO_NOT_STORE = [
   'currentConversationIndex',
 ];
 
-export type SearchSuggestion = 'web' | 'docs' | undefined;
+export type SearchSuggestionTag = 'web' | 'doc';
 
 type Store = {
   isAppLaunchedOnStartup: boolean;
@@ -24,7 +25,7 @@ type Store = {
   conversationHistory: LLMConversationHistory[];
   currentConversationIndex: number;
   lastFetchAvailableModelsISODate: string;
-  currentSearchSuggestion: SearchSuggestion;
+  currentSearchSuggestionTag?: SearchSuggestionTag;
   setIsAppLaunchedOnStartup: (isAppLaunchedOnStartup: boolean) => void;
   setIsAppLoading: (isAppLoading: boolean) => void;
   setAssistantLanguage: (language: LanguageCode) => void;
@@ -41,7 +42,7 @@ type Store = {
   availableModels: Model[];
   setAvailableModels: (models: Model[]) => void;
   setLastFetchAvailableModelsISODate: (date: string) => void;
-  setCurrentSearchSuggestion: (suggestion: SearchSuggestion) => void;
+  setCurrentSearchSuggestionTag: (suggestionTag?: SearchSuggestionTag) => void;
 };
 
 const useAppStore = create(
@@ -154,8 +155,8 @@ const useAppStore = create(
         setLastFetchAvailableModelsISODate: (date: string) =>
           set({ lastFetchAvailableModelsISODate: date }),
 
-        setCurrentSearchSuggestion: (suggestion: SearchSuggestion) =>
-          set({ currentSearchSuggestion: suggestion }),
+        setCurrentSearchSuggestionTag: (suggestionTag?: SearchSuggestionTag) =>
+          set({ currentSearchSuggestionTag: suggestionTag }),
       })),
 
       {
