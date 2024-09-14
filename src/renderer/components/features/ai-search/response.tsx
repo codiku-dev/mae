@@ -1,13 +1,13 @@
 import { Clipboard, ClipboardCheck } from 'lucide-react';
 import { useState } from 'react';
-import { Button } from '../ui/button';
-import { Skeleton } from '../ui/skeleton';
+import { Button } from '../../ui/button';
+import { Skeleton } from '../../ui/skeleton';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '../ui/tooltip';
+} from '../../ui/tooltip';
 
 export function Response(p: {
   streamedResponse: string;

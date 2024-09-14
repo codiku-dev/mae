@@ -5,37 +5,44 @@ import {
   CardHeader,
   CardTitle,
 } from '@/renderer/components/ui/card';
+import {
+  Control,
+  Controller,
+  FieldValues,
+  useFormContext,
+} from 'react-hook-form';
 
 interface StartupSectionProps {
-  isLaunchedOnStartup: boolean;
-  onLaunchOnStartupChange: (checked: boolean) => void;
+  name: string;
 }
 
-export const StartupSection = ({
-  isLaunchedOnStartup,
-  onLaunchOnStartupChange,
-}: StartupSectionProps) => {
+export const StartupSection = ({ name }: StartupSectionProps) => {
+  const { control } = useFormContext();
   return (
     <Card>
       <CardHeader>
         <CardTitle>Startup</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="flex items-center space-x-2">
-          <Checkbox
-            id="isLaunchedOnStartup"
-            checked={isLaunchedOnStartup}
-            onCheckedChange={(checked) =>
-              onLaunchOnStartupChange(checked as boolean)
-            }
-          />
-          <label
-            htmlFor="isLaunchedOnStartup"
-            className="cursor-pointer text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            Launch on startup
-          </label>
-        </div>
+        <Controller
+          name={name}
+          control={control}
+          render={({ field }) => (
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="isLaunchedOnStartup"
+                checked={field.value}
+                onCheckedChange={field.onChange}
+              />
+              <label
+                htmlFor="isLaunchedOnStartup"
+                className="cursor-pointer text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                Launch on startup
+              </label>
+            </div>
+          )}
+        />
       </CardContent>
     </Card>
   );

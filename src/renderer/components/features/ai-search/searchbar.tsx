@@ -1,5 +1,5 @@
 import { ChangeEvent, FormEvent } from 'react';
-import { PlaceholdersAndVanishInput } from '../ui/placeholders-and-vanish-input';
+import { PlaceholdersAndVanishInput } from '../../ui/placeholders-and-vanish-input';
 
 // cmd + shift + P to toggle
 const placeholders = [

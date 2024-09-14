@@ -12,34 +12,43 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/renderer/components/ui/select';
-export const LanguageSelection = (p: {
-  currentLanguage: keyof typeof LANGUAGES;
-  onChange: (language: keyof typeof LANGUAGES) => void;
-}) => {
+import {
+  Control,
+  Controller,
+  FieldValues,
+  useFormContext,
+} from 'react-hook-form';
+
+interface LanguageSelectionProps {
+  name: string;
+}
+
+export const LanguageSelection = ({ name }: LanguageSelectionProps) => {
+  const { control } = useFormContext();
   return (
     <Card>
       <CardHeader>
         <CardTitle>Assistant language</CardTitle>
       </CardHeader>
       <CardContent>
-        <Select
-          name="assistantLanguage"
-          value={p.currentLanguage}
-          onValueChange={(value) => {
-            p.onChange(value as keyof typeof LANGUAGES);
-          }}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Select language" />
-          </SelectTrigger>
-          <SelectContent>
-            {Object.values(LANGUAGES).map((language) => (
-              <SelectItem key={language.code} value={language.code}>
-                {language.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <Controller
+          name={name}
+          control={control}
+          render={({ field }) => (
+            <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select language" />
+              </SelectTrigger>
+              <SelectContent>
+                {Object.values(LANGUAGES).map((language) => (
+                  <SelectItem key={language.code} value={language.code}>
+                    {language.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+        />
       </CardContent>
     </Card>
   );

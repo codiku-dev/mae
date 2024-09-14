@@ -17,9 +17,8 @@ import { Switch } from '@/renderer/components/ui/switch';
 import { Loader2, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { ollamaService } from '@/main/services/ollama/ollama.service';
-import { Model } from '@/renderer/pages/settings.page';
 import { useAppStore } from '@/renderer/hooks/use-app-store';
-
+import { Model } from '@/types/model-type';
 export const ModelSelection = () => {
   const {
     availableModels,
@@ -27,6 +26,7 @@ export const ModelSelection = () => {
     lastFetchAvailableModelsISODate,
     setLastFetchAvailableModelsISODate,
   } = useAppStore();
+
   const [installedModels, setInstalledModels] = useState<Model[]>([]);
   const [installingModel, setInstallingModel] = useState<string | null>(null);
 

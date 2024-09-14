@@ -1,16 +1,12 @@
-import {
-  ollamaService,
-  OllamaService,
-} from '@/main/services/ollama/ollama.service';
-import { Error } from '@/renderer/components/features/error';
-import { RichResponse } from '@/renderer/components/features/rich-response';
+import { ollamaService } from '@/main/services/ollama/ollama.service';
+import { Error } from '@/renderer/components/features/ai-search/error';
+import { RichResponse } from '@/renderer/components/features/ai-search/rich-response';
 import { Button } from '@/renderer/components/ui/button';
 import { cn } from '@/renderer/libs/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { SearchBar } from '../components/features/searchbar';
-import { LLMConversationHistory } from '@/main/services/ollama/ollama-type';
+import { SearchBar } from '../components/features/ai-search/searchbar';
 import { useAppStore } from '../hooks/use-app-store';
 
 export function HomePage() {
@@ -23,13 +19,10 @@ export function HomePage() {
   const [error, setError] = useState('');
   const [isAIWorking, setIsAIWorking] = useState(false);
   const {
-    conversationHistory,
     addMessageToCurrentConversation,
     getCurrentConversation,
     createNewConversation,
-    setCurrentConversationTitle,
   } = useAppStore();
-  console.log('conversationHistory', conversationHistory);
   const stopAndResetAll = () => {
     ollamaService.abortAllRequests();
     setStreamedResponse('');

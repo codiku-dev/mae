@@ -7,13 +7,13 @@ import { markdownLookBack } from '@llm-ui/markdown';
 //@ts-ignore
 import { useLLMOutput } from '@llm-ui/react';
 import { useEffect, useRef, useState } from 'react';
-import logo from '../../assets/icon.png';
-import { CodeRenderer } from '../ui/code-renderer';
-import { MarkdownRenderer } from '../ui/markdown-renderer';
+import logo from '../../../assets/icon.png';
+import { CodeRenderer } from '../../ui/code-renderer';
+import { MarkdownRenderer } from '../../ui/markdown-renderer';
 //@ts-ignore
 import { throttleBasic } from '@llm-ui/react';
 
-import { Skeleton } from '../ui/skeleton';
+import { Skeleton } from '../../ui/skeleton';
 
 export const RichResponse = (p: {
   question: string;

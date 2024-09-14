@@ -5,8 +5,8 @@ import {
   LLMMessage,
 } from '@/main/services/ollama/ollama-type';
 import { v4 as uuidv4 } from 'uuid';
-import { Model } from '@/renderer/pages/settings.page';
 import { LanguageCode, LANGUAGES } from '@/libs/languages';
+import { Model } from '@/types/model-type';
 
 const KEYS_TO_NOT_STORE = [
   'isAppLoading',
@@ -34,7 +34,6 @@ type Store = {
   addMessageToCurrentConversation: (message: LLMMessage) => void;
   getCurrentConversationMessages: () => LLMMessage[];
   clearAllHistory: () => void;
-  setCurrentConversationTitle: (title: string) => void;
   setCurrentConversationIndex: (index: number) => void;
   availableModels: Model[];
   setAvailableModels: (models: Model[]) => void;

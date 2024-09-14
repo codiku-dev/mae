@@ -5,7 +5,7 @@ import { Toaster } from '../components/ui/toaster';
 import { useAppStore } from '../hooks/use-app-store';
 import { ROUTES } from './routes';
 import { makeInteractiveClassClickable } from './utils';
-import { DevTool } from '../components/dev/DevTool';
+import { DevTool } from '../components/features/dev-tools';
 
 // TODO: Add a global listener to handle the navigate event
 
