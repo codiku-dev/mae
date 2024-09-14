@@ -13,6 +13,7 @@ import {
   net,
   shell,
 } from 'electron';
+import { json } from 'react-router-dom';
 import { username } from 'username';
 
 export class EventListenersService {
@@ -58,10 +59,12 @@ export class EventListenersService {
     this.addOnSearchbarVisibiltyChangeRequestListener();
     this.addMakeHttpRequestListener();
     this.addAutoLaunchListener();
+    this.addMakeHttpRequestJsonListener();
   }
 
   private addFocusRequestListener() {
     ipcMain.on('request-focus-window', () => {
+      console.log('do the shit');
       this.mainWindow?.hide();
       this.mainWindow?.show();
       this.mainWindow?.focus();
@@ -171,14 +174,22 @@ export class EventListenersService {
   }
   private addMakeHttpRequestListener() {
     ipcMain.handle('make-http-request', async (event, url) => {
+      console.log('url', url);
       const response = await net.fetch(url);
       const text = await response.text();
       return text;
     });
   }
+  private addMakeHttpRequestJsonListener() {
+    ipcMain.handle('make-http-request-json', async (event, url, headers) => {
+      const response = await net.fetch(url, { headers });
+      const json = await response.json();
+      return json;
+    });
+  }
 
   private addAutoLaunchListener() {
-    ipcMain.handle('set-app-auto-launch', (event, isLaunchedOnStartup) => {
+    ipcMain.handle('set-app-auto-launch', () => {
       var miaAutoLauncher = new AutoLaunch({
         name: 'Mia',
         path: '/Applications/Mia.app',

@@ -14,6 +14,8 @@ const KEYS_TO_NOT_STORE = [
   'currentConversationIndex',
 ];
 
+export type SearchSuggestion = 'web' | 'docs' | undefined;
+
 type Store = {
   isAppLaunchedOnStartup: boolean;
   isAppLoading: boolean;
@@ -22,6 +24,7 @@ type Store = {
   conversationHistory: LLMConversationHistory[];
   currentConversationIndex: number;
   lastFetchAvailableModelsISODate: string;
+  currentSearchSuggestion: SearchSuggestion;
   setIsAppLaunchedOnStartup: (isAppLaunchedOnStartup: boolean) => void;
   setIsAppLoading: (isAppLoading: boolean) => void;
   setAssistantLanguage: (language: LanguageCode) => void;
@@ -38,6 +41,7 @@ type Store = {
   availableModels: Model[];
   setAvailableModels: (models: Model[]) => void;
   setLastFetchAvailableModelsISODate: (date: string) => void;
+  setCurrentSearchSuggestion: (suggestion: SearchSuggestion) => void;
 };
 
 const useAppStore = create(
@@ -52,6 +56,7 @@ const useAppStore = create(
         currentConversationId: undefined,
         availableModels: [],
         lastFetchAvailableModelsISODate: '',
+        currentSearchSuggestion: undefined,
         setIsAppLaunchedOnStartup: (isAppLaunchedOnStartup: boolean) => {
           set({ isAppLaunchedOnStartup });
         },
@@ -148,6 +153,9 @@ const useAppStore = create(
 
         setLastFetchAvailableModelsISODate: (date: string) =>
           set({ lastFetchAvailableModelsISODate: date }),
+
+        setCurrentSearchSuggestion: (suggestion: SearchSuggestion) =>
+          set({ currentSearchSuggestion: suggestion }),
       })),
 
       {

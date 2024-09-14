@@ -136,7 +136,6 @@ export class OllamaService {
           modelfile: modelFileContent,
         }),
       });
-      console.log('response', response);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }

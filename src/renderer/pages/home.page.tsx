@@ -8,7 +8,7 @@ import { X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { SearchBar } from '../components/features/ai-search/searchbar';
 import { useAppStore } from '../hooks/use-app-store';
-
+import { webScraperService } from '@/main/services/web-scapper/web-scrapper-service';
 export function HomePage() {
   const [value, setValue] = useState<string>('');
   const [streamedResponse, setStreamedResponse] = useState<string>('');
@@ -55,6 +55,9 @@ export function HomePage() {
     });
   }, []);
 
+  useEffect(() => {
+    // webScraperService.scrapRelevantHtml('https://ui.shadcn.com/docs');
+  }, []);
   useEffect(function addOpenCloseListener() {
     // requestFocus
 
@@ -68,18 +71,18 @@ export function HomePage() {
         }
       },
     );
-    const unsubscribeEscapeShortcut = window.electron.ipcRenderer.on(
-      'global-shortcut',
-      (e) => {
-        if (e.data.shortcut === 'Escape') {
-          setIsVisible(false);
-        }
-      },
-    );
+    // const unsubscribeEscapeShortcut = window.electron.ipcRenderer.on(
+    //   'global-shortcut',
+    //   (e) => {
+    //     if (e.data.shortcut === 'Escape') {
+    //       setIsVisible(false);
+    //     }
+    //   },
+    // );
     // window.electron.ipcRenderer.on('on-main-window-blur', () => '');
     return () => {
       unsubscribeGlobalShortcut();
-      unsubscribeEscapeShortcut();
+      // unsubscribeEscapeShortcut();
     };
   }, []);
 

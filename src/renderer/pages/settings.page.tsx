@@ -3,8 +3,8 @@
 import { LanguageCode, LANGUAGES } from '@/libs/languages';
 import { Button } from '@/renderer/components/ui/button';
 import { useToast } from '@/renderer/hooks/use-toast';
-import { useEffect, useState, useState } from 'react';
-import { Form, FormProvider, SubmitHandler, useForm } from 'react-hook-form';
+import { useEffect, useState } from 'react';
+import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
 
 import { ModelFile } from '@/main/services/ollama/Modelfile';
 import { ollamaService } from '@/main/services/ollama/ollama.service';
@@ -35,10 +35,7 @@ export function SettingsPage() {
       assistantLanguage,
     },
   });
-  const {
-    handleSubmit,
-    formState: { isDirty },
-  } = form;
+  const { handleSubmit } = form;
 
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('request-open-window');
@@ -64,7 +61,6 @@ export function SettingsPage() {
       try {
         setIsLoading(true);
         await ollamaService.createOllamaModelFromModelFile(modelFile);
-        setIsLoading(false);
       } catch (error) {
         toast({
           title: 'Error',
@@ -73,6 +69,7 @@ export function SettingsPage() {
         return;
       }
     }
+    setIsLoading(false);
 
     toast({
       title: 'Settings saved',
@@ -112,7 +109,7 @@ export function SettingsPage() {
         <HistorySection />
 
         <Button type="submit" disabled={isLoading}>
-          {isDirty ? (
+          {!isLoading ? (
             'Apply'
           ) : (
             <>
