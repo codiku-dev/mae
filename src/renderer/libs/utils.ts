@@ -43,3 +43,15 @@ export function makeInteractiveClassClickable() {
   }
   return unsubscribe;
 }
+
+export function normalizeUrl(url: string) {
+  // Remove the protocol (http, https) and normalize by lowercasing and removing trailing slashes
+  return url
+    .replace(/^(https?:\/\/)?(www\.)?/, '') // Remove protocol and 'www'
+    .replace(/\/$/, '') // Remove trailing slash
+    .toLowerCase(); // Make it lowercase for comparison
+}
+
+export function areUrlsEqual(url1: string, url2: string) {
+  return normalizeUrl(url1) === normalizeUrl(url2);
+}

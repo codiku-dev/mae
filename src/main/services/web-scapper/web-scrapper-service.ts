@@ -1,5 +1,9 @@
 import { v4 as uuidv4 } from 'uuid';
 import * as cheerio from 'cheerio';
+import {
+  IndexedWebsite,
+  WebsiteScrapedContent,
+} from '@/renderer/hooks/use-app-store';
 
 interface ControllerEntry {
   id: string;
@@ -117,6 +121,28 @@ export class WebScraperService {
       console.error('Error scraping HTML:', error);
       return '';
     }
+  }
+
+  async fetchWebsiteContent(url: string): Promise<WebsiteScrapedContent[]> {
+    const webpageMinimalHtml = await this.scrapMinimalHtml(url);
+    const sublinks = await this.fetchSublinks(url);
+    // map
+    const sublinkMinimalHtmlPromises = sublinks.map(
+      async (sublink): Promise<WebsiteScrapedContent> => {
+        return {
+          url: sublink,
+          htmlContent: await this.scrapMinimalHtml(sublink),
+        };
+      },
+    );
+    const pagesHTMLContentList = await Promise.all(sublinkMinimalHtmlPromises);
+    return [
+      {
+        url: url,
+        htmlContent: webpageMinimalHtml,
+      },
+      ...pagesHTMLContentList,
+    ];
   }
 }
 

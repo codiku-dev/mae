@@ -18,6 +18,7 @@ export function HomePage() {
   const [submitedPrompt, setSubmitedPrompt] = useState('');
   const [error, setError] = useState('');
   const [isAIWorking, setIsAIWorking] = useState(false);
+  const { indexedWebsitesContent, currentSearchSuggestions } = useAppStore();
   const {
     addMessageToCurrentConversation,
     getCurrentConversation,
@@ -55,9 +56,6 @@ export function HomePage() {
     });
   }, []);
 
-  useEffect(() => {
-    //   webScraperService.scrapRelevantHtml('https://ui.shadcn.com/docs');
-  }, []);
   useEffect(function addOpenCloseListener() {
     // requestFocus
 
@@ -105,10 +103,24 @@ export function HomePage() {
         role: 'user',
         content: submittedText,
       });
+      const context =
+        'To answer the questions, you can use each of these websites content: ' +
+        currentSearchSuggestions
+          .map(
+            (suggestion) =>
+              'Link : ' +
+              suggestion.link +
+              '\n' +
+              'HTML content : ' +
+              suggestion.suggestion,
+          )
+          .join('\n\n');
 
+      console.log('PROVIDED context ', context);
       ollamaService.requestLlamaStream(
         submittedText,
-        [],
+        getCurrentConversation()?.messages || [],
+        context,
         (chunk) => {
           responseContent += chunk.message.content;
           if (chunk.done === false) {

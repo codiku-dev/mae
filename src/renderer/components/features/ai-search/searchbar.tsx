@@ -16,6 +16,8 @@ import { DialogLinkInput } from './dialog-link-input';
 
 import { BadgeSuggestionList } from './badge-suggestion-list';
 import { SuggestionAutoCompleter } from './suggestion-autocompleter';
+import { webScraperService } from '@/main/services/web-scapper/web-scrapper-service';
+import { sleep } from '@/libs/utils';
 
 // cmd + shift + P to toggle
 const placeholders = [
@@ -23,7 +25,7 @@ const placeholders = [
   '⌘ + ⇧ + P to open and close',
 ];
 
-const suggestions: SearchSuggestionTag[] = ['doc', 'web'];
+const suggestions: SearchSuggestionTag[] = ['web'];
 export type SearchSuggestion = {
   id: string;
   suggestion: SearchSuggestionTag;
@@ -36,8 +38,13 @@ export function SearchBar(p: {
   isLoading: boolean;
   onClickStop: () => void;
 }) {
-  const { currentSearchSuggestions, setCurrentSearchSuggestions } =
-    useAppStore();
+  const {
+    currentSearchSuggestions,
+    setCurrentSearchSuggestions,
+    isWebsiteIndexed,
+    addWebsiteToIndexedWebsites,
+    indexedWebsitesContent,
+  } = useAppStore();
   const inputRef = useRef<HTMLInputElement>(null);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(0);
@@ -123,9 +130,8 @@ export function SearchBar(p: {
     }
   };
 
-  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    p.onSubmit(p.value);
+  const onSubmit = (value: string) => {
+    p.onSubmit(value);
   };
 
   const handleDialogClose = () => {
@@ -133,7 +139,7 @@ export function SearchBar(p: {
     setCurrentSuggestion(undefined);
   };
 
-  const handleDialogSubmit = (link: string) => {
+  const handleDialogSubmit = async (link: string) => {
     if (currentSuggestion) {
       // first add the "@suggestion" to the input
       setCurrentSearchSuggestions([
@@ -147,6 +153,19 @@ export function SearchBar(p: {
       // Remove any word starting with "@" from the input
       const newValue = p.value.replace(/@\S+\s?/, '').trim();
       p.onChange(newValue);
+
+      if (!isWebsiteIndexed(link)) {
+        console.log('adding new website to indexed websites', link);
+        const newIndexedWebsiteContent =
+          await webScraperService.fetchWebsiteContent(link);
+
+        addWebsiteToIndexedWebsites({
+          url: link,
+          scrapedContent: newIndexedWebsiteContent,
+        });
+      } else {
+        console.log('website already indexed', link);
+      }
     }
     handleDialogClose();
   };

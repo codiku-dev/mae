@@ -13,6 +13,7 @@ import { LanguageSelection } from '../components/features/settings/language-sele
 import { ROUTES } from '../libs/routes';
 import { HistorySection } from '../components/features/settings/history-section';
 import { StartupSection } from '../components/features/settings/startup-section';
+import { DeleteLearnedDataSection } from '../components/features/settings/delete-learned-data-section';
 import { useAppStore } from '../hooks/use-app-store';
 
 type FormValues = {
@@ -107,6 +108,8 @@ export function SettingsPage() {
         <StartupSection name="isAppLaunchedOnStartup" />
 
         <HistorySection />
+
+        <DeleteLearnedDataSection />
 
         <Button type="submit" disabled={isLoading}>
           {!isLoading ? (

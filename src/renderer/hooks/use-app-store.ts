@@ -7,8 +7,8 @@ import {
 import { v4 as uuidv4 } from 'uuid';
 import { LanguageCode, LANGUAGES } from '@/libs/languages';
 import { Model } from '@/types/model-type';
-import { Search } from 'react-router-dom';
 import { SearchSuggestion } from '../components/features/ai-search/searchbar';
+import { areUrlsEqual } from '../libs/utils';
 
 const KEYS_TO_NOT_STORE = [
   'isAppLoading',
@@ -20,7 +20,16 @@ const KEYS_TO_NOT_STORE = [
 
 export type SearchSuggestionTag = 'web' | 'doc';
 
+export type WebsiteScrapedContent = {
+  url: string;
+  htmlContent: string;
+};
+export type IndexedWebsite = {
+  url: string;
+  scrapedContent: WebsiteScrapedContent[];
+};
 type Store = {
+  indexedWebsitesContent: IndexedWebsite[];
   isAppLaunchedOnStartup: boolean;
   isAppLoading: boolean;
   assistantLanguage: keyof typeof LANGUAGES;
@@ -29,6 +38,8 @@ type Store = {
   currentConversationIndex: number;
   lastFetchAvailableModelsISODate: string;
   currentSearchSuggestions: SearchSuggestion[];
+  availableModels: Model[];
+
   setCurrentSearchSuggestions: (suggestions: SearchSuggestion[]) => void;
   setIsAppLaunchedOnStartup: (isAppLaunchedOnStartup: boolean) => void;
   setIsAppLoading: (isAppLoading: boolean) => void;
@@ -43,9 +54,11 @@ type Store = {
   getCurrentConversationMessages: () => LLMMessage[];
   clearAllHistory: () => void;
   setCurrentConversationIndex: (index: number) => void;
-  availableModels: Model[];
   setAvailableModels: (models: Model[]) => void;
   setLastFetchAvailableModelsISODate: (date: string) => void;
+  isWebsiteIndexed: (url: string) => boolean;
+  setIndexedWebsitesContent: (indexedWebsitesContent: IndexedWebsite[]) => void;
+  addWebsiteToIndexedWebsites: (website: IndexedWebsite) => void;
 };
 
 const useAppStore = create(
@@ -62,6 +75,7 @@ const useAppStore = create(
         availableModels: [],
         lastFetchAvailableModelsISODate: '',
         currentSearchSuggestion: undefined,
+        indexedWebsitesContent: [],
         setCurrentSearchSuggestions: (suggestions: SearchSuggestion[]) => {
           set({ currentSearchSuggestions: suggestions });
         },
@@ -161,6 +175,22 @@ const useAppStore = create(
 
         setLastFetchAvailableModelsISODate: (date: string) =>
           set({ lastFetchAvailableModelsISODate: date }),
+        isWebsiteIndexed: (url: string) => {
+          const { indexedWebsitesContent } = get();
+          return indexedWebsitesContent.some(
+            (indexedWebsite) =>
+              areUrlsEqual(indexedWebsite.url, url) ||
+              indexedWebsite.scrapedContent.some((content) =>
+                areUrlsEqual(content.url, url),
+              ),
+          );
+        },
+        setIndexedWebsitesContent: (indexedWebsitesContent: IndexedWebsite[]) =>
+          set({ indexedWebsitesContent }),
+        addWebsiteToIndexedWebsites: (website: IndexedWebsite) => {
+          const { indexedWebsitesContent } = get();
+          set({ indexedWebsitesContent: [...indexedWebsitesContent, website] });
+        },
       })),
 
       {

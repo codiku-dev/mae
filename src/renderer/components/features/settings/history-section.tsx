@@ -11,7 +11,10 @@ import { useAppStore } from '@/renderer/hooks/use-app-store';
 export const HistorySection = () => {
   const { toast } = useToast();
   const { clearAllHistory } = useAppStore();
-  const handleDeleteConversationHistory = () => {
+  const handleDeleteConversationHistory = (
+    e: React.MouseEvent<HTMLButtonElement>,
+  ) => {
+    e.preventDefault();
     const isConfirmed = window.confirm(
       'Are you sure you want to delete all conversation history? This action cannot be undone.',
     );

@@ -59,6 +59,7 @@ export class OllamaService {
   async requestLlamaStream(
     prompt: string,
     previousMessages: LLMMessage[],
+    context: string,
     onData: (chunk: ChatResponseChunk) => void,
     onError: () => void,
   ) {
@@ -69,7 +70,9 @@ export class OllamaService {
     // const promptString = PROMPT_TEMPLATES[mode];
     await this.abortAllRequests();
     OllamaService.abortControllers.push({ id, controller });
-
+    if (context) {
+      previousMessages.unshift({ role: 'system', content: context });
+    }
     try {
       const response = await fetch('http://localhost:11434/api/chat', {
         method: 'POST',
