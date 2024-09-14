@@ -1,6 +1,6 @@
 'use client';
 
-import { LANGUAGES } from '@/libs/languages';
+import { LanguageCode, LANGUAGES } from '@/libs/languages';
 import { Button } from '@/renderer/components/ui/button';
 import { Checkbox } from '@/renderer/components/ui/checkbox';
 import { useToast } from '@/renderer/hooks/use-toast';
@@ -13,14 +13,14 @@ import {
 } from '@/main/services/ollama/ollama.service';
 import { Loader2, Trash, X } from 'lucide-react';
 import { LanguageSelection } from '../components/features/settings/language-selection';
-import { usePersistentStore } from '../hooks/use-persistent-store';
 import { ROUTES } from '../libs/routes';
 import { HistorySection } from '../components/features/settings/history-section';
 import { StartupSection } from '../components/features/settings/startup-section';
+import { useAppStore } from '../hooks/use-app-store';
 
 type FormValues = {
-  assistantLanguage?: (typeof LANGUAGES)[keyof typeof LANGUAGES]['code'];
-  isLaunchedOnStartup?: boolean;
+  assistantLanguage: LanguageCode;
+  isAppLaunchedOnStartup: boolean;
 };
 export interface Model {
   id: string;
@@ -28,21 +28,19 @@ export interface Model {
   isActive: boolean;
 }
 export function SettingsPage() {
-  const persistentStore = usePersistentStore();
+  const appStore = useAppStore();
+  const {
+    isAppLaunchedOnStartup,
+    assistantLanguage,
+    setIsAppLaunchedOnStartup,
+  } = appStore;
   const [isLoading, setIsLoading] = useState(false);
-  const [formValues, setFormValues] = useState<FormValues>(
-    persistentStore.getStore(),
-  );
+  const [formValues, setFormValues] = useState<FormValues>({
+    isAppLaunchedOnStartup: isAppLaunchedOnStartup,
+    assistantLanguage,
+  });
 
   const { toast } = useToast();
-
-  useEffect(() => {
-    const store = persistentStore.getStore();
-    setFormValues({
-      assistantLanguage: store?.assistantLanguage,
-      isLaunchedOnStartup: store?.isLaunchedOnStartup,
-    });
-  }, [persistentStore.isStoreInitialized]);
 
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('request-open-window');
@@ -52,30 +50,31 @@ export function SettingsPage() {
   }, []);
 
   const hasFieldChanged = (
-    field: keyof Pick<FormValues, 'assistantLanguage' | 'isLaunchedOnStartup'>,
+    field: keyof Pick<
+      FormValues,
+      'assistantLanguage' | 'isAppLaunchedOnStartup'
+    >,
   ) => {
-    const s = persistentStore.getStore();
-    if (s) {
-      return s[field] !== formValues[field];
-    }
+    return appStore[field] !== formValues[field];
   };
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     setIsLoading(true);
     e.preventDefault();
-
-    if (hasFieldChanged('isLaunchedOnStartup')) {
+    console.log(
+      'has field changed ? ',
+      hasFieldChanged('isAppLaunchedOnStartup'),
+    );
+    if (hasFieldChanged('isAppLaunchedOnStartup')) {
+      setIsAppLaunchedOnStartup(formValues.isAppLaunchedOnStartup);
       window.electron.ipcRenderer.invoke(
         'set-app-auto-launch',
-        formValues.isLaunchedOnStartup,
+        formValues.isAppLaunchedOnStartup,
       );
     }
 
     if (hasFieldChanged('assistantLanguage')) {
       const modelFile = new ModelFile();
-      persistentStore.setStore(
-        'assistantLanguage',
-        formValues.assistantLanguage,
-      );
+      appStore.setAssistantLanguage(formValues.assistantLanguage);
       modelFile.addRule(
         `You will answer the user exclusively with the following language: ${LANGUAGES[formValues.assistantLanguage || 'en'].name}. Even if the user is speaking another language than the one you are answering in, you will answer in the language you are speaking in.`,
       );
@@ -114,7 +113,7 @@ export function SettingsPage() {
   const handleLaunchOnStartupChange = (checked: boolean) => {
     setFormValues({
       ...formValues,
-      isLaunchedOnStartup: checked,
+      isAppLaunchedOnStartup: checked,
     });
   };
 
@@ -123,11 +122,11 @@ export function SettingsPage() {
       <Checkbox
         id="isLaunchedOnStartup"
         name="isLaunchedOnStartup"
-        checked={formValues.isLaunchedOnStartup}
+        checked={formValues.isAppLaunchedOnStartup}
         onCheckedChange={(checked) =>
           setFormValues({
             ...formValues,
-            isLaunchedOnStartup: checked as boolean,
+            isAppLaunchedOnStartup: checked as boolean,
           })
         }
       />
@@ -158,7 +157,7 @@ export function SettingsPage() {
       />
 
       <StartupSection
-        isLaunchedOnStartup={formValues.isLaunchedOnStartup || false}
+        isLaunchedOnStartup={formValues.isAppLaunchedOnStartup || false}
         onLaunchOnStartupChange={handleLaunchOnStartupChange}
       />
 

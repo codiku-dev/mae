@@ -6,7 +6,6 @@ import { logToMain } from '../../../renderer/libs/utils';
 import { ModelFile } from './Modelfile';
 import { OllamaConfig } from './ollama.config';
 import { LLMConversationHistory, LLMMessage } from './ollama-type';
-import { conversationHistoryManager } from './ollama-history';
 interface ControllerEntry {
   id: string;
   controller: AbortController;
@@ -31,14 +30,6 @@ export class OllamaService {
   static llm: Ollama;
 
   public static abortControllers: ControllerEntry[] = [];
-
-  constructor() {
-    this.initConversationHistory();
-  }
-
-  async initConversationHistory() {
-    await conversationHistoryManager.loadConversationHistoryList();
-  }
 
   public static getInstance(): OllamaService {
     if (OllamaService.instance === null) {

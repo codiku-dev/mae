@@ -1,6 +1,7 @@
 import { app, BrowserWindow /* ,screen */, screen } from 'electron';
 import path from 'path';
 import { start } from './start';
+import { on } from 'events';
 
 export function initWindow() {
   // const { width, height } = screen.getPrimaryDisplay().workAreaSize;
@@ -22,6 +23,7 @@ export function initWindow() {
 
     webPreferences: {
       // devTools: false,
+
       devTools: global.DEBUG,
       nodeIntegration: true,
       contextIsolation: true,

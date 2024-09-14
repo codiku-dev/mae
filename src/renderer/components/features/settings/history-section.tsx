@@ -7,7 +7,6 @@ import {
 } from '@/renderer/components/ui/card';
 import { useToast } from '@/renderer/hooks/use-toast';
 import { Trash } from 'lucide-react';
-import { usePersistentStore } from '@/renderer/hooks/use-persistent-store';
 import { useAppStore } from '@/renderer/hooks/use-app-store';
 export const HistorySection = () => {
   const { toast } = useToast();

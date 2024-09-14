@@ -1,5 +1,5 @@
 import { initMenu, refreshMenuLabels } from '@/main/menu/menu';
-import { PeristentStore } from '@/main/store/store-type';
+import { useAppStore } from '@/renderer/hooks/use-app-store';
 import { ROUTES } from '@/renderer/libs/routes';
 import { beforeStart } from '@/scripts/before-start';
 var AutoLaunch = require('auto-launch');
@@ -13,19 +13,15 @@ import {
   net,
   shell,
 } from 'electron';
-// import { logToRenderer } from '../../../libs/utils';
 import { username } from 'username';
 
 export class EventListenersService {
   private mainWindow: BrowserWindow | null = null;
-  private persistentStore: PeristentStore;
   constructor(
     private app: App,
     mainWindow: BrowserWindow | null,
-    persistentStore: PeristentStore,
   ) {
     this.mainWindow = mainWindow;
-    this.persistentStore = persistentStore;
   }
 
   // eslint-disable-next-line no-use-before-define
@@ -33,24 +29,18 @@ export class EventListenersService {
 
   public static getInstance(
     mainWindow: BrowserWindow | null,
-    persistentStore: PeristentStore,
     app: App,
   ): EventListenersService {
     if (!EventListenersService.instance) {
       EventListenersService.instance = new EventListenersService(
         app,
         mainWindow,
-        persistentStore,
       );
     }
     return EventListenersService.instance;
   }
 
   public addMainEventListeners() {
-    this.addElectronStoreGetRequestListener();
-    this.addElectronStoreSetRequestListener();
-    this.addElectronStoreChangeListener();
-    this.addElectronStoreGetAllRequestListener();
     this.addCmdSListeners();
     this.addRendererLogListener();
     if (!global.DEBUG) {
@@ -67,7 +57,6 @@ export class EventListenersService {
     this.addNavigateRequestListener();
     this.addOnSearchbarVisibiltyChangeRequestListener();
     this.addMakeHttpRequestListener();
-    this.addElectronStoreClearRequestListener();
     this.addAutoLaunchListener();
   }
 
@@ -86,10 +75,6 @@ export class EventListenersService {
       console.log('Mia: finished pre start actions');
       this.mainWindow?.webContents.send('before-start-reply');
     });
-  }
-
-  private addLLMMessageToMemoryListener() {
-    ipcMain.on('request-add-llm-message-to-memory', (event, message) => {});
   }
 
   private addBlurRequestListener() {
@@ -178,39 +163,6 @@ export class EventListenersService {
     });
   }
 
-  private addElectronStoreGetRequestListener() {
-    ipcMain.handle('electron-store-get', async (event, val) => {
-      return await this.persistentStore.get(val);
-    });
-  }
-
-  private addElectronStoreSetRequestListener() {
-    ipcMain.handle('electron-store-set', (event, key, value) => {
-      this.persistentStore.set(key, value);
-    });
-  }
-
-  private addElectronStoreGetAllRequestListener() {
-    ipcMain.handle('electron-store-get-all', (event) => {
-      return JSON.stringify(this.persistentStore.store);
-    });
-  }
-
-  private addElectronStoreChangeListener() {
-    this.persistentStore.onDidAnyChange(() => {
-      this.mainWindow?.webContents.send(
-        'electron-store-changed',
-        JSON.stringify(this.persistentStore.store),
-      );
-    });
-  }
-
-  private addElectronStoreClearRequestListener() {
-    ipcMain.handle('electron-store-clear', () => {
-      this.persistentStore.clear();
-    });
-  }
-
   private addOnSearchbarVisibiltyChangeRequestListener() {
     ipcMain.on('on-searchbar-visibilty-change', (event, isVisible) => {
       global.isSearchOpen = isVisible;
@@ -227,17 +179,16 @@ export class EventListenersService {
 
   private addAutoLaunchListener() {
     ipcMain.handle('set-app-auto-launch', (event, isLaunchedOnStartup) => {
-      this.persistentStore.set('isLaunchedOnStartup', isLaunchedOnStartup);
-      var minecraftAutoLauncher = new AutoLaunch({
+      var miaAutoLauncher = new AutoLaunch({
         name: 'Mia',
         path: '/Applications/Mia.app',
       });
-      if (isLaunchedOnStartup) {
+      if (useAppStore.getState().isAppLaunchedOnStartup) {
         console.log('Mia: enabling auto launch');
-        minecraftAutoLauncher.enable();
+        miaAutoLauncher.enable();
       } else {
         console.log('Mia: disabling auto launch');
-        minecraftAutoLauncher.disable();
+        miaAutoLauncher.disable();
       }
     });
   }

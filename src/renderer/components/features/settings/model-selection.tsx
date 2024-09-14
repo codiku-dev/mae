@@ -1,4 +1,3 @@
-import { LANGUAGES } from '@/libs/languages';
 import { Button } from '@/renderer/components/ui/button';
 import {
   Card,
@@ -15,29 +14,27 @@ import {
   SelectValue,
 } from '@/renderer/components/ui/select';
 import { Switch } from '@/renderer/components/ui/switch';
-import { useToast } from '@/renderer/hooks/use-toast';
 import { Loader2, Trash2 } from 'lucide-react';
-import React, { useEffect, useMemo, useState } from 'react';
-import { usePersistentStore } from '@/renderer/hooks/use-persistent-store';
-import {
-  ollamaService,
-  OllamaService,
-} from '@/main/services/ollama/ollama.service';
+import { useEffect, useState } from 'react';
+import { ollamaService } from '@/main/services/ollama/ollama.service';
 import { Model } from '@/renderer/pages/settings.page';
+import { useAppStore } from '@/renderer/hooks/use-app-store';
 
 export const ModelSelection = () => {
-  const persistentStore = usePersistentStore();
-  const [availableModels, setAvailableModels] = useState<Model[]>([]);
+  const {
+    availableModels,
+    setAvailableModels,
+    lastFetchAvailableModelsISODate,
+    setLastFetchAvailableModelsISODate,
+  } = useAppStore();
   const [installedModels, setInstalledModels] = useState<Model[]>([]);
   const [installingModel, setInstallingModel] = useState<string | null>(null);
 
   useEffect(function fetchAndScrapAvailableModel() {
     const shouldFetch =
-      persistentStore.getStore().lastFetchAvailableModelsISODate === '' ||
+      lastFetchAvailableModelsISODate === '' ||
       new Date().getTime() -
-        new Date(
-          persistentStore.getStore().lastFetchAvailableModelsISODate,
-        ).getTime() >
+        new Date(lastFetchAvailableModelsISODate).getTime() >
         7 * 24 * 60 * 60 * 1000;
 
     if (shouldFetch) {
@@ -49,22 +46,11 @@ export const ModelSelection = () => {
             isActive: false,
           })),
         );
-        persistentStore.setStore(
-          'lastFetchAvailableModelsISODate',
-          new Date().toISOString(),
-        );
-        persistentStore.setStore('availableModels', modelsName);
+        setLastFetchAvailableModelsISODate(new Date().toISOString());
       });
-    } else {
-      setAvailableModels(
-        persistentStore.getStore().availableModels.map((model) => ({
-          id: model,
-          name: model,
-          isActive: false,
-        })),
-      );
     }
   }, []);
+
   const handleToggleModel = (id: string) => {
     setInstalledModels((models) =>
       models.map((model) =>

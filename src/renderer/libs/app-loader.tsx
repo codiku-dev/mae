@@ -3,18 +3,16 @@ import { Outlet, useNavigate } from 'react-router-dom';
 import { SplashScreen } from '../components/features/splash-screen';
 import { Toaster } from '../components/ui/toaster';
 import { useAppStore } from '../hooks/use-app-store';
-import { usePersistentStore } from '../hooks/use-persistent-store';
 import { ROUTES } from './routes';
 import { makeInteractiveClassClickable } from './utils';
+import { DevTool } from '../components/dev/DevTool';
 
-import { conversationHistoryManager } from '@/main/services/ollama/ollama-history';
 // TODO: Add a global listener to handle the navigate event
 
 export const AppLoader = () => {
   const navigate = useNavigate();
-  const { setIsAppLoading, isAppLoading } = useAppStore();
-  const persistentStore = usePersistentStore();
-  const { clearAllHistory } = useAppStore();
+  const { setIsAppLoading, isAppLoading, isAppLaunchedOnStartup } =
+    useAppStore();
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('request-before-start');
     const unsubscribeBeforeStartReply = window.electron.ipcRenderer.on(
@@ -49,15 +47,13 @@ export const AppLoader = () => {
   }, []);
 
   if (isAppLoading) {
-    return persistentStore.getStore()?.isLaunchedOnStartup ? null : (
-      <SplashScreen />
-    );
+    return isAppLaunchedOnStartup ? null : <SplashScreen />;
   }
-
   return (
     <>
+      <DevTool />
       <Toaster />
-      <Outlet />;
+      <Outlet />
     </>
   );
 };

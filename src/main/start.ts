@@ -1,7 +1,5 @@
 import { App, BrowserWindow } from 'electron';
 import { EventListenersService } from './services/event-listeners/event-listener.service';
-import { persistentStore } from './store/store';
-import { OllamaService } from './services/ollama/ollama.service';
 
 export async function start(app: App, mainWindow: BrowserWindow) {
   mainWindow.setFocusable(true);
@@ -9,14 +7,8 @@ export async function start(app: App, mainWindow: BrowserWindow) {
     mainWindow.webContents.openDevTools();
   }
 
-  const eventListenerService = new EventListenersService(
-    app,
-    mainWindow,
-    persistentStore,
-  );
+  const eventListenerService = new EventListenersService(app, mainWindow);
   eventListenerService.addMainEventListeners();
-
-  console.log('Mia: Starting window.', persistentStore);
 
   console.log('Mia: Starting window.');
 }

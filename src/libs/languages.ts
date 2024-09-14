@@ -1,3 +1,4 @@
+export type LanguageCode = (typeof LANGUAGES)[keyof typeof LANGUAGES]['code'];
 export const LANGUAGES = {
   ab: { code: 'ab', name: 'Abkhazian' },
   aa: { code: 'aa', name: 'Afar' },

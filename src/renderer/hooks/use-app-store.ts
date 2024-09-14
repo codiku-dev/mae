@@ -5,6 +5,8 @@ import {
   LLMMessage,
 } from '@/main/services/ollama/ollama-type';
 import { v4 as uuidv4 } from 'uuid';
+import { Model } from '@/renderer/pages/settings.page';
+import { LanguageCode, LANGUAGES } from '@/libs/languages';
 
 const KEYS_TO_NOT_STORE = [
   'isAppLoading',
@@ -13,13 +15,19 @@ const KEYS_TO_NOT_STORE = [
 ];
 
 type Store = {
+  isAppLaunchedOnStartup: boolean;
   isAppLoading: boolean;
-  setIsAppLoading: (isAppLoading: boolean) => void;
+  assistantLanguage: keyof typeof LANGUAGES;
+  currentConversationId?: string;
   conversationHistory: LLMConversationHistory[];
+  currentConversationIndex: number;
+  lastFetchAvailableModelsISODate: string;
+  setIsAppLaunchedOnStartup: (isAppLaunchedOnStartup: boolean) => void;
+  setIsAppLoading: (isAppLoading: boolean) => void;
+  setAssistantLanguage: (language: LanguageCode) => void;
   setConversationHistory: (
     conversationHistory: LLMConversationHistory[],
   ) => void;
-  currentConversationId?: string;
   setCurrentConversationId: (conversationId: string) => void;
   getCurrentConversation: () => LLMConversationHistory | undefined;
   createNewConversation: (title: string) => Promise<string>;
@@ -27,8 +35,10 @@ type Store = {
   getCurrentConversationMessages: () => LLMMessage[];
   clearAllHistory: () => void;
   setCurrentConversationTitle: (title: string) => void;
-  currentConversationIndex: number;
   setCurrentConversationIndex: (index: number) => void;
+  availableModels: Model[];
+  setAvailableModels: (models: Model[]) => void;
+  setLastFetchAvailableModelsISODate: (date: string) => void;
 };
 
 const useAppStore = create(
@@ -37,7 +47,18 @@ const useAppStore = create(
       subscribeWithSelector<Store>((set, get) => ({
         //STATE
         currentConversationIndex: 0,
+        isAppLaunchedOnStartup: false,
         isAppLoading: true,
+        assistantLanguage: 'en',
+        currentConversationId: undefined,
+        availableModels: [],
+        lastFetchAvailableModelsISODate: '',
+        setIsAppLaunchedOnStartup: (isAppLaunchedOnStartup: boolean) => {
+          set({ isAppLaunchedOnStartup });
+        },
+        setAssistantLanguage: (language: keyof typeof LANGUAGES) => {
+          set({ assistantLanguage: language });
+        },
         setIsAppLoading: (isAppLoading: boolean) => {
           set({ isAppLoading });
         },
@@ -47,7 +68,7 @@ const useAppStore = create(
         ) => {
           set({ conversationHistory });
         },
-        currentConversationId: undefined,
+
         setCurrentConversationId: (conversationId: string) => {
           set({ currentConversationId: conversationId });
         },
@@ -122,7 +143,14 @@ const useAppStore = create(
         setCurrentConversationIndex: (index: number) => {
           set({ currentConversationIndex: index });
         },
+
+        setAvailableModels: (models: Model[]) =>
+          set({ availableModels: models }),
+
+        setLastFetchAvailableModelsISODate: (date: string) =>
+          set({ lastFetchAvailableModelsISODate: date }),
       })),
+
       {
         name: 'store',
         partialize: (store) =>
