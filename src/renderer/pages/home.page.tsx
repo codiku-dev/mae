@@ -100,6 +100,7 @@ export function HomePage() {
       setIsStreamingFinished(false);
       setValue('');
       setError('');
+
       if (!getCurrentConversation()) {
         await createNewConversation(submittedText.slice(0, 30) + '...');
       }
