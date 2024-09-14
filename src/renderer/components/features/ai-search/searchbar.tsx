@@ -7,7 +7,10 @@ import {
   useState,
 } from 'react';
 import { PlaceholdersAndVanishInput } from '../../ui/placeholders-and-vanish-input';
-import { SearchSuggestionTag } from '@/renderer/hooks/use-app-store';
+import {
+  SearchSuggestionTag,
+  useAppStore,
+} from '@/renderer/hooks/use-app-store';
 import { v4 as uuidv4 } from 'uuid';
 import { DialogLinkInput } from './dialog-link-input';
 
@@ -19,9 +22,6 @@ const placeholders = [
   'Ask any question and press enter !',
   '⌘ + ⇧ + P to open and close',
 ];
-const formatLinkForDisplay = (link: string) => {
-  return link.replace(/^(https?:\/\/)?(www\.)?/, '').slice(0, 10) + '...';
-};
 
 const suggestions: SearchSuggestionTag[] = ['doc', 'web'];
 export type SearchSuggestion = {
@@ -36,12 +36,11 @@ export function SearchBar(p: {
   isLoading: boolean;
   onClickStop: () => void;
 }) {
+  const { currentSearchSuggestions, setCurrentSearchSuggestions } =
+    useAppStore();
   const inputRef = useRef<HTMLInputElement>(null);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(0);
-  const [linksToLearnFrom, setLinksToLearnFrom] = useState<SearchSuggestion[]>(
-    [],
-  );
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [currentSuggestion, setCurrentSuggestion] =
     useState<SearchSuggestionTag>();
@@ -51,7 +50,7 @@ export function SearchBar(p: {
 
   useEffect(() => {
     inputRef.current?.focus();
-  }, [linksToLearnFrom]);
+  }, [currentSearchSuggestions.length]);
 
   useEffect(() => {
     if (!isDialogOpen) {
@@ -91,6 +90,15 @@ export function SearchBar(p: {
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Escape') {
+      if (isDialogOpen) {
+        handleDialogClose();
+      } else if (showSuggestions) {
+        setShowSuggestions(false);
+      }
+      return;
+    }
+
     if (showSuggestions) {
       switch (e.key) {
         case 'ArrowUp':
@@ -111,9 +119,6 @@ export function SearchBar(p: {
             submitSuggestion(filteredSuggestions[selectedSuggestionIndex]);
           }
           break;
-        case 'Escape':
-          setShowSuggestions(false);
-          break;
       }
     }
   };
@@ -131,8 +136,8 @@ export function SearchBar(p: {
   const handleDialogSubmit = (link: string) => {
     if (currentSuggestion) {
       // first add the "@suggestion" to the input
-      setLinksToLearnFrom([
-        ...linksToLearnFrom,
+      setCurrentSearchSuggestions([
+        ...currentSearchSuggestions,
         {
           id: uuidv4(),
           link,
@@ -177,10 +182,6 @@ export function SearchBar(p: {
     setCurrentSuggestion(pickedSuggestion);
   };
 
-  const removeLink = (id: string) => {
-    setLinksToLearnFrom(linksToLearnFrom.filter((link) => link.id !== id));
-  };
-
   return (
     <div className="relative">
       <PlaceholdersAndVanishInput
@@ -206,11 +207,7 @@ export function SearchBar(p: {
         />
       )}
 
-      <BadgeSuggestionList
-        linksToLearnFrom={linksToLearnFrom}
-        removeLink={removeLink}
-        formatLinkForDisplay={formatLinkForDisplay}
-      />
+      <BadgeSuggestionList />
       {currentSuggestion && (
         <DialogLinkInput
           isOpen={isDialogOpen}

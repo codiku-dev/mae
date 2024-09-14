@@ -64,7 +64,6 @@ export class EventListenersService {
 
   private addFocusRequestListener() {
     ipcMain.on('request-focus-window', () => {
-      console.log('do the shit');
       this.mainWindow?.hide();
       this.mainWindow?.show();
       this.mainWindow?.focus();

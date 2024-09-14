@@ -91,7 +91,7 @@ export class WebScraperService {
 
       // Optionally remove attributes from tags that are not crucial
       $('*').each((_, el) => {
-        for (const attr of el.attributes) {
+        for (const attr of (el as any).attributes) {
           $(el).removeAttr(attr.name);
         }
       });

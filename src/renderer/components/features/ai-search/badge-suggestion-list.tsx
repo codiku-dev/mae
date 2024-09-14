@@ -7,6 +7,7 @@ import {
 } from '@/renderer/components/ui/tooltip';
 import { X } from 'lucide-react';
 import { Badge } from '../../ui/badge';
+import { useAppStore } from '@/renderer/hooks/use-app-store';
 
 interface Link {
   id: string;
@@ -14,33 +15,36 @@ interface Link {
   link: string;
 }
 
-interface BadgeSelectedSuggestionProps {
-  linksToLearnFrom: Link[];
-  removeLink: (id: string) => void;
-  formatLinkForDisplay: (link: string) => string;
-}
+interface BadgeSelectedSuggestionProps {}
 
-const BadgeSuggestionList: React.FC<BadgeSelectedSuggestionProps> = ({
-  linksToLearnFrom,
-  removeLink,
-  formatLinkForDisplay,
-}) => {
+const BadgeSuggestionList: React.FC<BadgeSelectedSuggestionProps> = () => {
+  const { currentSearchSuggestions, setCurrentSearchSuggestions } =
+    useAppStore();
+  const removeLink = (id: string) => {
+    setCurrentSearchSuggestions(
+      currentSearchSuggestions.filter((link) => link.id !== id),
+    );
+  };
+
+  const formatLinkForDisplay = (link: string) => {
+    return link.replace(/^(https?:\/\/)?(www\.)?/, '').slice(0, 10) + '...';
+  };
   return (
     <div className="mt-2 flex flex-wrap gap-2">
-      {linksToLearnFrom.map((link) => (
-        <TooltipProvider key={link.id}>
+      {currentSearchSuggestions.map((suggestion) => (
+        <TooltipProvider key={suggestion.id}>
           <Tooltip delayDuration={200}>
             <TooltipTrigger asChild>
               <div className="inline-block">
                 <Badge className="pr-1 flex items-center cursor-pointer">
                   <span>
-                    {link.suggestion.toUpperCase()}{' '}
-                    {formatLinkForDisplay(link.link)}
+                    {suggestion.suggestion.toUpperCase()}{' '}
+                    {formatLinkForDisplay(suggestion.link)}
                   </span>
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      removeLink(link.id);
+                      removeLink(suggestion.id);
                     }}
                     className="ml-1 text-xs hover:text-red-500 focus:outline-none"
                     aria-label="Remove link"
@@ -51,7 +55,7 @@ const BadgeSuggestionList: React.FC<BadgeSelectedSuggestionProps> = ({
               </div>
             </TooltipTrigger>
             <TooltipContent>
-              <p>{link.link}</p>
+              <p>{suggestion.link}</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>

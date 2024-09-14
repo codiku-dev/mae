@@ -1,4 +1,4 @@
-import { AnimatePresence, AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { Square } from 'lucide-react';
 import React, {
   forwardRef,

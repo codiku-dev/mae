@@ -7,11 +7,14 @@ import {
 import { v4 as uuidv4 } from 'uuid';
 import { LanguageCode, LANGUAGES } from '@/libs/languages';
 import { Model } from '@/types/model-type';
+import { Search } from 'react-router-dom';
 import { SearchSuggestion } from '../components/features/ai-search/searchbar';
 
 const KEYS_TO_NOT_STORE = [
   'isAppLoading',
   'currentConversationId',
+  'currentConversationIndex',
+  'conversationHistory',
   'currentConversationIndex',
 ];
 
@@ -25,7 +28,8 @@ type Store = {
   conversationHistory: LLMConversationHistory[];
   currentConversationIndex: number;
   lastFetchAvailableModelsISODate: string;
-  currentSearchSuggestionTag?: SearchSuggestionTag;
+  currentSearchSuggestions: SearchSuggestion[];
+  setCurrentSearchSuggestions: (suggestions: SearchSuggestion[]) => void;
   setIsAppLaunchedOnStartup: (isAppLaunchedOnStartup: boolean) => void;
   setIsAppLoading: (isAppLoading: boolean) => void;
   setAssistantLanguage: (language: LanguageCode) => void;
@@ -42,7 +46,6 @@ type Store = {
   availableModels: Model[];
   setAvailableModels: (models: Model[]) => void;
   setLastFetchAvailableModelsISODate: (date: string) => void;
-  setCurrentSearchSuggestionTag: (suggestionTag?: SearchSuggestionTag) => void;
 };
 
 const useAppStore = create(
@@ -51,6 +54,7 @@ const useAppStore = create(
       subscribeWithSelector<Store>((set, get) => ({
         //STATE
         currentConversationIndex: 0,
+        currentSearchSuggestions: [],
         isAppLaunchedOnStartup: false,
         isAppLoading: true,
         assistantLanguage: 'en',
@@ -58,6 +62,9 @@ const useAppStore = create(
         availableModels: [],
         lastFetchAvailableModelsISODate: '',
         currentSearchSuggestion: undefined,
+        setCurrentSearchSuggestions: (suggestions: SearchSuggestion[]) => {
+          set({ currentSearchSuggestions: suggestions });
+        },
         setIsAppLaunchedOnStartup: (isAppLaunchedOnStartup: boolean) => {
           set({ isAppLaunchedOnStartup });
         },
@@ -154,9 +161,6 @@ const useAppStore = create(
 
         setLastFetchAvailableModelsISODate: (date: string) =>
           set({ lastFetchAvailableModelsISODate: date }),
-
-        setCurrentSearchSuggestionTag: (suggestionTag?: SearchSuggestionTag) =>
-          set({ currentSearchSuggestionTag: suggestionTag }),
       })),
 
       {
