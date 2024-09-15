@@ -81,7 +81,7 @@ export class WebScraperService {
 
       // Remove unwanted tags
       $(
-        'head, script, style, meta, link, noscript, iframe, object, svg, a',
+        'head, script, style, meta, link, noscript, iframe, object, svg, a, nav, footer',
       ).remove();
 
       // Optionally remove attributes from tags that are not crucial

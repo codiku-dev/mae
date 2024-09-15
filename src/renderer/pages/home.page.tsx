@@ -81,6 +81,7 @@ export function HomePage() {
 
   const handleSubmit = async (submittedText: string) => {
     stopAndResetAll();
+    submittedText = 'Code for Breadcrumb component shadcnui';
     setTimeout(async () => {
       let responseContent = '';
       setIsAIWorking(true);
@@ -96,8 +97,10 @@ export function HomePage() {
       }
 
       if (currentSearchSuggestions.length > 0) {
-        submittedText = getContextFromSelectedIndexedWebsites();
-        +'\n\n\n ' + submittedText;
+        addMessageToCurrentConversation({
+          role: 'system',
+          content: getContextFromSelectedIndexedWebsites(),
+        });
       }
       addMessageToCurrentConversation({
         role: 'user',
