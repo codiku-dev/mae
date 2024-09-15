@@ -9,6 +9,9 @@ import { useEffect, useState } from 'react';
 import { SearchBar } from '../components/features/ai-search/searchbar';
 import { useAppStore } from '../hooks/use-app-store';
 import { webScraperService } from '@/main/services/web-scapper/web-scrapper-service';
+import { within } from '@testing-library/react';
+import { is } from 'cheerio/dist/commonjs/api/traversing';
+import { on } from 'events';
 export function HomePage() {
   const [value, setValue] = useState<string>('');
   const [streamedResponse, setStreamedResponse] = useState<string>('');
@@ -86,6 +89,7 @@ export function HomePage() {
 
   const handleSubmit = async (submittedText: string) => {
     if (submittedText !== '') {
+      let context = ``;
       let responseContent = '';
       setIsAIWorking(true);
       setSubmitedPrompt(submittedText);
@@ -103,20 +107,39 @@ export function HomePage() {
         role: 'user',
         content: submittedText,
       });
-      const context =
-        'To answer the questions, you can use each of these websites content: ' +
-        currentSearchSuggestions
-          .map(
-            (suggestion) =>
-              'Link : ' +
-              suggestion.link +
-              '\n' +
-              'HTML content : ' +
-              suggestion.suggestion,
-          )
-          .join('\n\n');
+      if (currentSearchSuggestions.length > 0) {
+        const websites = indexedWebsitesContent.filter((website) =>
+          currentSearchSuggestions.some((suggestion) =>
+            website.url.includes(suggestion.link),
+          ),
+        );
+        if (websites) {
+          websites.map((website) => {
+            context += `Documentation of : ' + website.url
+            `;
+            website.scrapedContent.map((scrapedWebsite) => {
+              context += `Source: 
+              ${scrapedWebsite.url}
 
-      console.log('PROVIDED context ', context);
+          Content:
+          ${scrapedWebsite.htmlContent}
+
+          `;
+            });
+          });
+        }
+
+        context += `
+
+      Instructions:
+      1. Base your answer primarily on the information in the provided in the above documentation.
+      2. If code is requested, look for relevant snippets within <code></code> tags.
+      3. Always include necessary imports when providing code examples.
+      4. If the documentation doesn't contain the answer, state that clearly.
+      5. Summarize and paraphrase the relevant information rather than quoting directly.
+      `;
+      }
+
       ollamaService.requestLlamaStream(
         submittedText,
         getCurrentConversation()?.messages || [],

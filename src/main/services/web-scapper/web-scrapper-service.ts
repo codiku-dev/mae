@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import * as cheerio from 'cheerio';
+import { decodeHTML } from 'entities';
 import {
   IndexedWebsite,
   WebsiteScrapedContent,
@@ -107,16 +108,23 @@ export class WebScraperService {
         }
       });
 
-      console.log('after remove ', $('*').html());
+      // Remove span tags inside code tags, but keep their content
+      $('code').each((_, codeEl) => {
+        $(codeEl)
+          .find('span')
+          .each((_, spanEl) => {
+            $(spanEl).replaceWith($(spanEl).contents());
+          });
+      });
 
       // Extract content from the body
       const bodyContent = $('body').html(); // or $.root().html() if you want the whole cleaned content
 
-      // Return cleaned HTML, ensuring it's not empty
-      const response = bodyContent?.trim() || '';
+      // Decode HTML entities
+      const decodedContent = decodeHTML(bodyContent || '');
 
-      //   console.log('response', response);
-      return response;
+      // Return cleaned and decoded HTML, ensuring it's not empty
+      return decodedContent.trim();
     } catch (error) {
       console.error('Error scraping HTML:', error);
       return '';
@@ -129,9 +137,11 @@ export class WebScraperService {
     // map
     const sublinkMinimalHtmlPromises = sublinks.map(
       async (sublink): Promise<WebsiteScrapedContent> => {
+        const htmlContent = await this.scrapMinimalHtml(sublink);
         return {
           url: sublink,
-          htmlContent: await this.scrapMinimalHtml(sublink),
+          htmlContent,
+          sizeKb: htmlContent.length / 1024,
         };
       },
     );
@@ -140,6 +150,7 @@ export class WebScraperService {
       {
         url: url,
         htmlContent: webpageMinimalHtml,
+        sizeKb: webpageMinimalHtml.length / 1024,
       },
       ...pagesHTMLContentList,
     ];

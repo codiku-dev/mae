@@ -23,6 +23,7 @@ export type SearchSuggestionTag = 'web' | 'doc';
 export type WebsiteScrapedContent = {
   url: string;
   htmlContent: string;
+  sizeKb: number;
 };
 export type IndexedWebsite = {
   url: string;
@@ -59,6 +60,8 @@ type Store = {
   isWebsiteIndexed: (url: string) => boolean;
   setIndexedWebsitesContent: (indexedWebsitesContent: IndexedWebsite[]) => void;
   addWebsiteToIndexedWebsites: (website: IndexedWebsite) => void;
+  deleteWebsiteScrapedContent: (parentUrl: string, url: string) => void;
+  deleteIndexedWebsite: (url: string) => void;
 };
 
 const useAppStore = create(
@@ -152,7 +155,6 @@ const useAppStore = create(
           return currentConversation?.messages || [];
         },
         clearAllHistory: () => {
-          console.log('clearAllHistory');
           const { setConversationHistory } = get();
           setConversationHistory([]);
         },
@@ -190,6 +192,36 @@ const useAppStore = create(
         addWebsiteToIndexedWebsites: (website: IndexedWebsite) => {
           const { indexedWebsitesContent } = get();
           set({ indexedWebsitesContent: [...indexedWebsitesContent, website] });
+        },
+        deleteWebsiteScrapedContent: (
+          parentUrl: string,
+          scrapedUrl: string,
+        ) => {
+          const { indexedWebsitesContent } = get();
+          let parentIndex = -1;
+          const parent = indexedWebsitesContent.find((website, index) => {
+            if (areUrlsEqual(website.url, parentUrl)) {
+              parentIndex = index;
+            }
+            return website;
+          });
+          if (parent) {
+            // Remove the scraped content that matches the parentUrl
+            parent.scrapedContent = parent.scrapedContent.filter(
+              (content) => !areUrlsEqual(content.url, scrapedUrl),
+            );
+            // find the parent index and put it back into the indexedWebsitesContent
+            indexedWebsitesContent[parentIndex] = parent;
+            set({ indexedWebsitesContent });
+          }
+        },
+
+        deleteIndexedWebsite: (url: string) => {
+          const { indexedWebsitesContent } = get();
+          const updatedContent = indexedWebsitesContent.filter(
+            (website) => !areUrlsEqual(website.url, url),
+          );
+          set({ indexedWebsitesContent: updatedContent });
         },
       })),
 

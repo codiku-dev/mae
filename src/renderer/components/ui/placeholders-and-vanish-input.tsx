@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, AnimatePresence, motion } from 'framer-motion';
 import { Square } from 'lucide-react';
 import React, {
   forwardRef,
@@ -39,8 +39,7 @@ export const PlaceholdersAndVanishInput = forwardRef<
     inputRef: React.Ref<HTMLInputElement>,
   ) => {
     const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
-    const [inputValue, setInputValue] = useState(value);
-    console.log('the input vlaue', inputValue);
+
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const newDataRef = useRef<any[]>([]);
@@ -92,7 +91,7 @@ export const PlaceholdersAndVanishInput = forwardRef<
       const fontSize = parseFloat(computedStyles.getPropertyValue('font-size'));
       ctx.font = `${fontSize * 2}px ${computedStyles.fontFamily}`;
       ctx.fillStyle = '#FFF';
-      ctx.fillText(inputValue, 16, 40);
+      ctx.fillText(value, 16, 40);
 
       const imageData = ctx.getImageData(0, 0, 800, 800);
       const pixelData = imageData.data;
@@ -127,13 +126,16 @@ export const PlaceholdersAndVanishInput = forwardRef<
         r: 1,
         color: `rgba(${color[0]}, ${color[1]}, ${color[2]}, ${color[3]})`,
       }));
-    }, [inputValue]);
+    }, [value]);
 
     useEffect(() => {
       draw();
-    }, [inputValue, draw]);
+    }, [value, draw]);
 
     const animate = (start: number) => {
+      // Add a speed factor
+      const speedFactor = 2; // Increase this to make it faster, decrease to make it slower
+
       const animateFrame = (pos: number = 0) => {
         requestAnimationFrame(() => {
           const newArr = [];
@@ -146,9 +148,11 @@ export const PlaceholdersAndVanishInput = forwardRef<
                 current.r = 0;
                 continue;
               }
-              current.x += Math.random() > 0.5 ? 1 : -1;
-              current.y += Math.random() > 0.5 ? 1 : -1;
-              current.r -= 0.05 * Math.random();
+              // Adjust the speed of particle movement
+              current.x += (Math.random() > 0.5 ? 1 : -1) * speedFactor;
+              current.y += (Math.random() > 0.5 ? 1 : -1) * speedFactor;
+              // Adjust the speed of particle shrinking
+              current.r -= 0.05 * Math.random() * speedFactor;
               newArr.push(current);
             }
           }
@@ -168,10 +172,11 @@ export const PlaceholdersAndVanishInput = forwardRef<
             });
           }
           if (newDataRef.current.length > 0) {
-            animateFrame(pos - 8);
+            // Adjust the speed of the sweep
+            animateFrame(pos - 8 * speedFactor);
           } else {
+            onSubmit && onSubmit(value);
             onChangeValue('');
-            setInputValue('');
             setAnimating(false);
           }
         });
@@ -179,7 +184,7 @@ export const PlaceholdersAndVanishInput = forwardRef<
       animateFrame(start);
     };
 
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
       if (e.key === 'Enter' && !animating) {
         vanishAndSubmit();
       }
@@ -201,7 +206,6 @@ export const PlaceholdersAndVanishInput = forwardRef<
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      onSubmit?.(inputValue);
       vanishAndSubmit();
     };
 
@@ -249,7 +253,7 @@ export const PlaceholdersAndVanishInput = forwardRef<
                 strokeDashoffset: '50%',
               }}
               animate={{
-                strokeDashoffset: inputValue ? 0 : '50%',
+                strokeDashoffset: value ? 0 : '50%',
               }}
               transition={{
                 duration: 0.3,
@@ -267,7 +271,7 @@ export const PlaceholdersAndVanishInput = forwardRef<
       <form
         className={cn(
           'w-full relative max-w-xl mx-auto bg-white dark:bg-zinc-800 h-12 rounded-full overflow-hidden shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),_0px_1px_0px_0px_rgba(25,28,33,0.02),_0px_0px_0px_1px_rgba(25,28,33,0.08)] transition duration-200',
-          inputValue && 'bg-gray-50',
+          value && 'bg-gray-50',
         )}
         onSubmit={handleSubmit}
       >
@@ -283,7 +287,6 @@ export const PlaceholdersAndVanishInput = forwardRef<
             onChange={(e) => {
               if (!animating) {
                 onChangeValue(e.target.value);
-                setInputValue(e.target.value);
                 onChange && onChange(e);
               }
             }}
@@ -295,7 +298,7 @@ export const PlaceholdersAndVanishInput = forwardRef<
               }
             }} // Use the forwarded ref here
             autoFocus={true}
-            value={inputValue}
+            value={value}
             type="text"
             className={cn(
               'interactive w-full relative text-sm sm:text-base z-50 border-none  bg-transparent pt-[0.85rem] text-black rounded-full focus:outline-none focus:ring-0 pl-4 sm:pl-10 pr-20',
@@ -309,7 +312,7 @@ export const PlaceholdersAndVanishInput = forwardRef<
 
         <div className="absolute inset-0 flex items-center rounded-full pointer-events-none">
           <AnimatePresence mode="wait">
-            {!inputValue && (
+            {!value && (
               <motion.p
                 initial={{
                   y: 5,

@@ -126,7 +126,6 @@ export class OllamaService {
     this.removeAbortController(id);
   }
   async createOllamaModelFromModelFile(modelFile: ModelFile) {
-    console.log('createOllamaModelFromModelFile()', modelFile.toString());
     const modelFileContent = modelFile.toString();
     try {
       const response = await fetch('http://localhost:11434/api/create', {

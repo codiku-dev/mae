@@ -130,8 +130,8 @@ export function SearchBar(p: {
     }
   };
 
-  const onSubmit = (value: string) => {
-    p.onSubmit(value);
+  const onSubmit = (inputValue: string) => {
+    p.onSubmit(inputValue);
   };
 
   const handleDialogClose = () => {
@@ -155,7 +155,6 @@ export function SearchBar(p: {
       p.onChange(newValue);
 
       if (!isWebsiteIndexed(link)) {
-        console.log('adding new website to indexed websites', link);
         const newIndexedWebsiteContent =
           await webScraperService.fetchWebsiteContent(link);
 
@@ -163,8 +162,6 @@ export function SearchBar(p: {
           url: link,
           scrapedContent: newIndexedWebsiteContent,
         });
-      } else {
-        console.log('website already indexed', link);
       }
     }
     handleDialogClose();
