@@ -228,11 +228,11 @@ const useAppStore = create(
         getContextFromSelectedIndexedWebsites: () => {
           const instructions = `Instructions:
         1. Base your answer ONLY on the information provided in the following documentation.
-        2. When asked for code, prioritize content within <pre><code> tags.
-        3. Pay attention to headings (h1, h2, h3) to understand the structure of the documentation.
-        4. Always include necessary imports when providing code examples.
-        5. If the documentation doesn't contain the answer, state that clearly.
-        6. Summarize and paraphrase the relevant information rather than quoting directly.
+        2. Try to locate the relevant piece of documentation.
+        3. When asked for code, prioritize content within <pre><code> tags.
+        4. Pay attention to headings (h1, h2, h3) to understand the structure of the documentation.
+        5. Always include necessary imports when providing code examples.
+        6. If the documentation doesn't contain the answer, state that clearly.
         7. When asked for code for a specific component, provide the most complete example you can find in the documentation.`;
 
           const { indexedWebsitesContent, currentSearchSuggestions } = get();
