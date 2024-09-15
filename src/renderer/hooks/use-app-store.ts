@@ -70,9 +70,9 @@ const useAppStore = create(
     persist(
       subscribeWithSelector<Store>((set, get) => ({
         //STATE
-        currentSearchSuggestions: [],
         conversationHistory: [],
         currentConversationIndex: 0,
+        currentSearchSuggestions: [],
         isAppLaunchedOnStartup: false,
         isAppLoading: true,
         assistantLanguage: 'en',
@@ -229,15 +229,10 @@ const useAppStore = create(
           let context = '';
           const { indexedWebsitesContent, currentSearchSuggestions } = get();
           const websites = indexedWebsitesContent.filter((website) =>
-            currentSearchSuggestions.some(
-              (suggestion) =>
-                website.url.includes(suggestion.link) ||
-                website.scrapedContent.some((content) =>
-                  content.url.includes(suggestion.link),
-                ),
+            currentSearchSuggestions.some((suggestion) =>
+              website.url.includes(suggestion.link),
             ),
           );
-          console.log('found websites', websites);
           if (websites) {
             websites.map((website) => {
               context += `Documentation of : ' + website.url

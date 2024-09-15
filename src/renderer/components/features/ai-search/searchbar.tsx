@@ -222,6 +222,16 @@ export function SearchBar(p: {
           onSubmit={submitSuggestion}
         />
       )}
+
+      <BadgeSuggestionList />
+      {currentSuggestion && (
+        <DialogLinkInput
+          isOpen={isDialogOpen}
+          onClose={handleDialogClose}
+          onSubmit={handleDialogSubmit}
+          currentSuggestion={currentSuggestion}
+        />
+      )}
     </div>
   );
 }
