@@ -19,11 +19,8 @@ export function HomePage() {
   const [submitedPrompt, setSubmitedPrompt] = useState('');
   const [error, setError] = useState('');
   const [isAIWorking, setIsAIWorking] = useState(false);
-  const {
-    getContextFromSelectedIndexedWebsites,
-    currentSearchSuggestions,
-    setCurrentSearchSuggestions,
-  } = useAppStore();
+  const { getContextFromSelectedIndexedWebsites, currentSearchSuggestions } =
+    useAppStore();
   const {
     addMessageToCurrentConversation,
     getCurrentConversation,
@@ -31,7 +28,9 @@ export function HomePage() {
   } = useAppStore();
 
   const stopAndResetAll = () => {
+    console.log('stopAndResetAll');
     ollamaService.abortAllRequests();
+
     setStreamedResponse('');
     setValue('');
     setError('');
@@ -41,6 +40,7 @@ export function HomePage() {
   };
 
   const handleStopStream = () => {
+    console.log('handleStopStream');
     ollamaService.abortAllRequests();
     setValue('');
     setError('');
@@ -96,18 +96,13 @@ export function HomePage() {
       }
 
       if (currentSearchSuggestions.length > 0) {
-        let context = getContextFromSelectedIndexedWebsites();
-        addMessageToCurrentConversation({
-          role: 'system',
-          content: context,
-        });
+        submittedText = getContextFromSelectedIndexedWebsites();
+        +'\n\n\n ' + submittedText;
       }
-
       addMessageToCurrentConversation({
         role: 'user',
         content: submittedText,
       });
-
       ollamaService.requestLlamaStream(
         getCurrentConversation()?.messages || [],
         (chunk) => {
@@ -126,20 +121,21 @@ export function HomePage() {
           }
         },
         (error) => {
-          console.log('STOPED adding partial response to conversion');
           addMessageToCurrentConversation({
             role: 'assistant',
             content: responseContent,
           });
           if (error.name !== 'AbortError') {
-            setError('Something went wrong...');
+            console.log('ERROR aborted...');
+          } else {
+            console.log('ERROR', error);
           }
           setIsLoading(false);
           setIsStreamingFinished(true);
           setIsAIWorking(false);
         },
       );
-    }, 100);
+    }, 500);
   };
 
   const clearButton = (

@@ -24,19 +24,6 @@ export class WebScraperService {
     return WebScraperService.instance;
   }
 
-  async abortAllRequests() {
-    WebScraperService.abortControllers.forEach((entry) => {
-      entry.controller.abort();
-    });
-    await new Promise((resolve) => setTimeout(resolve, 50));
-    WebScraperService.abortControllers = [];
-  }
-
-  removeAbortController(id: string) {
-    WebScraperService.abortControllers =
-      WebScraperService.abortControllers.filter((entry) => entry.id !== id);
-  }
-
   async fetchSublinks(url_: string): Promise<string[]> {
     const url = addProtocolToUrl(url_);
     try {

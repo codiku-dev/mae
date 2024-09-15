@@ -73,16 +73,14 @@ export function DialogLinkInput({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>
-            Enter a {currentSuggestion} link to learn from
-          </DialogTitle>
+          <DialogTitle>Search in :</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="relative mt-4">
             <Input
               value={linkInput}
               onChange={(e) => setLinkInput(e.target.value)}
-              placeholder="https://super-documentation.com"
+              placeholder="super-website.com"
               aria-label={`Enter ${currentSuggestion} link`}
             />
             <kbd className="pointer-events-none absolute right-[0.5rem] top-[0.7rem] hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">

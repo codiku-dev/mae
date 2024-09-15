@@ -6,6 +6,7 @@ import { logToMain } from '../../../renderer/libs/utils';
 import { ModelFile } from './Modelfile';
 import { OllamaConfig } from './ollama.config';
 import { LLMConversationHistory, LLMMessage } from './ollama-type';
+import { Console } from 'console';
 interface ControllerEntry {
   id: string;
   controller: AbortController;
@@ -68,7 +69,7 @@ export class OllamaService {
     // const promptString = PROMPT_TEMPLATES[mode];
     await this.abortAllRequests();
     OllamaService.abortControllers.push({ id, controller });
-
+    console.log('sending conversation ', conversation);
     try {
       const response = await fetch('http://localhost:11434/api/chat', {
         method: 'POST',
