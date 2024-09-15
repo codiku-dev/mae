@@ -69,3 +69,10 @@ export function isValidUrl(url: string) {
     /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
   return urlPattern.test(url);
 }
+
+export function addProtocolToUrl(url: string) {
+  if (!url.startsWith('http://') && !url.startsWith('https://')) {
+    url = 'https://' + url;
+  }
+  return url;
+}

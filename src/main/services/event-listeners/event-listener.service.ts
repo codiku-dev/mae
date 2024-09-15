@@ -2,6 +2,7 @@ import { initMenu, refreshMenuLabels } from '@/main/menu/menu';
 import { useAppStore } from '@/renderer/hooks/use-app-store';
 import { ROUTES } from '@/renderer/libs/routes';
 import { beforeStart } from '@/scripts/before-start';
+import console from 'console';
 var AutoLaunch = require('auto-launch');
 
 import {
@@ -13,7 +14,6 @@ import {
   net,
   shell,
 } from 'electron';
-import { json } from 'react-router-dom';
 import { username } from 'username';
 
 export class EventListenersService {
@@ -59,13 +59,12 @@ export class EventListenersService {
     this.addOnSearchbarVisibiltyChangeRequestListener();
     this.addMakeHttpRequestListener();
     this.addAutoLaunchListener();
-    this.addMakeHttpRequestJsonListener();
   }
 
   private addFocusRequestListener() {
     ipcMain.on('request-focus-window', () => {
-      this.mainWindow?.hide();
-      this.mainWindow?.show();
+      // this.mainWindow?.hide();
+      // this.mainWindow?.show();
       this.mainWindow?.focus();
     });
   }
@@ -173,17 +172,12 @@ export class EventListenersService {
   }
   private addMakeHttpRequestListener() {
     ipcMain.handle('make-http-request', async (event, url) => {
-      console.log('url', url);
+      console.log('Original url:', url);
+
+      console.log('Fetching url:', url);
       const response = await net.fetch(url);
       const text = await response.text();
       return text;
-    });
-  }
-  private addMakeHttpRequestJsonListener() {
-    ipcMain.handle('make-http-request-json', async (event, url, headers) => {
-      const response = await net.fetch(url, { headers });
-      const json = await response.json();
-      return json;
     });
   }
 

@@ -5,6 +5,7 @@ import {
   IndexedWebsite,
   WebsiteScrapedContent,
 } from '@/renderer/hooks/use-app-store';
+import { addProtocolToUrl } from '@/renderer/libs/utils';
 
 interface ControllerEntry {
   id: string;
@@ -36,7 +37,8 @@ export class WebScraperService {
       WebScraperService.abortControllers.filter((entry) => entry.id !== id);
   }
 
-  async fetchSublinks(url: string): Promise<string[]> {
+  async fetchSublinks(url_: string): Promise<string[]> {
+    const url = addProtocolToUrl(url_);
     try {
       let html = await window.electron.ipcRenderer.invoke(
         'make-http-request',
@@ -78,7 +80,8 @@ export class WebScraperService {
     }
   }
   // keeps only the body of the html and only the node that have text
-  async scrapMinimalHtml(url: string): Promise<string> {
+  async scrapMinimalHtml(url_: string): Promise<string> {
+    const url = addProtocolToUrl(url_);
     try {
       // Fetch HTML from the provided URL
       let html = await window.electron.ipcRenderer.invoke(
@@ -131,7 +134,8 @@ export class WebScraperService {
     }
   }
 
-  async fetchWebsiteContent(url: string): Promise<WebsiteScrapedContent[]> {
+  async fetchWebsiteContent(url_: string): Promise<WebsiteScrapedContent[]> {
+    const url = addProtocolToUrl(url_);
     const webpageMinimalHtml = await this.scrapMinimalHtml(url);
     const sublinks = await this.fetchSublinks(url);
     // map

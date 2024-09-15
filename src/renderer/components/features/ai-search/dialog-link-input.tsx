@@ -26,11 +26,11 @@ export function DialogLinkInput({
 }: DialogLinkInputProps) {
   const [linkInput, setLinkInput] = useState('');
   const { toast } = useToast();
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const submitLink = (link: string) => {
     if (linkInput) {
       // Simple URL validation using a regular expression
       if (isValidUrl(linkInput)) {
+        console.log("it' s a valid link ", linkInput);
         onSubmit(linkInput);
         setLinkInput('');
         onClose();
@@ -45,6 +45,10 @@ export function DialogLinkInput({
       }
     }
   };
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    submitLink(linkInput);
+  };
 
   useEffect(() => {
     const handlePaste = (e: ClipboardEvent) => {
@@ -52,9 +56,7 @@ export function DialogLinkInput({
         e.preventDefault();
         const pastedText = e.clipboardData?.getData('text');
         if (pastedText) {
-          setLinkInput(pastedText);
-          onSubmit(pastedText);
-          onClose();
+          submitLink(pastedText);
         }
       }
     };

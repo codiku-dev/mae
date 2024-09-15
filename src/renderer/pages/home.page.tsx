@@ -18,8 +18,11 @@ export function HomePage() {
   const [submitedPrompt, setSubmitedPrompt] = useState('');
   const [error, setError] = useState('');
   const [isAIWorking, setIsAIWorking] = useState(false);
-  const { getContextFromSelectedIndexedWebsites, currentSearchSuggestions } =
-    useAppStore();
+  const {
+    getContextFromSelectedIndexedWebsites,
+    currentSearchSuggestions,
+    setCurrentSearchSuggestions,
+  } = useAppStore();
   const {
     addMessageToCurrentConversation,
     getCurrentConversation,
@@ -34,6 +37,7 @@ export function HomePage() {
     setIsLoading(false);
     setIsStreamingFinished(true);
     setIsAIWorking(false);
+    setCurrentSearchSuggestions([]);
   };
 
   const handleStopStream = () => {
@@ -76,69 +80,65 @@ export function HomePage() {
   }, []);
 
   const handleSubmit = async (submittedText: string) => {
-    console.log('handleSubmit', submittedText);
     stopAndResetAll();
-    if (submittedText !== '') {
-      setTimeout(async () => {
-        let responseContent = '';
-        setIsAIWorking(true);
-        setSubmitedPrompt(submittedText);
-        setStreamedResponse('');
-        setIsLoading(true);
-        setIsStreamingFinished(false);
-        setValue('');
-        setError('');
+    setTimeout(async () => {
+      let responseContent = '';
+      setIsAIWorking(true);
+      setSubmitedPrompt(submittedText);
+      setStreamedResponse('');
+      setIsLoading(true);
+      setIsStreamingFinished(false);
+      setValue('');
+      setError('');
 
-        if (!getCurrentConversation()) {
-          await createNewConversation(submittedText.slice(0, 30) + '...');
-        }
+      if (!getCurrentConversation()) {
+        await createNewConversation(submittedText.slice(0, 30) + '...');
+      }
 
-        if (currentSearchSuggestions.length > 0) {
-          addMessageToCurrentConversation({
-            role: 'system',
-            content: getContextFromSelectedIndexedWebsites(),
-          });
-        }
-        console.log('STARTING adding question from user to conversion');
-
+      if (currentSearchSuggestions.length > 0) {
         addMessageToCurrentConversation({
-          role: 'user',
-          content: submittedText,
+          role: 'system',
+          content: getContextFromSelectedIndexedWebsites(),
         });
+      }
 
-        ollamaService.requestLlamaStream(
-          getCurrentConversation()?.messages || [],
-          (chunk) => {
-            responseContent += chunk.message.content;
-            if (chunk.done === false) {
-              setStreamedResponse((prev) => prev + chunk.message.content);
-              setIsLoading(false);
-            } else {
-              setIsStreamingFinished(true);
-              setIsAIWorking(false);
-              setIsLoading(false);
-              addMessageToCurrentConversation({
-                role: 'assistant',
-                content: responseContent,
-              });
-            }
-          },
-          (error) => {
-            console.log('STOPED adding partial response to conversion');
+      addMessageToCurrentConversation({
+        role: 'user',
+        content: submittedText,
+      });
+
+      ollamaService.requestLlamaStream(
+        getCurrentConversation()?.messages || [],
+        (chunk) => {
+          responseContent += chunk.message.content;
+          if (chunk.done === false) {
+            setStreamedResponse((prev) => prev + chunk.message.content);
+            setIsLoading(false);
+          } else {
+            setIsStreamingFinished(true);
+            setIsAIWorking(false);
+            setIsLoading(false);
             addMessageToCurrentConversation({
               role: 'assistant',
               content: responseContent,
             });
-            if (error.name !== 'AbortError') {
-              setError('Something went wrong...');
-            }
-            setIsLoading(false);
-            setIsStreamingFinished(true);
-            setIsAIWorking(false);
-          },
-        );
-      }, 100);
-    }
+          }
+        },
+        (error) => {
+          console.log('STOPED adding partial response to conversion');
+          addMessageToCurrentConversation({
+            role: 'assistant',
+            content: responseContent,
+          });
+          if (error.name !== 'AbortError') {
+            setError('Something went wrong...');
+          }
+          setIsLoading(false);
+          setIsStreamingFinished(true);
+          setIsAIWorking(false);
+        },
+      );
+    }, 100);
   };
 
   const clearButton = (
