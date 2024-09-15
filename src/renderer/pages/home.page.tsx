@@ -81,7 +81,6 @@ export function HomePage() {
 
   const handleSubmit = async (submittedText: string) => {
     stopAndResetAll();
-    submittedText = 'Code for Breadcrumb component shadcnui';
     setTimeout(async () => {
       let responseContent = '';
       setIsAIWorking(true);
