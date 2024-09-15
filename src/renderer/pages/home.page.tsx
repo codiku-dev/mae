@@ -76,6 +76,7 @@ export function HomePage() {
   }, []);
 
   const handleSubmit = async (submittedText: string) => {
+    console.log('handleSubmit', submittedText);
     stopAndResetAll();
     if (submittedText !== '') {
       setTimeout(async () => {
@@ -157,6 +158,18 @@ export function HomePage() {
     </div>
   );
 
+  const onClosed = () => {
+    setTimeout(() => {
+      window.electron.ipcRenderer.sendMessage('request-close-window');
+    }, 100);
+  };
+
+  const onOpen = () => {
+    setTimeout(() => {
+      window.electron.ipcRenderer.sendMessage('request-focus-window');
+    }, 100);
+  };
+
   return (
     <div id="container" className={cn(' ')}>
       <AnimatePresence>
@@ -177,17 +190,9 @@ export function HomePage() {
               y: number;
             }) => {
               if (definition.opacity === 0) {
-                setTimeout(() => {
-                  window.electron.ipcRenderer.sendMessage(
-                    'request-close-window',
-                  );
-                }, 100);
+                onClosed();
               } else {
-                setTimeout(() => {
-                  window.electron.ipcRenderer.sendMessage(
-                    'request-focus-window',
-                  );
-                }, 100);
+                onOpen();
               }
             }}
           >

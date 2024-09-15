@@ -1,4 +1,4 @@
-import { AnimatePresence, AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { Square } from 'lucide-react';
 import React, {
   forwardRef,
@@ -206,7 +206,9 @@ export const PlaceholdersAndVanishInput = forwardRef<
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      vanishAndSubmit();
+      if (inputRef?.current.value !== '') {
+        vanishAndSubmit();
+      }
     };
 
     const renderButtonSubmit = () => {

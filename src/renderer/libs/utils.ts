@@ -63,3 +63,9 @@ export function formatBytesSize(bytes: number): string {
     return `${(bytes / (1024 * 1024)).toFixed(2)}MB`;
   return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)}GB`;
 }
+
+export function isValidUrl(url: string) {
+  const urlPattern =
+    /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
+  return urlPattern.test(url);
+}

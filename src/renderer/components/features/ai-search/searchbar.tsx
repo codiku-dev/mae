@@ -22,6 +22,7 @@ import { sleep } from '@/libs/utils';
 // cmd + shift + P to toggle
 const placeholders = [
   'Ask any question and press enter !',
+  'Type @web to search from a website',
   '⌘ + ⇧ + P to open and close',
 ];
 
@@ -43,7 +44,6 @@ export function SearchBar(p: {
     setCurrentSearchSuggestions,
     isWebsiteIndexed,
     addWebsiteToIndexedWebsites,
-    indexedWebsitesContent,
   } = useAppStore();
   const inputRef = useRef<HTMLInputElement>(null);
   const [showSuggestions, setShowSuggestions] = useState(false);

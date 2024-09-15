@@ -8,6 +8,8 @@ import {
 import { Input } from '@/renderer/components/ui/input';
 import { SearchSuggestionTag } from '@/renderer/hooks/use-app-store';
 import { SearchSuggestion } from './searchbar';
+import { isValidUrl } from '@/renderer/libs/utils';
+import { useToast } from '@/renderer/hooks/use-toast';
 
 interface DialogLinkInputProps {
   isOpen: boolean;
@@ -23,13 +25,24 @@ export function DialogLinkInput({
   currentSuggestion,
 }: DialogLinkInputProps) {
   const [linkInput, setLinkInput] = useState('');
-
+  const { toast } = useToast();
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (linkInput) {
-      onSubmit(linkInput);
-      setLinkInput('');
-      onClose();
+      // Simple URL validation using a regular expression
+      if (isValidUrl(linkInput)) {
+        onSubmit(linkInput);
+        setLinkInput('');
+        onClose();
+      } else {
+        // Handle invalid URL (you might want to show an error message to the user)
+        toast({
+          title: 'Invalid URL',
+          description: 'Please enter a valid URL',
+          variant: 'destructive',
+        });
+        // TODO: Add user feedback for invalid URL
+      }
     }
   };
 
