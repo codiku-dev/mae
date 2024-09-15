@@ -40,7 +40,6 @@ export function initMenu(mainWindow: BrowserWindow): Menu {
             data: { shortcut: 'CommandOrControl+Shift+P' },
           });
 
-          console.log('TOGGLE SEARCH  ');
           refreshMenuLabels();
         }, 100);
       },

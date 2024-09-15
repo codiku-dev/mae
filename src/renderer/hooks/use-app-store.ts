@@ -62,6 +62,7 @@ type Store = {
   addWebsiteToIndexedWebsites: (website: IndexedWebsite) => void;
   deleteWebsiteScrapedContent: (parentUrl: string, url: string) => void;
   deleteIndexedWebsite: (url: string) => void;
+  getContextFromSelectedIndexedWebsites: () => string;
 };
 
 const useAppStore = create(
@@ -69,6 +70,7 @@ const useAppStore = create(
     persist(
       subscribeWithSelector<Store>((set, get) => ({
         //STATE
+        conversationHistory: [],
         currentConversationIndex: 0,
         currentSearchSuggestions: [],
         isAppLaunchedOnStartup: false,
@@ -91,7 +93,7 @@ const useAppStore = create(
         setIsAppLoading: (isAppLoading: boolean) => {
           set({ isAppLoading });
         },
-        conversationHistory: [],
+
         setConversationHistory: (
           conversationHistory: LLMConversationHistory[],
         ) => {
@@ -222,6 +224,41 @@ const useAppStore = create(
             (website) => !areUrlsEqual(website.url, url),
           );
           set({ indexedWebsitesContent: updatedContent });
+        },
+        getContextFromSelectedIndexedWebsites: () => {
+          let context = '';
+          const { indexedWebsitesContent, currentSearchSuggestions } = get();
+          const websites = indexedWebsitesContent.filter((website) =>
+            currentSearchSuggestions.some((suggestion) =>
+              website.url.includes(suggestion.link),
+            ),
+          );
+          if (websites) {
+            websites.map((website) => {
+              context += `Documentation of : ' + website.url
+              `;
+              website.scrapedContent.map((scrapedWebsite) => {
+                context += `Source: 
+                ${scrapedWebsite.url}
+  
+            Content:
+            ${scrapedWebsite.htmlContent}
+  
+            `;
+              });
+            });
+          }
+
+          context += `
+  
+        Instructions:
+        1. Base your answer primarily on the information in the provided in the above documentation.
+        2. If code is requested, look for relevant snippets within <code></code> tags.
+        3. Always include necessary imports when providing code examples.
+        4. If the documentation doesn't contain the answer, state that clearly.
+        5. Summarize and paraphrase the relevant information rather than quoting directly.
+        `;
+          return context;
         },
       })),
 

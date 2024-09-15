@@ -57,11 +57,9 @@ export class OllamaService {
   }
 
   async requestLlamaStream(
-    prompt: string,
-    previousMessages: LLMMessage[],
-    context: string,
+    conversation: LLMMessage[],
     onData: (chunk: ChatResponseChunk) => void,
-    onError: () => void,
+    onError: (error: Error) => void,
   ) {
     const controller = new AbortController();
 
@@ -70,9 +68,7 @@ export class OllamaService {
     // const promptString = PROMPT_TEMPLATES[mode];
     await this.abortAllRequests();
     OllamaService.abortControllers.push({ id, controller });
-    if (context) {
-      previousMessages.unshift({ role: 'system', content: context });
-    }
+
     try {
       const response = await fetch('http://localhost:11434/api/chat', {
         method: 'POST',
@@ -81,7 +77,7 @@ export class OllamaService {
         },
         body: JSON.stringify({
           model: OllamaConfig.model,
-          messages: [...previousMessages, { role: 'user', content: prompt }],
+          messages: conversation,
           stream: true,
         }),
         signal: signal, // Add the signal to the fetch request
@@ -109,17 +105,13 @@ export class OllamaService {
           }
         } catch (error) {
           await reader.cancel();
-          onError();
+          onError(error as Error);
           break;
         }
       }
     } catch (error) {
-      logToMain('Error during fetch: ' + (error as Error).message);
-      if ((error as Error).name === 'AbortError') {
-      } else {
-        onError();
-      }
-    } finally {
+      logToMain('Fetch was stopped with error : ' + (error as Error).message);
+      onError(error as Error);
     }
 
     // Remove the controller after the request is done

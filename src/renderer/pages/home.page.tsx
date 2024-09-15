@@ -8,10 +8,7 @@ import { X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { SearchBar } from '../components/features/ai-search/searchbar';
 import { useAppStore } from '../hooks/use-app-store';
-import { webScraperService } from '@/main/services/web-scapper/web-scrapper-service';
-import { within } from '@testing-library/react';
-import { is } from 'cheerio/dist/commonjs/api/traversing';
-import { on } from 'events';
+
 export function HomePage() {
   const [value, setValue] = useState<string>('');
   const [streamedResponse, setStreamedResponse] = useState<string>('');
@@ -21,12 +18,14 @@ export function HomePage() {
   const [submitedPrompt, setSubmitedPrompt] = useState('');
   const [error, setError] = useState('');
   const [isAIWorking, setIsAIWorking] = useState(false);
-  const { indexedWebsitesContent, currentSearchSuggestions } = useAppStore();
+  const { getContextFromSelectedIndexedWebsites, currentSearchSuggestions } =
+    useAppStore();
   const {
     addMessageToCurrentConversation,
     getCurrentConversation,
     createNewConversation,
   } = useAppStore();
+
   const stopAndResetAll = () => {
     ollamaService.abortAllRequests();
     setStreamedResponse('');
@@ -60,8 +59,6 @@ export function HomePage() {
   }, []);
 
   useEffect(function addOpenCloseListener() {
-    // requestFocus
-
     const unsubscribeGlobalShortcut = window.electron.ipcRenderer.on(
       'global-shortcut',
       (e) => {
@@ -72,104 +69,74 @@ export function HomePage() {
         }
       },
     );
-    // const unsubscribeEscapeShortcut = window.electron.ipcRenderer.on(
-    //   'global-shortcut',
-    //   (e) => {
-    //     if (e.data.shortcut === 'Escape') {
-    //       setIsVisible(false);
-    //     }
-    //   },
-    // );
-    // window.electron.ipcRenderer.on('on-main-window-blur', () => '');
+
     return () => {
       unsubscribeGlobalShortcut();
-      // unsubscribeEscapeShortcut();
     };
   }, []);
 
   const handleSubmit = async (submittedText: string) => {
+    stopAndResetAll();
     if (submittedText !== '') {
-      let context = ``;
-      let responseContent = '';
-      setIsAIWorking(true);
-      setSubmitedPrompt(submittedText);
-      setStreamedResponse('');
-      setIsLoading(true);
-      setIsStreamingFinished(false);
-      setValue('');
-      setError('');
+      setTimeout(async () => {
+        let responseContent = '';
+        setIsAIWorking(true);
+        setSubmitedPrompt(submittedText);
+        setStreamedResponse('');
+        setIsLoading(true);
+        setIsStreamingFinished(false);
+        setValue('');
+        setError('');
 
-      if (!getCurrentConversation()) {
-        await createNewConversation(submittedText.slice(0, 30) + '...');
-      }
-
-      addMessageToCurrentConversation({
-        role: 'user',
-        content: submittedText,
-      });
-      if (currentSearchSuggestions.length > 0) {
-        const websites = indexedWebsitesContent.filter((website) =>
-          currentSearchSuggestions.some((suggestion) =>
-            website.url.includes(suggestion.link),
-          ),
-        );
-        if (websites) {
-          websites.map((website) => {
-            context += `Documentation of : ' + website.url
-            `;
-            website.scrapedContent.map((scrapedWebsite) => {
-              context += `Source: 
-              ${scrapedWebsite.url}
-
-          Content:
-          ${scrapedWebsite.htmlContent}
-
-          `;
-            });
-          });
+        if (!getCurrentConversation()) {
+          await createNewConversation(submittedText.slice(0, 30) + '...');
         }
 
-        context += `
+        if (currentSearchSuggestions.length > 0) {
+          addMessageToCurrentConversation({
+            role: 'system',
+            content: getContextFromSelectedIndexedWebsites(),
+          });
+        }
+        console.log('STARTING adding question from user to conversion');
 
-      Instructions:
-      1. Base your answer primarily on the information in the provided in the above documentation.
-      2. If code is requested, look for relevant snippets within <code></code> tags.
-      3. Always include necessary imports when providing code examples.
-      4. If the documentation doesn't contain the answer, state that clearly.
-      5. Summarize and paraphrase the relevant information rather than quoting directly.
-      `;
-      }
+        addMessageToCurrentConversation({
+          role: 'user',
+          content: submittedText,
+        });
 
-      ollamaService.requestLlamaStream(
-        submittedText,
-        getCurrentConversation()?.messages || [],
-        context,
-        (chunk) => {
-          responseContent += chunk.message.content;
-          if (chunk.done === false) {
-            setStreamedResponse((prev) => prev + chunk.message.content);
-            setIsLoading(false);
-          } else {
-            setIsStreamingFinished(true);
-            setIsAIWorking(false);
-            setIsLoading(false);
+        ollamaService.requestLlamaStream(
+          getCurrentConversation()?.messages || [],
+          (chunk) => {
+            responseContent += chunk.message.content;
+            if (chunk.done === false) {
+              setStreamedResponse((prev) => prev + chunk.message.content);
+              setIsLoading(false);
+            } else {
+              setIsStreamingFinished(true);
+              setIsAIWorking(false);
+              setIsLoading(false);
+              addMessageToCurrentConversation({
+                role: 'assistant',
+                content: responseContent,
+              });
+            }
+          },
+          (error) => {
+            console.log('STOPED adding partial response to conversion');
             addMessageToCurrentConversation({
               role: 'assistant',
               content: responseContent,
             });
-          }
-        },
-        () => {
-          addMessageToCurrentConversation({
-            role: 'assistant',
-            content: responseContent,
-          });
-          setError('Something went wrong...');
-          setIsLoading(false);
-          setIsStreamingFinished(true);
-          setIsAIWorking(false);
-        },
-      );
+            if (error.name !== 'AbortError') {
+              setError('Something went wrong...');
+            }
+            setIsLoading(false);
+            setIsStreamingFinished(true);
+            setIsAIWorking(false);
+          },
+        );
+      }, 100);
     }
   };
 
