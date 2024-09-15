@@ -8,6 +8,7 @@ import { X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { SearchBar } from '../components/features/ai-search/searchbar';
 import { useAppStore } from '../hooks/use-app-store';
+import { InputMention } from '../components/ui/input-mention';
 
 export function HomePage() {
   const [value, setValue] = useState<string>('');
@@ -37,7 +38,6 @@ export function HomePage() {
     setIsLoading(false);
     setIsStreamingFinished(true);
     setIsAIWorking(false);
-    setCurrentSearchSuggestions([]);
   };
 
   const handleStopStream = () => {
@@ -96,9 +96,10 @@ export function HomePage() {
       }
 
       if (currentSearchSuggestions.length > 0) {
+        let context = getContextFromSelectedIndexedWebsites();
         addMessageToCurrentConversation({
           role: 'system',
-          content: getContextFromSelectedIndexedWebsites(),
+          content: context,
         });
       }
 
@@ -199,7 +200,14 @@ export function HomePage() {
             <div className="w-screen">
               <div className="flex flex-col  items-center ">
                 <div id="ai-searchbar" className="w-96">
-                  <SearchBar
+                  {/* <SearchBar
+                    value={value}
+                    onChange={setValue}
+                    onSubmit={handleSubmit}
+                    isLoading={isAIWorking}
+                    onClickStop={handleStopStream}
+                  /> */}
+                  <InputMention
                     value={value}
                     onChange={setValue}
                     onSubmit={handleSubmit}

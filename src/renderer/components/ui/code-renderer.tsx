@@ -52,7 +52,6 @@ export const CodeRenderer: LLMOutputComponent = (p: { blockMatch: any }) => {
     const trimmedLanguage = language.replace('```', '').trim();
     return trimmedLanguage;
   }, [p.blockMatch.output]);
-  console.log('the language', getLanguage());
   const handleCopyContent = () => {
     setHasCopiedRecently(true);
     setTimeout(() => {
