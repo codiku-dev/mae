@@ -146,6 +146,8 @@ const getFolderPath = (folderName: string): string => {
 export const requestLLM = async (
   question: string,
   documents: Document[],
+  onChunk?: (chunk?: string) => void,
+  printInConsole = true,
 ): Promise<string> => {
   const llm = new ChatOllama({
     model: 'llama3.1:latest', // or any other model you prefer
@@ -160,6 +162,18 @@ export const requestLLM = async (
     Context: {context}
     Question: {question}`);
   const chain = await createStuffDocumentsChain({ llm, prompt });
-  const response = await chain.invoke({ question, context: documents });
+  const stream = await chain.stream({ question, context: documents });
+  let response = '';
+  for await (const chunk of stream) {
+    response += chunk;
+    if (printInConsole) {
+      process.stdout.write(chunk);
+    }
+    onChunk?.(chunk);
+  }
+  onChunk?.(undefined);
+  if (printInConsole) {
+    process.stdout.write('\n');
+  }
   return response;
 };
