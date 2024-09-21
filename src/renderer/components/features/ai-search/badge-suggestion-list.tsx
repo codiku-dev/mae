@@ -36,7 +36,10 @@ const BadgeSuggestionList: React.FC<BadgeSelectedSuggestionProps> = () => {
           <Tooltip delayDuration={200}>
             <TooltipTrigger asChild>
               <div className="inline-block">
-                <Badge className="pr-1 flex items-center cursor-pointer">
+                <Badge
+                  id={'ai-badge-' + suggestion.link}
+                  className=" interactive pr-1 flex items-center cursor-pointer"
+                >
                   <span>
                     {suggestion.suggestion.toUpperCase()}{' '}
                     {formatLinkForDisplay(suggestion.link)}

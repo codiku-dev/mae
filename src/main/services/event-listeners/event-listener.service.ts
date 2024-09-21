@@ -45,9 +45,9 @@ export class EventListenersService {
   public addMainEventListeners() {
     this.addCmdSListeners();
     this.addRendererLogListener();
-    if (!global.DEBUG) {
-      this.addIgnoreMouseEventListener();
-    }
+    // if (!global.DEBUG) {
+    this.addIgnoreMouseEventListener();
+    // }
     this.addFocusRequestListener();
     this.addBlurListener();
     this.addCopyTextToClipboardRequestListener();

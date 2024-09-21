@@ -203,13 +203,12 @@ export class LangchainService {
 export const langchainService = LangchainService.getInstance();
 
 export async function langchainDemo() {
-  const htmlFiles = await langchainService.getAllHTMLFilesContent(
-    getResourcesPath('src/main/services/langchain/docs'),
-  );
-  await langchainService.addDocs(htmlFiles);
-  const searchResults = await langchainService.searchDocs(
-    'How to add an avatar to a button?',
-    1,
-  );
-  console.log(searchResults);
+  // const htmlFiles = await langchainService.getAllHTMLFilesContent(
+  //   getResourcesPath('src/main/services/langchain/docs'),
+  // );
+  // await langchainService.addDocs(htmlFiles);
+  // const searchResults = await langchainService.searchDocs(
+  //   'How to add an avatar to a button?',
+  //   1,
+  // );
 }

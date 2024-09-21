@@ -27,17 +27,9 @@ export function HomePage() {
     createNewConversation,
   } = useAppStore();
 
-  useEffect(() => {
-    setTimeout(() => {
-      console.log('go');
-      window.electron.ipcRenderer.invoke('sandbox-request');
-    }, 1000);
-  }, []);
-
   const stopAndResetAll = () => {
     console.log('stopAndResetAll');
     ollamaService.abortAllRequests();
-
     setStreamedResponse('');
     setValue('');
     setError('');
@@ -177,7 +169,7 @@ export function HomePage() {
   };
 
   return (
-    <div id="container" className={cn(' ')}>
+    <div id="container">
       <AnimatePresence>
         {isVisible && (
           <motion.div

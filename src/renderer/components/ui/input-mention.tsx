@@ -81,6 +81,9 @@ export const InputMention = (p: Props) => {
   return (
     <form onSubmit={handleSubmit} className="relative">
       <MentionsInput
+        id="ai-search-input"
+        className="interactive"
+        onClickCapture={() => console.log('CLICK')}
         ref={(r) => {
           inputRef.current = r;
         }}
@@ -111,7 +114,8 @@ export const InputMention = (p: Props) => {
         disabled={p.value === ''}
         variant="outline"
         size="icon"
-        className="shadow-md w-[3.35rem] h-[2.50rem] absolute right-0 top-[0.64rem] transform  rounded-full bg-black text-white"
+        id="ai-search-button"
+        className="interactive cursor-pointer shadow-md w-[3.35rem] h-[2.50rem] absolute right-0 top-[0.64rem] transform  rounded-full bg-black text-white"
         type="submit"
       >
         <ArrowRight className="size-4" />
