@@ -15,6 +15,7 @@ import {
   shell,
 } from 'electron';
 import { username } from 'username';
+import { langchainDemo } from '../langchain/langchain-service';
 
 export class EventListenersService {
   private mainWindow: BrowserWindow | null = null;
@@ -59,6 +60,7 @@ export class EventListenersService {
     this.addOnSearchbarVisibiltyChangeRequestListener();
     this.addMakeHttpRequestListener();
     this.addAutoLaunchListener();
+    this.addSandboxListener();
   }
 
   private addFocusRequestListener() {
@@ -194,6 +196,12 @@ export class EventListenersService {
         console.log('Mia: disabling auto launch');
         miaAutoLauncher.disable();
       }
+    });
+  }
+
+  private addSandboxListener() {
+    ipcMain.handle('sandbox-request', () => {
+      langchainDemo();
     });
   }
 }

@@ -27,6 +27,13 @@ export function HomePage() {
     createNewConversation,
   } = useAppStore();
 
+  useEffect(() => {
+    setTimeout(() => {
+      console.log('go');
+      window.electron.ipcRenderer.invoke('sandbox-request');
+    }, 1000);
+  }, []);
+
   const stopAndResetAll = () => {
     console.log('stopAndResetAll');
     ollamaService.abortAllRequests();

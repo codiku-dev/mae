@@ -1,3 +1,5 @@
+import { app } from 'electron';
+
 import { BrowserWindow } from 'electron';
 import path from 'path';
 import { URL } from 'url';

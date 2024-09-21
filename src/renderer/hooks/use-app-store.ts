@@ -29,7 +29,7 @@ export type IndexedWebsite = {
   url: string;
   scrapedContent: WebsiteScrapedContent[];
 };
-type Store = {
+export type Store = {
   indexedWebsitesContent: IndexedWebsite[];
   isAppLaunchedOnStartup: boolean;
   isAppLoading: boolean;

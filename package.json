@@ -97,6 +97,7 @@
     }
   },
   "dependencies": {
+    "@dqbd/tiktoken": "^1.0.16",
     "@electron/notarize": "^2.3.2",
     "@hookform/resolvers": "^3.9.0",
     "@langchain/community": "^0.3.1",
@@ -130,10 +131,10 @@
     "fix-path": "^4.0.0",
     "framer-motion": "^11.3.28",
     "fs": "^0.0.1-security",
-    "gpt-3-encoder": "^1.1.4",
     "html-react-parser": "^5.1.14",
     "html-to-text": "^9.0.5",
     "langchain": "^0.2.20",
+    "llama3-tokenizer-js": "^1.2.0",
     "lodash": "^4.17.21",
     "lucide-react": "^0.428.0",
     "react": "^18.2.0",
@@ -149,6 +150,7 @@
     "tailwindcss-animate": "^1.0.7",
     "username": "^7.0.0",
     "uuid": "^10.0.0",
+    "vectra": "^0.9.0",
     "zustand": "^4.5.5"
   },
   "devDependencies": {
@@ -182,6 +184,7 @@
     "electron": "^32.0.2",
     "electron-builder": "^24.13.3",
     "electron-devtools-installer": "^3.2.0",
+    "electron-rebuild": "^3.2.9",
     "electronmon": "^2.0.2",
     "eslint": "^8.49.0",
     "eslint-config-airbnb-base": "^15.0.0",

@@ -1,11 +1,11 @@
 import { app, BrowserWindow /* ,screen */, screen } from 'electron';
 import path from 'path';
 import { start } from './start';
-import { on } from 'events';
 
 export function initWindow() {
   // const { width, height } = screen.getPrimaryDisplay().workAreaSize;
-  global.DEBUG = !app.isPackaged;
+  //global.DEBUG = !app.isPackaged;
+  global.DEBUG = true;
   let mainWindow: BrowserWindow | null = new BrowserWindow({
     height: screen.getPrimaryDisplay().workAreaSize.height,
     width: screen.getPrimaryDisplay().workAreaSize.width,

@@ -1,7 +1,7 @@
 // Disable no-unused-vars, broken for spread args
 /* eslint no-unused-vars: off */
+import { Store } from '@/renderer/hooks/use-app-store';
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
-import { StoreType } from './store/store-type';
 
 export type Channels =
   | 'global-shortcut'
@@ -27,7 +27,8 @@ export type Channels =
   | 'ollama-create-model'
   | 'make-http-request'
   | 'electron-store-clear'
-  | 'set-app-auto-launch';
+  | 'set-app-auto-launch'
+  | 'sandbox-request';
 
 const electronHandler = {
   ipcRenderer: {
@@ -51,16 +52,16 @@ const electronHandler = {
     },
   },
   store: {
-    async get<K extends keyof StoreType>(key: K) {
+    async get<K extends keyof Store>(key: K) {
       return await ipcRenderer.invoke('electron-store-get', key);
     },
-    async set(key: keyof StoreType, value: StoreType[keyof StoreType]) {
+    async set(key: keyof Store, value: Store[keyof Store]) {
       ipcRenderer.invoke('electron-store-set', key, value);
     },
     async getAll(): Promise<string> {
       return await ipcRenderer.invoke('electron-store-get-all');
     },
-    async clear(key: keyof StoreType) {
+    async clear(key: keyof Store) {
       ipcRenderer.invoke('electron-store-clear', key);
     },
   },
