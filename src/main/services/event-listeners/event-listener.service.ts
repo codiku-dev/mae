@@ -1,5 +1,8 @@
 import { initMenu, refreshMenuLabels } from '@/main/menu/menu';
-import { useAppStore } from '@/renderer/hooks/use-app-store';
+import {
+  useAppStore,
+  WebsiteScrapedContent,
+} from '@/renderer/hooks/use-app-store';
 import { ROUTES } from '@/renderer/libs/routes';
 import { beforeStart } from '@/scripts/before-start';
 import console from 'console';
@@ -15,7 +18,10 @@ import {
   shell,
 } from 'electron';
 import { username } from 'username';
-import { langchainDemo } from '../langchain/langchain-service';
+import {
+  langchainDemo,
+  langchainService,
+} from '../langchain/langchain-service';
 
 export class EventListenersService {
   private mainWindow: BrowserWindow | null = null;
@@ -61,6 +67,8 @@ export class EventListenersService {
     this.addMakeHttpRequestListener();
     this.addAutoLaunchListener();
     this.addSandboxListener();
+    this.addLangchainLearnListener();
+    this.addLangchainFindRelevantHTMLDocumentListener();
   }
 
   private addFocusRequestListener() {
@@ -203,5 +211,24 @@ export class EventListenersService {
     ipcMain.handle('sandbox-request', () => {
       langchainDemo();
     });
+  }
+
+  private addLangchainLearnListener() {
+    ipcMain.handle(
+      'langchain-learn',
+      async (event, websites: WebsiteScrapedContent[]) => {
+        await langchainService.addDocs(websites);
+      },
+    );
+  }
+
+  private addLangchainFindRelevantHTMLDocumentListener() {
+    ipcMain.handle(
+      'langchain-find-relevant-document',
+      async (event, question: string) => {
+        const relevantDocument = await langchainService.searchDocs(question, 1);
+        return relevantDocument?.[0].pageContent;
+      },
+    );
   }
 }

@@ -58,6 +58,7 @@ export function DialogLinkInput({
         e.preventDefault();
         const pastedText = e.clipboardData?.getData('text');
         if (pastedText) {
+          console.log('submiting link', pastedText);
           submitLink(pastedText);
         }
       }
@@ -70,8 +71,15 @@ export function DialogLinkInput({
   }, [isOpen, onSubmit, onClose]);
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent>
+    <Dialog
+      open={isOpen}
+      onOpenChange={() => {
+        console.log('on Open change');
+        setLinkInput('');
+        onClose();
+      }}
+    >
+      <DialogContent className="interactive" id="ai-dialog-link-learn">
         <DialogHeader>
           <DialogTitle>Search in :</DialogTitle>
         </DialogHeader>

@@ -8,6 +8,7 @@ import { HNSWLib } from '@langchain/community/vectorstores/hnswlib';
 import { ChatPromptTemplate } from '@langchain/core/prompts';
 import { getResourcesPath } from '@/libs/utils';
 import { createStuffDocumentsChain } from 'langchain/chains/combine_documents';
+import { WebsiteScrapedContent } from '@/renderer/hooks/use-app-store';
 
 export class LangchainService {
   private static instance: LangchainService;
@@ -47,18 +48,25 @@ export class LangchainService {
     }
   }
 
-  public async addDocs(htmlFiles: Array<{ url: string; content: string }>) {
+  public async addDocs(htmlFiles: WebsiteScrapedContent[]) {
+    console.log('Adding docs to vector store');
     if (htmlFiles.length === 0) {
       return;
     }
     const documentsChunks = await this.chunkifyDocs(htmlFiles);
+    console.log('documentsChunks', documentsChunks);
+    console.log('Adding doc to vector store ');
     await this.vectorStore?.addDocuments(documentsChunks);
+    console.log('Saving vector store');
     await this.vectorStore?.save(this.vectorStorePath);
+    console.log('Save Done');
   }
 
   public async searchDocs(query: string, qty: number) {
+    console.log('Searching docs');
     const retriever = this.vectorStore?.asRetriever(qty);
     const searchResults = await retriever?.invoke(query);
+    console.log('Search results found : ', searchResults?.length);
     return searchResults;
   }
 
@@ -81,22 +89,24 @@ export class LangchainService {
   }
 
   chunkifyDocs = async (
-    htmlFiles: Array<{ url: string; content: string }>,
+    htmlFiles: WebsiteScrapedContent[],
   ): Promise<Document[]> => {
+    console.log('Chunkify docs');
     // Create Documents for each HTML file and split them
     const documents: Document[] = [];
     for (const file of htmlFiles) {
-      const chunks = this.splitHtmlToChunks(file.content);
-      chunks.forEach((chunk, index) => {
-        chunk.metadata = {
-          ...chunk.metadata,
-          url: file.url,
-          sizeKb: file.content.length / 1024,
-        };
-        chunk.id = file.url;
-      });
+      const chunks = this.splitHtmlToChunks(file);
+      // chunks.forEach((chunk, index) => {
+      //   chunk.metadata = {
+      //     ...chunk.metadata,
+      //     url: file.url,
+      //     sizeKb: file.sizeKb,
+      //   };
+
+      // });
       documents.push(...chunks);
     }
+
     return documents;
   };
 
@@ -121,13 +131,19 @@ export class LangchainService {
     question: string,
     documents: Document[],
     onChunk?: (chunk?: string) => void,
+    onError?: (error: Error) => void,
     printInConsole = true,
   ): Promise<string> => {
-    const llm = new ChatOllama({
-      model: 'llama3.1:latest', // or any other model you prefer
-      baseUrl: 'http://localhost:11434', // adjust if your Ollama instance is running elsewhere
-    });
-    const prompt = ChatPromptTemplate.fromTemplate(`
+    try {
+      const llm = new ChatOllama({
+        model: 'llama3.1:latest', // or any other model you prefer
+        baseUrl: 'http://localhost:11434', // adjust if your Ollama instance is running elsewhere
+      });
+      // const previousMessages: any[] = messages.map((message) => [
+      //   message.role,
+      //   message.content,
+      // ]);
+      const prompt = ChatPromptTemplate.fromTemplate(`
       Answer the question based on the provided website documentation (html format). If asked for code:
       1. Always include necessary imports in your answer.
       2. Provide complete, runnable code snippets when possible.
@@ -135,27 +151,36 @@ export class LangchainService {
       Be concise in your explanations. Don't comment on your answer.
       Context: {context}
       Question: {question}`);
-    const chain = await createStuffDocumentsChain({ llm, prompt });
-    const stream = await chain.stream({ question, context: documents });
-    let response = '';
-    for await (const chunk of stream) {
-      response += chunk;
-      if (printInConsole) {
-        process.stdout.write(chunk);
+      // const prompt = ChatPromptTemplate.fromMessages([
+      //   ...previousMessages,
+      //   message,
+      // ]);
+      const chain = await createStuffDocumentsChain({ llm, prompt });
+      const stream = await chain.stream({ question, context: documents });
+      let response = '';
+      for await (const chunk of stream) {
+        response += chunk;
+        if (printInConsole) {
+          process.stdout.write(chunk);
+        }
+        onChunk?.(chunk);
       }
-      onChunk?.(chunk);
+      onChunk?.(undefined);
+      if (printInConsole) {
+        process.stdout.write('\n');
+      }
+      return response;
+    } catch (error) {
+      onError?.(error as Error);
+      return '';
     }
-    onChunk?.(undefined);
-    if (printInConsole) {
-      process.stdout.write('\n');
-    }
-    return response;
   };
 
   splitHtmlToChunks = (
-    content: string,
-    maxTokens: number = 500,
+    file: WebsiteScrapedContent,
+    maxTokens: number = 300,
   ): Document[] => {
+    console.log('Split html to chunks');
     const chunks: Document[] = [];
     let currentChunk = '';
     let currentTokens = 0;
@@ -165,17 +190,21 @@ export class LangchainService {
     const codeBlocks: string[] = [];
 
     // Replace <code> blocks with placeholders and store them
-    content = content.replace(codeBlockRegex, (match) => {
+    file.htmlContent = file.htmlContent.replace(codeBlockRegex, (match) => {
       const placeholder = `__CODE_BLOCK_${codeBlocks.length}__`;
       codeBlocks.push(match);
       return placeholder;
     });
 
     // Convert remaining HTML to text
-    const text = convert(content, { wordwrap: false, preserveNewlines: true });
+    const text = convert(file.htmlContent, {
+      wordwrap: false,
+      preserveNewlines: true,
+    });
 
     // Split into lines and process
     const lines = text.split('\n');
+    let chunkIndex = 0;
     for (const line of lines) {
       const processedLine = line.replace(
         /__CODE_BLOCK_(\d+)__/g,
@@ -183,19 +212,42 @@ export class LangchainService {
       );
       const lineTokens = llama3Tokenizer.encode(processedLine);
 
-      if (currentTokens + lineTokens.length > maxTokens && currentChunk) {
-        chunks.push(new Document({ pageContent: currentChunk.trim() }));
-        currentChunk = '';
-        currentTokens = 0;
+      if (currentTokens + lineTokens.length > maxTokens) {
+        if (currentChunk) {
+          chunks.push(
+            new Document({
+              pageContent: currentChunk.trim(),
+              metadata: {
+                url: `${file.url}`,
+                sizeKb: file.sizeKb,
+                chunkIndex: chunkIndex,
+              },
+              id: `${file.url}_chk_${chunkIndex}`,
+            }),
+          );
+          chunkIndex++;
+        }
+        currentChunk = processedLine + '\n';
+        currentTokens = lineTokens.length;
+      } else {
+        currentChunk += processedLine + '\n';
+        currentTokens += lineTokens.length;
       }
-      currentChunk += processedLine + '\n';
-      currentTokens += lineTokens.length;
     }
 
     if (currentChunk) {
-      chunks.push(new Document({ pageContent: currentChunk.trim() }));
+      chunks.push(
+        new Document({
+          pageContent: currentChunk.trim(),
+          metadata: {
+            url: `${file.url}`,
+            sizeKb: file.sizeKb,
+            chunkIndex: chunkIndex,
+          },
+          id: `${file.url}_chk_${chunkIndex}`,
+        }),
+      );
     }
-
     return chunks;
   };
 }

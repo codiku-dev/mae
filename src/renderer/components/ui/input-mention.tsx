@@ -1,7 +1,6 @@
 import { MentionsInput, Mention } from 'react-mentions';
 import { Button } from './button';
 import { ArrowRight } from 'lucide-react';
-import { Input } from './input';
 import { BadgeSuggestionList } from '../features/ai-search/badge-suggestion-list';
 import { DialogLinkInput } from '../features/ai-search/dialog-link-input';
 import { useRef, useState } from 'react';
@@ -20,11 +19,11 @@ type Props = {
   onClickStop: () => void;
 };
 const optionList = [
-  { id: 1, display: 'web' },
+  // { id: 1, display: 'web' },
   { id: 2, display: 'doc' },
 ];
 export const InputMention = (p: Props) => {
-  const inputRef = useRef<HTMLInputElement>(null);
+  let inputRef = useRef<HTMLInputElement>(null);
   const {
     currentSearchSuggestions,
     setCurrentSearchSuggestions,
@@ -55,7 +54,7 @@ export const InputMention = (p: Props) => {
     if (currentSuggestion) {
       // first add the "@suggestion" to the input
       setCurrentSearchSuggestions([
-        ...currentSearchSuggestions,
+        // ...currentSearchSuggestions,
         {
           id: uuidv4(),
           link,
@@ -66,15 +65,18 @@ export const InputMention = (p: Props) => {
       const newValue = p.value.replace(/@\S+\s?/, '').trim();
       p.onChange(newValue);
 
-      if (!isWebsiteIndexed(link)) {
-        const newIndexedWebsiteContent =
-          await webScraperService.fetchWebsiteContent(link);
-
-        addWebsiteToIndexedWebsites({
-          url: link,
-          scrapedContent: newIndexedWebsiteContent,
-        });
-      }
+      // if (!isWebsiteIndexed(link)) {
+      const newIndexedWebsiteContent =
+        await webScraperService.fetchWebsiteContent(link);
+      p;
+      window.electron.ipcRenderer.invoke(
+        'langchain-learn',
+        newIndexedWebsiteContent,
+      );
+      addWebsiteToIndexedWebsites({
+        url: link,
+        scrapedContent: [],
+      });
     }
   };
 
@@ -101,7 +103,6 @@ export const InputMention = (p: Props) => {
           data={optionList}
           style={mentionInInputStyle}
           onAdd={(entryId, entry) => {
-            console.log('selecting entry' + entry);
             setCurrentSuggestion(entry as SearchSuggestionTag);
             setIsDialogOpen(true);
           }}

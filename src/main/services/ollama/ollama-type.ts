@@ -3,6 +3,11 @@ export type LLMMessage = {
   content: string;
 };
 
+export type LLMMessagePromptLangchain = [
+  'user' | 'assistant' | 'system',
+  string,
+];
+
 export type LLMConversationHistory = {
   title: string;
   id: string;

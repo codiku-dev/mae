@@ -6,7 +6,6 @@ import { cn } from '@/renderer/libs/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { SearchBar } from '../components/features/ai-search/searchbar';
 import { useAppStore } from '../hooks/use-app-store';
 import { InputMention } from '../components/ui/input-mention';
 
@@ -81,6 +80,9 @@ export function HomePage() {
   const handleSubmit = async (submittedText: string) => {
     stopAndResetAll();
     setTimeout(async () => {
+      // remove all @docs and @web from submittedText
+      submittedText = submittedText.replace(/@docs/g, '');
+      submittedText = submittedText.replace(/@web/g, '');
       let responseContent = '';
       setIsAIWorking(true);
       setSubmitedPrompt(submittedText);
@@ -95,15 +97,23 @@ export function HomePage() {
       }
 
       if (currentSearchSuggestions.length > 0) {
+        console.log('Looking for relevant document context');
+        const context = await window.electron.ipcRenderer.invoke(
+          'langchain-find-relevant-document',
+          submittedText,
+        );
         addMessageToCurrentConversation({
-          role: 'system',
-          content: getContextFromSelectedIndexedWebsites(),
+          role: 'user',
+          content: `Answer the question based on the documentation provided. If code is asked include the imports in answer. And make sure to use the right syntax for the language.
+          Context: ${context}
+          Question: ${submittedText}`,
+        });
+      } else {
+        addMessageToCurrentConversation({
+          role: 'user',
+          content: submittedText,
         });
       }
-      addMessageToCurrentConversation({
-        role: 'user',
-        content: submittedText,
-      });
       ollamaService.requestLlamaStream(
         getCurrentConversation()?.messages || [],
         (chunk) => {
@@ -197,13 +207,6 @@ export function HomePage() {
             <div className="w-screen">
               <div className="flex flex-col  items-center ">
                 <div id="ai-searchbar" className="w-96">
-                  {/* <SearchBar
-                    value={value}
-                    onChange={setValue}
-                    onSubmit={handleSubmit}
-                    isLoading={isAIWorking}
-                    onClickStop={handleStopStream}
-                  /> */}
                   <InputMention
                     value={value}
                     onChange={setValue}

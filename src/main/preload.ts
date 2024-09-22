@@ -28,7 +28,9 @@ export type Channels =
   | 'make-http-request'
   | 'electron-store-clear'
   | 'set-app-auto-launch'
-  | 'sandbox-request';
+  | 'sandbox-request'
+  | 'langchain-learn'
+  | 'langchain-find-relevant-document';
 
 const electronHandler = {
   ipcRenderer: {
