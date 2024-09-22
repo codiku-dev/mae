@@ -101,7 +101,7 @@ export function HomePage() {
           'langchain-find-relevant-document',
           submittedText,
         );
-        console.log("context found", context)
+        console.log("context found")
         addMessageToCurrentConversation({
           role: 'user',
           content: `Answer the question based on the documentation provided. If code is asked include the imports in answer. And provide full code. And make sure to use the right programming language.

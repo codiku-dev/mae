@@ -3,13 +3,13 @@ import { Document } from '@langchain/core/documents';
 import * as fs from 'fs';
 import { convert } from 'html-to-text';
 import llama3Tokenizer from 'llama3-tokenizer-js';
-import path from 'path';
 import { HNSWLib } from '@langchain/community/vectorstores/hnswlib';
-import { getResourcesPath } from '@/libs/utils';
+import { getResourcesPath, logToRenderer } from '@/libs/utils';
 import { WebsiteScrapedContent } from '@/renderer/hooks/use-app-store';
-
+import { BrowserWindow } from 'electron';
 export class LangchainService {
   private static instance: LangchainService;
+  public static mainWindow: BrowserWindow | null = null;
   private vectorStore: HNSWLib | null = null;
   private llmEmbeddings: OllamaEmbeddings | null = null;
   private vectorStorePath: string = getResourcesPath(
@@ -28,19 +28,29 @@ export class LangchainService {
   }
 
   public async init() {
+    logToRenderer(LangchainService.mainWindow, 'Initializing LangchainService');
     console.log('Init vector store at ', this.vectorStorePath);
     this.llmEmbeddings = new OllamaEmbeddings({
       model: 'mxbai-embed-large',
       baseUrl: 'http://localhost:11434',
     });
     if (!this.vectorStore) {
+      logToRenderer(
+        LangchainService.mainWindow,
+        'Vector store not initialized',
+      );
       if (fs.existsSync(this.vectorStorePath + '')) {
+        logToRenderer(
+          LangchainService.mainWindow,
+          'Loading existing vector store',
+        );
         console.log('Loading existing vector store...');
         this.vectorStore = await HNSWLib.load(
           this.vectorStorePath,
           this.llmEmbeddings,
         );
       } else {
+        logToRenderer(LangchainService.mainWindow, 'Creating new vector store');
         console.log('Creating new vector store...');
         this.vectorStore = new HNSWLib(this.llmEmbeddings, { space: 'cosine' });
       }
@@ -48,23 +58,29 @@ export class LangchainService {
   }
 
   public async addDocs(htmlFiles: WebsiteScrapedContent[]) {
+    logToRenderer(LangchainService.mainWindow, 'Adding docs to vector store');
     console.log('Adding docs to vector store');
     if (htmlFiles.length === 0) {
+      logToRenderer(LangchainService.mainWindow, 'No HTML files to add');
       return;
     }
     const documentsChunks = await this.chunkifyDocs(htmlFiles);
 
     await this.vectorStore?.addDocuments(documentsChunks);
 
+    logToRenderer(LangchainService.mainWindow, 'Saving vector store');
     console.log('Saving vector store');
     await this.vectorStore?.save(this.vectorStorePath);
+    logToRenderer(LangchainService.mainWindow, 'Vector store saved');
     console.log('Save Done');
   }
 
   public async searchDocs(query: string, qty: number) {
+    logToRenderer(LangchainService.mainWindow, 'Searching docs');
     console.log('Searching docs');
     const retriever = this.vectorStore?.asRetriever(qty);
     const response = await retriever?.invoke(query);
+    logToRenderer(LangchainService.mainWindow, 'Search completed');
     console.log('the response', response);
     return response;
   }
@@ -72,11 +88,14 @@ export class LangchainService {
   public async getDoc(
     id: string,
   ): Promise<{ recordId: string; document: Document } | null> {
+    logToRenderer(LangchainService.mainWindow, 'Getting document by ID');
     const entries = this.vectorStore!.docstore._docs.entries();
     const doc = Array.from(entries).find((doc) => doc[1].id === id);
     if (!doc) {
+      logToRenderer(LangchainService.mainWindow, 'Document not found');
       return null;
     }
+    logToRenderer(LangchainService.mainWindow, 'Document found');
     return { recordId: doc[0], document: doc[1] };
   }
 
@@ -84,6 +103,7 @@ export class LangchainService {
     metadata: Record<string, string>,
     partial = false,
   ): Promise<{ recordId: string; document: Document }[]> {
+    logToRenderer(LangchainService.mainWindow, 'Getting documents by metadata');
     const entries = this.vectorStore?.docstore._docs.entries();
     const matchingDocs: { recordId: string; document: Document }[] = [];
     if (entries) {
@@ -99,38 +119,66 @@ export class LangchainService {
         }
       }
 
-      return matchingDocs.length > 0 ? matchingDocs : [];
+      if (matchingDocs.length > 0) {
+        logToRenderer(LangchainService.mainWindow, 'Matching documents found');
+        return matchingDocs;
+      } else {
+        logToRenderer(
+          LangchainService.mainWindow,
+          'No matching documents found',
+        );
+        return [];
+      }
     }
+    logToRenderer(
+      LangchainService.mainWindow,
+      'No entries found in vector store',
+    );
     return [];
   }
 
   public async deleteDoc(documentId: string) {
+    logToRenderer(LangchainService.mainWindow, 'Deleting document');
     const doc = await this.getDoc(documentId);
     if (!doc) {
+      logToRenderer(
+        LangchainService.mainWindow,
+        'Document not found for deletion',
+      );
       return;
     }
     this.vectorStore!.docstore._docs.delete(doc.recordId);
     await this.vectorStore!.save(this.vectorStorePath);
+    logToRenderer(
+      LangchainService.mainWindow,
+      'Document deleted and vector store saved',
+    );
     return documentId;
   }
 
   public async deleteAllDocs() {
+    logToRenderer(LangchainService.mainWindow, 'Deleting all documents');
     this.vectorStore!.docstore._docs.clear();
     await this.vectorStore!.save(this.vectorStorePath);
+    logToRenderer(
+      LangchainService.mainWindow,
+      'All documents deleted and vector store saved',
+    );
   }
 
   chunkifyDocs = async (
     htmlFiles: WebsiteScrapedContent[],
   ): Promise<Document[]> => {
+    logToRenderer(LangchainService.mainWindow, 'Chunkifying documents');
     console.log('Chunkify docs');
     // Create Documents for each HTML file and split them
     const documents: Document[] = [];
     for (const file of htmlFiles) {
       const chunks = this.splitHtmlToChunks(file);
-
       documents.push(...chunks);
     }
 
+    logToRenderer(LangchainService.mainWindow, 'Documents chunkified');
     return documents;
   };
 
@@ -138,6 +186,7 @@ export class LangchainService {
     file: WebsiteScrapedContent,
     maxTokens: number = 300,
   ): Document[] => {
+    logToRenderer(LangchainService.mainWindow, 'Splitting HTML into chunks');
     const chunks: Document[] = [];
     let currentChunk = '';
     let currentTokens = 0;
@@ -235,6 +284,7 @@ export class LangchainService {
         }),
       );
     }
+    logToRenderer(LangchainService.mainWindow, 'HTML split into chunks');
     return chunks;
   };
 }

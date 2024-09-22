@@ -91,7 +91,7 @@ export const Searchbar = (p: Props) => {
 
         const newIndexedWebsiteContent =
           await webScraperService.fetchWebsiteContent(link);
-        p;
+
         await window.electron.ipcRenderer.invoke(
           'langchain-learn',
           newIndexedWebsiteContent,

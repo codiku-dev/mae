@@ -1,6 +1,9 @@
 import { App, BrowserWindow } from 'electron';
 import { EventListenersService } from './services/event-listeners/event-listener.service';
-import { langchainService } from './services/langchain/langchain-service';
+import {
+  LangchainService,
+  langchainService,
+} from './services/langchain/langchain-service';
 
 export async function start(app: App, mainWindow: BrowserWindow) {
   mainWindow.setFocusable(true);
@@ -8,8 +11,11 @@ export async function start(app: App, mainWindow: BrowserWindow) {
     mainWindow.webContents.openDevTools();
   }
 
-  const eventListenerService = new EventListenersService(app, mainWindow);
+  const eventListenerService = EventListenersService.getInstance(
+    mainWindow,
+    app,
+  );
   eventListenerService.addMainEventListeners();
-  langchainService;
+  LangchainService.mainWindow = mainWindow;
   console.log('Mia: Starting window.');
 }

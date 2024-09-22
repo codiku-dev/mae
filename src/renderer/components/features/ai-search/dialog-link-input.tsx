@@ -7,7 +7,6 @@ import {
 } from '@/renderer/components/ui/dialog';
 import { Input } from '@/renderer/components/ui/input';
 import { SearchSuggestionTag } from '@/renderer/hooks/use-app-store';
-import { SearchSuggestion } from './searchbar_';
 import { isValidUrl } from '@/renderer/libs/utils';
 import { useToast } from '@/renderer/hooks/use-toast';
 
