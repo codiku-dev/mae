@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -51,6 +51,15 @@ export function DialogLinkInput({
     submitLink(linkInput);
   };
 
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        onClose();
+      }
+    },
+    [isOpen, onClose]
+  );
+
   useEffect(() => {
     const handlePaste = (e: ClipboardEvent) => {
       console.log('handlePaste');
@@ -65,10 +74,12 @@ export function DialogLinkInput({
     };
 
     document.addEventListener('paste', handlePaste);
+    document.addEventListener('keydown', handleKeyDown);
     return () => {
       document.removeEventListener('paste', handlePaste);
+      document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [isOpen, onSubmit, onClose]);
+  }, [isOpen, onSubmit, onClose, handleKeyDown]);
 
   return (
     <Dialog

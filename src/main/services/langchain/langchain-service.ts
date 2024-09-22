@@ -1,11 +1,10 @@
-import { ChatOllama, OllamaEmbeddings } from '@langchain/ollama';
+import { OllamaEmbeddings } from '@langchain/ollama';
 import { Document } from '@langchain/core/documents';
 import * as fs from 'fs';
 import { convert } from 'html-to-text';
 import llama3Tokenizer from 'llama3-tokenizer-js';
 import path from 'path';
 import { HNSWLib } from '@langchain/community/vectorstores/hnswlib';
-import { ChatPromptTemplate } from '@langchain/core/prompts';
 import { getResourcesPath } from '@/libs/utils';
 import { WebsiteScrapedContent } from '@/renderer/hooks/use-app-store';
 
@@ -34,16 +33,17 @@ export class LangchainService {
       model: 'mxbai-embed-large',
       baseUrl: 'http://localhost:11434',
     });
-
-    if (fs.existsSync(this.vectorStorePath + '')) {
-      console.log('Loading existing vector store...');
-      this.vectorStore = await HNSWLib.load(
-        this.vectorStorePath,
-        this.llmEmbeddings,
-      );
-    } else {
-      console.log('Creating new vector store...');
-      this.vectorStore = new HNSWLib(this.llmEmbeddings, { space: 'cosine' });
+    if (!this.vectorStore) {
+      if (fs.existsSync(this.vectorStorePath + '')) {
+        console.log('Loading existing vector store...');
+        this.vectorStore = await HNSWLib.load(
+          this.vectorStorePath,
+          this.llmEmbeddings,
+        );
+      } else {
+        console.log('Creating new vector store...');
+        this.vectorStore = new HNSWLib(this.llmEmbeddings, { space: 'cosine' });
+      }
     }
   }
 
@@ -128,84 +128,11 @@ export class LangchainService {
     const documents: Document[] = [];
     for (const file of htmlFiles) {
       const chunks = this.splitHtmlToChunks(file);
-      // chunks.forEach((chunk, index) => {
-      //   chunk.metadata = {
-      //     ...chunk.metadata,
-      //     url: file.url,
-      //     sizeKb: file.sizeKb,
-      //   };
 
-      // });
       documents.push(...chunks);
     }
 
     return documents;
-  };
-
-  getAllHTMLFilesContent = async (
-    folderPath: string,
-  ): Promise<Array<{ url: string; content: string }>> => {
-    const htmlFilesName = fs
-      .readdirSync(folderPath)
-      .filter((file) => file.endsWith('.html'));
-    console.log('htmlFiles', htmlFilesName);
-    const filesData: Array<{ url: string; content: string }> = [];
-    for (const url of htmlFilesName) {
-      const filePath = path.join(folderPath, url);
-      const content = await fs.promises.readFile(filePath, 'utf-8');
-      filesData.push({ url, content });
-    }
-
-    return filesData;
-  };
-
-  requestLLM = async (
-    question: string,
-    documents: Document[],
-    onChunk?: (chunk?: string) => void,
-    onError?: (error: Error) => void,
-    printInConsole = true,
-  ): Promise<string> => {
-    try {
-      const llm = new ChatOllama({
-        model: 'llama3.1:latest', // or any other model you prefer
-        baseUrl: 'http://localhost:11434', // adjust if your Ollama instance is running elsewhere
-      });
-      // const previousMessages: any[] = messages.map((message) => [
-      //   message.role,
-      //   message.content,
-      // ]);
-      const prompt = ChatPromptTemplate.fromTemplate(`
-      Answer the question based on the provided website documentation (html format). If asked for code:
-      1. Always include necessary imports in your answer.
-      2. Provide complete, runnable code snippets when possible.
-      3. Make sure the correct programming language is specified at the beginning of each code block.
-      Be concise in your explanations. Don't comment on your answer.
-      Context: {context}
-      Question: {question}`);
-      // const prompt = ChatPromptTemplate.fromMessages([
-      //   ...previousMessages,
-      //   message,
-      // ]);
-      const chain = await createStuffDocumentsChain({ llm, prompt });
-      const stream = await chain.stream({ question, context: documents });
-      let response = '';
-      for await (const chunk of stream) {
-        response += chunk;
-        if (printInConsole) {
-          process.stdout.write(chunk);
-        }
-        onChunk?.(chunk);
-      }
-      onChunk?.(undefined);
-      if (printInConsole) {
-        process.stdout.write('\n');
-      }
-      return response;
-    } catch (error) {
-      onError?.(error as Error);
-      return '';
-    }
   };
 
   splitHtmlToChunks = (
@@ -325,3 +252,20 @@ export async function langchainDemo() {
   //   1,
   // );
 }
+
+// getAllHTMLFilesContent = async (
+//   folderPath: string,
+// ): Promise<Array<{ url: string; content: string }>> => {
+//   const htmlFilesName = fs
+//     .readdirSync(folderPath)
+//     .filter((file) => file.endsWith('.html'));
+//   console.log('htmlFiles', htmlFilesName);
+//   const filesData: Array<{ url: string; content: string }> = [];
+//   for (const url of htmlFilesName) {
+//     const filePath = path.join(folderPath, url);
+//     const content = await fs.promises.readFile(filePath, 'utf-8');
+//     filesData.push({ url, content });
+//   }
+
+//   return filesData;
+// };
