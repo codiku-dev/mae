@@ -136,7 +136,6 @@ export const InputMention = (p: Props) => {
 
 export const mentionInListStyle = {
   control: {
-    // backgroundColor: '#fff',
     // fontSize: 14,
     // fontWeight: 'normal',
     // color: 'black',
@@ -157,6 +156,7 @@ export const mentionInListStyle = {
       border: 'unset',
     },
     input: {
+      backgroundColor: 'white',
       paddingLeft: 20,
       paddingRight: 60, // Add right padding to accommodate the button
       outline: 'none', // Add this line to remove the focus ring

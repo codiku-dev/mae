@@ -5,7 +5,6 @@ import {
 } from '@/renderer/hooks/use-app-store';
 import { ROUTES } from '@/renderer/libs/routes';
 import { beforeStart } from '@/scripts/before-start';
-import console from 'console';
 var AutoLaunch = require('auto-launch');
 
 import {
@@ -22,6 +21,7 @@ import {
   langchainDemo,
   langchainService,
 } from '../langchain/langchain-service';
+import { DocumentInterface } from '@langchain/core/documents';
 
 export class EventListenersService {
   private mainWindow: BrowserWindow | null = null;
@@ -226,8 +226,12 @@ export class EventListenersService {
     ipcMain.handle(
       'langchain-find-relevant-document',
       async (event, question: string) => {
-        const relevantDocument = await langchainService.searchDocs(question, 1);
-        return relevantDocument?.[0].pageContent;
+        const relevantDocument = await langchainService.searchDocs(question, 3);
+        const aggregation = relevantDocument
+          ?.map((r) => r[0].pageContent)
+          .join('');
+        console.log('relevant ', aggregation);
+        return aggregation;
       },
     );
   }

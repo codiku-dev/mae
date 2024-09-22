@@ -54,9 +54,9 @@ export class LangchainService {
       return;
     }
     const documentsChunks = await this.chunkifyDocs(htmlFiles);
-    console.log('documentsChunks', documentsChunks);
-    console.log('Adding doc to vector store ');
+
     await this.vectorStore?.addDocuments(documentsChunks);
+
     console.log('Saving vector store');
     await this.vectorStore?.save(this.vectorStorePath);
     console.log('Save Done');
@@ -64,10 +64,17 @@ export class LangchainService {
 
   public async searchDocs(query: string, qty: number) {
     console.log('Searching docs');
-    const retriever = this.vectorStore?.asRetriever(qty);
-    const searchResults = await retriever?.invoke(query);
-    console.log('Search results found : ', searchResults?.length);
-    return searchResults;
+    // const retriever = this.vectorStore?.asRetriever(qty);
+    const response = await this.vectorStore?.similaritySearchWithScore(
+      query,
+      qty,
+    );
+    // // excluse bad similarity score
+    // const goodResponse = response?.filter((doc) => doc[1] > 0.15);
+    // console.log('goodResponse', goodResponse);
+    // display similarity score
+
+    return response;
   }
 
   public async getDoc(id: string) {
@@ -180,7 +187,6 @@ export class LangchainService {
     file: WebsiteScrapedContent,
     maxTokens: number = 300,
   ): Document[] => {
-    console.log('Split html to chunks');
     const chunks: Document[] = [];
     let currentChunk = '';
     let currentTokens = 0;
@@ -189,11 +195,39 @@ export class LangchainService {
     const codeBlockRegex = /<code[\s\S]*?<\/code>/gi;
     const codeBlocks: string[] = [];
 
+    const splitCodeBlock = (codeBlock: string, maxTokens: number): string[] => {
+      const lines = codeBlock.split('\n');
+      const chunks: string[] = [];
+      let currentChunk = '';
+      let currentTokens = 0;
+
+      for (const line of lines) {
+        const lineTokens = llama3Tokenizer.encode(line);
+        if (currentTokens + lineTokens.length > maxTokens && currentChunk) {
+          chunks.push(currentChunk);
+          currentChunk = '';
+          currentTokens = 0;
+        }
+        currentChunk += line + '\n';
+        currentTokens += lineTokens.length;
+      }
+
+      if (currentChunk) {
+        chunks.push(currentChunk);
+      }
+
+      return chunks;
+    };
+
     // Replace <code> blocks with placeholders and store them
     file.htmlContent = file.htmlContent.replace(codeBlockRegex, (match) => {
-      const placeholder = `__CODE_BLOCK_${codeBlocks.length}__`;
-      codeBlocks.push(match);
-      return placeholder;
+      const codeChunks = splitCodeBlock(match, maxTokens);
+      const placeholders = codeChunks.map((_, index) => {
+        const placeholder = `__CODE_BLOCK_${codeBlocks.length + index}__`;
+        codeBlocks.push(_);
+        return placeholder;
+      });
+      return placeholders.join('\n');
     });
 
     // Convert remaining HTML to text
@@ -214,12 +248,13 @@ export class LangchainService {
 
       if (currentTokens + lineTokens.length > maxTokens) {
         if (currentChunk) {
+          const text = currentChunk.trim();
           chunks.push(
             new Document({
-              pageContent: currentChunk.trim(),
+              pageContent: text,
               metadata: {
                 url: `${file.url}`,
-                sizeKb: file.sizeKb,
+                sizeKb: text.length / 1024,
                 chunkIndex: chunkIndex,
               },
               id: `${file.url}_chk_${chunkIndex}`,
@@ -236,12 +271,13 @@ export class LangchainService {
     }
 
     if (currentChunk) {
+      const text = currentChunk.trim();
       chunks.push(
         new Document({
-          pageContent: currentChunk.trim(),
+          pageContent: text,
           metadata: {
             url: `${file.url}`,
-            sizeKb: file.sizeKb,
+            sizeKb: text.length / 1024,
             chunkIndex: chunkIndex,
           },
           id: `${file.url}_chk_${chunkIndex}`,

@@ -74,7 +74,6 @@ export function DialogLinkInput({
     <Dialog
       open={isOpen}
       onOpenChange={() => {
-        console.log('on Open change');
         setLinkInput('');
         onClose();
       }}

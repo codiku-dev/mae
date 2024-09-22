@@ -104,7 +104,7 @@ export function HomePage() {
         );
         addMessageToCurrentConversation({
           role: 'user',
-          content: `Answer the question based on the documentation provided. If code is asked include the imports in answer. And make sure to use the right syntax for the language.
+          content: `Answer the question based on the documentation provided. If code is asked include the imports in answer. And provide full code. And make sure to use the right programming language.
           Context: ${context}
           Question: ${submittedText}`,
         });
