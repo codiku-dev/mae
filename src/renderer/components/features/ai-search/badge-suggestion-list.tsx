@@ -22,7 +22,7 @@ interface Props {
 }
 
 const BadgeSuggestionList = (p: Props) => {
-  const { currentSearchSuggestions, setCurrentSearchSuggestions } =
+  const { currentSearchSuggestions, setCurrentSearchSuggestions, getCommands } =
     useAppStore();
   const removeLink = (id: string) => {
     setCurrentSearchSuggestions(
@@ -49,7 +49,7 @@ const BadgeSuggestionList = (p: Props) => {
                     {p.isLoading ? <span className='flex justify-between'>Learning from {formatLinkForDisplay(suggestion.link)}<LoadingSpinner /></span> :
                       <>
                         {suggestion.suggestion.toUpperCase()}{' '}
-                        {formatLinkForDisplay(suggestion.link)}
+                        {getCommands().find(command => command.url === suggestion.link)?.command}
                       </>
                     }
                   </span>

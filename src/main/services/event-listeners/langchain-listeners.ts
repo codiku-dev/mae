@@ -20,7 +20,6 @@ export function addLangchainListeners(mainWindow: BrowserWindow | null) {
   ipcMain.handle(
     'delete-langchain-doc',
     async (event, url: string, partial: boolean) => {
-      console.log('Start delete');
       const docsToDelete = await langchainService.getDocsByMetadata(
         { url: url },
         partial,
@@ -30,10 +29,7 @@ export function addLangchainListeners(mainWindow: BrowserWindow | null) {
       });
 
       await Promise.all(deletePromises);
-      console.log(
-        'Deleted docs',
-        docsToDelete.map((d) => d.document.id),
-      );
+
       return docsToDelete.map((d) => d.document.id);
     },
   );

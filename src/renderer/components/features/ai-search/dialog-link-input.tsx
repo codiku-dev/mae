@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -7,14 +7,14 @@ import {
 } from '@/renderer/components/ui/dialog';
 import { Input } from '@/renderer/components/ui/input';
 import { SearchSuggestionTag } from '@/renderer/hooks/use-app-store';
-import { SearchSuggestion } from './searchbar';
+import { SearchSuggestion } from './searchbar_';
 import { isValidUrl } from '@/renderer/libs/utils';
 import { useToast } from '@/renderer/hooks/use-toast';
 
 interface DialogLinkInputProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (link: string) => void;
+  onSubmit: (link: string, commandName: string) => void;
   currentSuggestion: SearchSuggestionTag;
 }
 
@@ -25,40 +25,52 @@ export function DialogLinkInput({
   currentSuggestion,
 }: DialogLinkInputProps) {
   const [linkInput, setLinkInput] = useState('');
+  const [commandName, setCommandName] = useState('');
+  const commandNameRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
-  const submitLink = (link: string) => {
+
+  const submitLink = (link: string, command: string) => {
+    console.log("the link is ", link)
     if (link) {
-      // Simple URL validation using a regular expression
       if (isValidUrl(link)) {
-        console.log("it' s a valid link ", link);
-        onSubmit(link);
+        console.log("it's a valid link ", link);
+        onSubmit(link, command);
         setLinkInput('');
+        setCommandName('');
         onClose();
       } else {
-        // Handle invalid URL (you might want to show an error message to the user)
         toast({
           title: 'Invalid URL',
           description: 'Please enter a valid URL',
           variant: 'destructive',
         });
-        // TODO: Add user feedback for invalid URL
       }
     }
   };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    submitLink(linkInput);
+    submitLink(linkInput, commandName);
   };
 
-  const handleKeyDown = useCallback(
-    (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
+  const handleKeyDown = (e: KeyboardEvent) => {
+    if (isOpen) {
+      console.log('handleKeyDown', e.key);
+      if (e.key === 'Escape') {
         onClose();
       }
-    },
-    [isOpen, onClose]
-  );
+      if (e.key === 'Enter') {
+        console.log('submit link');
+        submitLink(linkInput, commandName);
+      }
+    }
+  }
+
+
+
+
+
 
   useEffect(() => {
     const handlePaste = (e: ClipboardEvent) => {
@@ -67,8 +79,11 @@ export function DialogLinkInput({
         e.preventDefault();
         const pastedText = e.clipboardData?.getData('text');
         if (pastedText) {
-          console.log('submiting link', pastedText);
-          submitLink(pastedText);
+          setLinkInput(pastedText);
+          console.log("setLinkInput to ", pastedText)
+          setCommandName(pastedText.split('://')[1]?.split(/[.\-_]/)[0] || '');
+          //submitLink(pastedText, pastedText.split('://')[1]?.split(/[.\-_]/)[0] || '');
+          commandNameRef.current?.focus();
         }
       }
     };
@@ -86,25 +101,36 @@ export function DialogLinkInput({
       open={isOpen}
       onOpenChange={() => {
         setLinkInput('');
+        setCommandName('');
         onClose();
       }}
     >
       <DialogContent className="interactive" id="ai-dialog-link-learn">
         <DialogHeader>
-          <DialogTitle>Search in :</DialogTitle>
+          <DialogTitle>Search in:</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
-          <div className="relative mt-4">
+          <div className="relative mt-4 space-y-4">
             <Input
               value={linkInput}
-              onChange={(e) => setLinkInput(e.target.value)}
+              onChange={(e) => { setLinkInput(e.target.value); console.log("linkInput is set in onchange to ", linkInput) }}
               placeholder="super-website.com"
               aria-label={`Enter ${currentSuggestion} link`}
             />
-            <kbd className="pointer-events-none absolute right-[0.5rem] top-[0.7rem] hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
-              <span className="text-xs">paste</span> or ENTER
+            <Input
+              ref={commandNameRef}
+              value={commandName}
+              onChange={(e) => setCommandName(e.target.value)}
+              placeholder="Command name "
+              aria-label="Enter command name"
+            />
+            <kbd className="pointer-events-none absolute right-[0.5rem] -top-[0.3rem] hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
+              <span className="text-xs">paste</span>
             </kbd>
           </div>
+          <p className='mt-4'>Press  <kbd className="pointer-events-none  h-5 select-none rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 ">
+            <span className="text-xs">Enter</span>
+          </kbd> to submit</p>
         </form>
       </DialogContent>
     </Dialog>

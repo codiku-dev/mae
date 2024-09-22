@@ -1,227 +1,244 @@
-import {
-  ChangeEvent,
-  FormEvent,
-  KeyboardEvent,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
-import { PlaceholdersAndVanishInput } from '../../ui/placeholders-and-vanish-input';
+import { MentionsInput, Mention } from 'react-mentions';
+import { Button } from '../../ui/button';
+import { ArrowRight, Square } from 'lucide-react';
+import { BadgeSuggestionList } from './badge-suggestion-list';
+import { DialogLinkInput } from './dialog-link-input';
+import { useRef, useState } from 'react';
 import {
   SearchSuggestionTag,
   useAppStore,
 } from '@/renderer/hooks/use-app-store';
-import { v4 as uuidv4 } from 'uuid';
-import { DialogLinkInput } from './dialog-link-input';
-
-import { BadgeSuggestionList } from './badge-suggestion-list';
-import { SuggestionAutoCompleter } from './suggestion-autocompleter';
 import { webScraperService } from '@/main/services/web-scapper/web-scrapper-service';
-import { sleep } from '@/libs/utils';
+import { v4 as uuidv4 } from 'uuid';
 
-// cmd + shift + P to toggle
-const placeholders = [
-  'Ask any question and press enter !',
-  'Type @web to search from a website',
-  '⌘ + ⇧ + P to open and close',
-];
-
-const suggestions: SearchSuggestionTag[] = ['web'];
-export type SearchSuggestion = {
-  id: string;
-  suggestion: SearchSuggestionTag;
-  link: string;
-};
-export function SearchBar(p: {
+type Props = {
   value: string;
+  isStreamingFinished: boolean;
   onChange: (value: string) => void;
   onSubmit: (value: string) => void;
   isLoading: boolean;
   onClickStop: () => void;
-}) {
+};
+const ENTRY_IDS = {
+  ADD_DOC: 2
+}
+const optionList = [
+  // { id: 1, display: 'web' },
+  { id: 2, display: '+ Add doc', type: 'add-doc' },
+];
+export const Searchbar = (p: Props) => {
+  let inputRef = useRef<HTMLInputElement>();
+
   const {
-    currentSearchSuggestions,
     setCurrentSearchSuggestions,
     isWebsiteIndexed,
     addWebsiteToIndexedWebsites,
+    getCommands
   } = useAppStore();
-  const inputRef = useRef<HTMLInputElement>(null);
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(0);
+
+  const [isLoading, setisLoading] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [currentSuggestion, setCurrentSuggestion] =
     useState<SearchSuggestionTag>();
-  const [filteredSuggestions, setFilteredSuggestions] = useState<
-    SearchSuggestionTag[]
-  >([]);
 
-  useEffect(() => {
-    inputRef.current?.focus();
-  }, [currentSearchSuggestions.length]);
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
-  useEffect(() => {
-    if (!isDialogOpen) {
-      inputRef.current?.focus();
-    }
-  }, [isDialogOpen]);
-
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value;
-    const cursorPosition = e.target.selectionStart || 0;
-    p.onChange(newValue);
-
-    const textBeforeCursor = newValue.slice(0, cursorPosition);
-    const textAfterCursor = newValue.slice(cursorPosition);
-
-    const wordsBeforeCursor = textBeforeCursor.split(/\s+/);
-    const lastWordBeforeCursor =
-      wordsBeforeCursor[wordsBeforeCursor.length - 1];
-
-    const isTypingAtSymbol = lastWordBeforeCursor.includes('@');
-    const hasSpaceAfterCursor = /^\s/.test(textAfterCursor);
-
-    if (isTypingAtSymbol && (hasSpaceAfterCursor || textAfterCursor === '')) {
-      const atSymbolIndex = lastWordBeforeCursor.lastIndexOf('@');
-      const textAfterAtSymbol = lastWordBeforeCursor.slice(atSymbolIndex + 1);
-      setShowSuggestions(true);
-
-      // Update filtered suggestions
-      const filtered = suggestions.filter((suggestion) =>
-        suggestion.toLowerCase().startsWith(textAfterAtSymbol.toLowerCase()),
-      );
-      setFilteredSuggestions(filtered);
-      setSelectedSuggestionIndex(0);
+    if (!p.isStreamingFinished) {
+      p.onClickStop();
+      focusInput()
     } else {
-      setShowSuggestions(false);
+      if (p.value === '') return;
+      p.onSubmit(p.value);
     }
   };
 
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Escape') {
-      if (isDialogOpen) {
-        handleDialogClose();
-      } else if (showSuggestions) {
-        setShowSuggestions(false);
-      }
-      return;
-    }
-
-    if (showSuggestions) {
-      switch (e.key) {
-        case 'ArrowUp':
-          e.preventDefault();
-          setSelectedSuggestionIndex((prev) =>
-            prev > 0 ? prev - 1 : filteredSuggestions.length - 1,
-          );
-          break;
-        case 'ArrowDown':
-          e.preventDefault();
-          setSelectedSuggestionIndex((prev) =>
-            prev < filteredSuggestions.length - 1 ? prev + 1 : 0,
-          );
-          break;
-        case 'Enter':
-          e.preventDefault();
-          if (filteredSuggestions.length > 0) {
-            submitSuggestion(filteredSuggestions[selectedSuggestionIndex]);
-          }
-          break;
-      }
-    }
+  const focusInput = () => {
+    setTimeout(() => {
+      (inputRef.current as any).inputElement.focus();
+    }, 50);
   };
-
-  const onSubmit = (inputValue: string) => {
-    p.onSubmit(inputValue);
-  };
-
   const handleDialogClose = () => {
     setIsDialogOpen(false);
-    setCurrentSuggestion(undefined);
+    // remove any part that start with @[+ Add doc]* from the input but keep the rest around spaces
+    p.onChange(p.value.replace(/@\[\+ Add doc\]\S+\s?/, '').trim());
+    // setCurrentSuggestion(undefined);
+    focusInput();
   };
 
-  const handleDialogSubmit = async (link: string) => {
+  const handleDialogSubmit = async (link: string, command: string) => {
     if (currentSuggestion) {
       // first add the "@suggestion" to the input
       setCurrentSearchSuggestions([
-        ...currentSearchSuggestions,
+        // ...currentSearchSuggestions,
         {
           id: uuidv4(),
           link,
           suggestion: currentSuggestion,
         },
       ]);
+
       // Remove any word starting with "@" from the input
-      const newValue = p.value.replace(/@\S+\s?/, '').trim();
+      let newValue = p.value.replace(/@ \+ Add doc\S+\s?/, '').trim();
+
+      // remove also anything of this form @[anything](anything) 
+      newValue = newValue.replace(/@\[.*?\]\S+\s?/, '')
+
       p.onChange(newValue);
 
       if (!isWebsiteIndexed(link)) {
+        setisLoading(true);
+
         const newIndexedWebsiteContent =
           await webScraperService.fetchWebsiteContent(link);
+        p;
+        await window.electron.ipcRenderer.invoke(
+          'langchain-learn',
+          newIndexedWebsiteContent,
+        );
 
         addWebsiteToIndexedWebsites({
           url: link,
-          scrapedContent: newIndexedWebsiteContent,
+          commandName: command,
+          subwebsite: newIndexedWebsiteContent.map((website) => ({
+            url: website.url,
+            htmlContent: '',
+            sizeKb: website.sizeKb,
+          })),
         });
+        setisLoading(false);
       }
     }
-    handleDialogClose();
-  };
-
-  const injectSuggestionInput = (pickedSuggestion: SearchSuggestionTag) => {
-    const inputElement = inputRef.current;
-    if (inputElement) {
-      const cursorPosition = inputElement.selectionStart || 0;
-      const textBeforeCursor = p.value.slice(0, cursorPosition);
-      const textAfterCursor = p.value.slice(cursorPosition);
-
-      // Find the start of the current @mention
-      const lastAtIndex = textBeforeCursor.lastIndexOf('@');
-      const newTextBeforeCursor = textBeforeCursor.slice(0, lastAtIndex);
-
-      // Construct the new value
-      const newValue = `${newTextBeforeCursor}@${pickedSuggestion} ${textAfterCursor}`;
-      p.onChange(newValue);
-
-      // Set cursor position after the inserted suggestion
-      setTimeout(() => {
-        const newCursorPosition =
-          newTextBeforeCursor.length + pickedSuggestion.length + 2; // +2 for @ and space
-        inputElement.setSelectionRange(newCursorPosition, newCursorPosition);
-      }, 0);
-    }
-  };
-
-  const submitSuggestion = (pickedSuggestion: SearchSuggestionTag) => {
-    setShowSuggestions(false);
-    injectSuggestionInput(pickedSuggestion);
-    setIsDialogOpen(true);
-    setCurrentSuggestion(pickedSuggestion);
   };
 
   return (
-    <div className="relative">
-      <PlaceholdersAndVanishInput
-        value={p.value}
-        onChangeValue={p.onChange}
-        onClickStop={p.onClickStop}
-        placeholders={placeholders}
-        onChange={handleChange}
-        onSubmit={onSubmit}
-        inputProps={{
-          autoFocus: true,
-          onKeyDown: handleKeyDown,
+    <form onSubmit={handleSubmit} className="relative">
+      <MentionsInput
+        placeholder="How can I help you?"
+        id="ai-search-input"
+        className="interactive"
+        ref={(r) => {
+          (inputRef.current as any) = r;
         }}
-        ref={inputRef}
-        isLoading={p.isLoading}
-      />
+        autoFocus
+        singleLine
+        value={p.value}
+        onChange={(e) => {
+          p.onChange(e.target.value);
+        }}
+        style={mentionInListStyle}
+        customSuggestionsContainer={(children) => (
+          <div className="absolute top-[0.9rem]">{children}</div>
+        )}
+      >
+        <Mention
+          trigger="@"
+          data={[...optionList, ...getCommands().map((command) => ({
+            id: command.command,
+            display: command.command,
+            type: 'doc'
+          }))]
+          }
+          style={mentionInInputStyle}
+          onAdd={(entryId, entry) => {
+            setCurrentSuggestion(entry as SearchSuggestionTag);
+            if (entryId === ENTRY_IDS.ADD_DOC) {
+              setIsDialogOpen(true);
+            } else {
+              const command = getCommands().find(c => c.command === entry);
+              if (command) {
+                setCurrentSearchSuggestions([
 
-      {showSuggestions && filteredSuggestions.length > 0 && (
-        <SuggestionAutoCompleter
-          filteredSuggestions={filteredSuggestions}
-          selectedSuggestionIndex={selectedSuggestionIndex}
-          onSubmit={submitSuggestion}
+                  {
+                    id: uuidv4(),
+                    link: command?.url!,
+                    suggestion: "doc"
+                  },
+                ]);
+
+                const newValue = p.value.replace(/(.*)@/, '$1')
+                p.onChange(newValue);
+              }
+            }
+          }}
+          renderSuggestion={(entry) => {
+            return <div>{entry.display}</div>;
+          }}
+        />
+      </MentionsInput>
+      <Button
+        disabled={p.value === '' && p.isStreamingFinished}
+        variant="outline"
+        size="icon"
+        id="ai-search-button"
+        className="interactive cursor-pointer shadow-md w-[3.35rem] h-[2.50rem] absolute right-0 top-[0.64rem] transform  rounded-full bg-black text-white"
+        type="submit"
+      >
+        {!p.isStreamingFinished ? <Square className="size-4" /> : <ArrowRight className="size-4" />}
+      </Button>
+      <BadgeSuggestionList isLoading={isLoading} />
+      {currentSuggestion && (
+        <DialogLinkInput
+          isOpen={isDialogOpen}
+          onClose={handleDialogClose}
+          onSubmit={handleDialogSubmit}
+          currentSuggestion={currentSuggestion}
         />
       )}
-    </div>
+    </form>
   );
-}
+};
+
+export const mentionInListStyle = {
+  control: {
+    // fontSize: 14,
+    // fontWeight: 'normal',
+    // color: 'black',
+
+    paddingTop: 10,
+    paddingLeft: 20,
+  },
+
+  '&singleLine': {
+    marginTop: 10,
+    display: 'inline-block',
+    width: '100%',
+    color: 'black',
+
+    // Removed all style properies
+    highlighter: {
+      padding: 1,
+      border: 'unset',
+    },
+    input: {
+      fontSize: 14,
+      backgroundColor: 'white',
+      paddingLeft: 20,
+      paddingRight: 60, // Add right padding to accommodate the button
+      outline: 'none', // Add this line to remove the focus ring
+      border: '1px solid rgba(0,0,0,0.08)',
+      borderRadius: '2rem',
+      height: 40,
+    },
+  },
+
+  suggestions: {
+    list: {
+      backgroundColor: 'white',
+      border: '1px solid rgba(0,0,0,0.15)',
+      fontSize: 14,
+    },
+    item: {
+      padding: '5px 15px',
+      borderBottom: '1px solid rgba(0,0,0,0.15)',
+      '&focused': {
+        backgroundColor: '#d1edfd',
+      },
+    },
+  },
+};
+
+const mentionInInputStyle = {
+  backgroundColor: '#d1edfd',
+  paddingTop: 4,
+};

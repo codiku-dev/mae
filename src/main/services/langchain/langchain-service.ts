@@ -72,7 +72,6 @@ export class LangchainService {
   public async getDoc(
     id: string,
   ): Promise<{ recordId: string; document: Document } | null> {
-    console.log('calling getDoc');
     const entries = this.vectorStore!.docstore._docs.entries();
     const doc = Array.from(entries).find((doc) => doc[1].id === id);
     if (!doc) {

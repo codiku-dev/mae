@@ -23,6 +23,7 @@ export function DeleteLearnedDataSection() {
     setIndexedWebsitesContent,
     deleteIndexedWebsite,
     deleteWebsiteScrapedContent,
+    getCommands,
   } = useAppStore();
   const { toast } = useToast();
 
@@ -86,6 +87,7 @@ export function DeleteLearnedDataSection() {
       childUrl,
     );
   }
+  console.table(getCommands())
   return (
     <Card>
       <CardHeader>
@@ -97,11 +99,11 @@ export function DeleteLearnedDataSection() {
             <Accordion type="single" collapsible className="w-full">
               <AccordionItem value={`item-${index}`}>
                 <AccordionTrigger className="flex justify-between items-center">
-                  <span>{indexedWebsite.url}</span>
+                  <span>@{getCommands().find(command => command.url === indexedWebsite.url)?.command} </span>
                 </AccordionTrigger>
                 <AccordionContent>
                   <ul className="space-y-2">
-                    {indexedWebsite.scrapedContent.map((content) => (
+                    {indexedWebsite.subwebsite.map((content) => (
                       <li
                         key={content.url}
                         className="flex justify-between items-center"
@@ -132,7 +134,7 @@ export function DeleteLearnedDataSection() {
             <div className="flex mt-4 ">
               <span className="text-sm text-gray-500 font-semibold mt-4 px-4">
                 {formatKbSize(
-                  indexedWebsite.scrapedContent.reduce(
+                  indexedWebsite.subwebsite.reduce(
                     (total, content) => total + content.sizeKb,
                     0,
                   ),

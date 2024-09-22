@@ -2,12 +2,11 @@ import { ollamaService } from '@/main/services/ollama/ollama.service';
 import { Error } from '@/renderer/components/features/ai-search/error';
 import { RichResponse } from '@/renderer/components/features/ai-search/rich-response';
 import { Button } from '@/renderer/components/ui/button';
-import { cn } from '@/renderer/libs/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useAppStore } from '../hooks/use-app-store';
-import { InputMention } from '../components/ui/input-mention';
+import { Searchbar } from '../components/features/ai-search/searchbar';
 
 export function HomePage() {
   const [value, setValue] = useState<string>('');
@@ -18,7 +17,7 @@ export function HomePage() {
   const [submitedPrompt, setSubmitedPrompt] = useState('');
   const [error, setError] = useState('');
   const [isAIWorking, setIsAIWorking] = useState(false);
-  const { getContextFromSelectedIndexedWebsites, currentSearchSuggestions } =
+  const { currentSearchSuggestions } =
     useAppStore();
   const {
     addMessageToCurrentConversation,
@@ -207,9 +206,10 @@ export function HomePage() {
           >
             <div className="w-screen">
               <div className="flex flex-col  items-center ">
-                <div id="ai-searchbar" className="w-96">
-                  <InputMention
+                <div id="ai-searchbar" className="w-[420px]">
+                  <Searchbar
                     value={value}
+                    isStreamingFinished={isStreamingFinished}
                     onChange={setValue}
                     onSubmit={handleSubmit}
                     isLoading={isAIWorking}

@@ -11,7 +11,7 @@ import { DevTool } from '../components/features/dev-tools';
 
 export const AppLoader = () => {
   const navigate = useNavigate();
-  const { setIsAppLoading, isAppLoading, isAppLaunchedOnStartup } =
+  const { setIsAppLoading, isAppLoading, isAppLaunchedOnStartup, resetStore } =
     useAppStore();
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('request-before-start');
@@ -21,6 +21,7 @@ export const AppLoader = () => {
         setIsAppLoading(false);
         window.electron.ipcRenderer.sendMessage('navigate', ROUTES.home);
         // clearAllHistory();
+        // resetStore()
       },
     );
     return () => {
