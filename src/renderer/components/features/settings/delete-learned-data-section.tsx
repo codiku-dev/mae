@@ -15,7 +15,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/renderer/components/ui/accordion';
-import { formatBytesSize } from '@/renderer/libs/utils';
+import { formatKbSize } from '@/renderer/libs/utils';
 
 export function DeleteLearnedDataSection() {
   const {
@@ -34,6 +34,7 @@ export function DeleteLearnedDataSection() {
 
     if (isConfirmed) {
       setIndexedWebsitesContent([]);
+      window.electron.ipcRenderer.invoke('delete-all-langchain-doc');
       toast({
         title: 'All learned data deleted',
         description: 'All learned website data has been removed.',
@@ -41,13 +42,16 @@ export function DeleteLearnedDataSection() {
     }
   };
 
-  const handleDeleteIndexedWebsite = (url: string) => {
+  const handleDeleteIndexedWebsite = async (url: string) => {
     const isConfirmed = window.confirm(
       `Are you sure you want to delete all data for ${url}?`,
     );
 
     if (isConfirmed) {
+      console.log("start delete")
       deleteIndexedWebsite(url);
+      const docsToDelete = await window.electron.ipcRenderer.invoke('delete-langchain-doc', url, true);
+      console.log("docs to delete", docsToDelete)
       toast({
         title: 'Indexed website deleted',
         description: `All data for ${url} has been removed.`,
@@ -72,6 +76,16 @@ export function DeleteLearnedDataSection() {
     }
   };
 
+  const handleClickTrash = async (parentURL: string, childUrl: string) => {
+    console.log("click trash")
+
+    const deletedDocs = await window.electron.ipcRenderer.invoke('delete-langchain-doc', childUrl);
+    console.log("docs to delete", deletedDocs)
+    handleDeleteScrapedContent(
+      parentURL,
+      childUrl,
+    );
+  }
   return (
     <Card>
       <CardHeader>
@@ -95,17 +109,15 @@ export function DeleteLearnedDataSection() {
                         <span className="truncate">{content.url}</span>
                         <div className="flex items-center space-x-2">
                           <span className="text-sm text-gray-500">
-                            {formatBytesSize(content.htmlContent.length)}
+                            {formatKbSize(content.sizeKb)}
                           </span>
                           <Button
                             variant="ghost"
                             size="sm"
                             onClick={(e) => {
                               e.preventDefault();
-                              handleDeleteScrapedContent(
-                                indexedWebsite.url,
-                                content.url,
-                              );
+                              handleClickTrash(indexedWebsite.url, content.url)
+
                             }}
                           >
                             <Trash className="h-4 w-4" />
@@ -119,9 +131,9 @@ export function DeleteLearnedDataSection() {
             </Accordion>
             <div className="flex mt-4 ">
               <span className="text-sm text-gray-500 font-semibold mt-4 px-4">
-                {formatBytesSize(
+                {formatKbSize(
                   indexedWebsite.scrapedContent.reduce(
-                    (total, content) => total + content.htmlContent.length,
+                    (total, content) => total + content.sizeKb,
                     0,
                   ),
                 )}

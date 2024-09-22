@@ -16,6 +16,7 @@ const KEYS_TO_NOT_STORE = [
   'currentConversationIndex',
   'conversationHistory',
   'currentConversationIndex',
+  'currentSearchSuggestions',
 ];
 
 export type SearchSuggestionTag = 'web' | 'doc';

@@ -69,6 +69,8 @@ export class EventListenersService {
     this.addSandboxListener();
     this.addLangchainLearnListener();
     this.addLangchainFindRelevantHTMLDocumentListener();
+    this.addDeleteLangchainDocListener();
+    this.addDeleteAllLangchainDocListener();
   }
 
   private addFocusRequestListener() {
@@ -222,15 +224,49 @@ export class EventListenersService {
     );
   }
 
+  private addDeleteLangchainDocListener() {
+    ipcMain.handle(
+      'delete-langchain-doc',
+      async (event, url: string, partial: boolean) => {
+        console.log('Start delete');
+        const docsToDelete = await langchainService.getDocsByMetadata(
+          {
+            url: url,
+          },
+          partial,
+        );
+        const deletePromises = docsToDelete.map((doc) => {
+          return langchainService.deleteDoc(doc.recordId);
+        });
+
+        await Promise.all(deletePromises);
+        console.log(
+          'Deleted docs',
+          docsToDelete.map((d) => d.document.id),
+        );
+        return docsToDelete.map((d) => d.document.id);
+      },
+    );
+  }
+
+  private addDeleteAllLangchainDocListener() {
+    ipcMain.handle('delete-all-langchain-doc', async () => {
+      await langchainService.deleteAllDocs();
+    });
+  }
   private addLangchainFindRelevantHTMLDocumentListener() {
     ipcMain.handle(
       'langchain-find-relevant-document',
       async (event, question: string) => {
-        const relevantDocument = await langchainService.searchDocs(question, 3);
-        const aggregation = relevantDocument
-          ?.map((r) => r[0].pageContent)
+        console.log('Start doc search');
+        const relevantDocuments = await langchainService.searchDocs(
+          question,
+          3,
+        );
+
+        const aggregation = relevantDocuments
+          ?.map((r) => r.pageContent)
           .join('');
-        console.log('relevant ', aggregation);
         return aggregation;
       },
     );

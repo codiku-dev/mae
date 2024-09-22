@@ -24,8 +24,8 @@ const optionList = [
 ];
 export const InputMention = (p: Props) => {
   let inputRef = useRef<HTMLInputElement>(null);
+  const [isLoading, setisLoading] = useState(false);
   const {
-    currentSearchSuggestions,
     setCurrentSearchSuggestions,
     isWebsiteIndexed,
     addWebsiteToIndexedWebsites,
@@ -46,6 +46,8 @@ export const InputMention = (p: Props) => {
   };
   const handleDialogClose = () => {
     setIsDialogOpen(false);
+    // remove any part that start with @[doc]* from the input but keep the rest around spaces
+    p.onChange(p.value.replace(/@\[doc\]\S+\s?/, '').trim());
     // setCurrentSuggestion(undefined);
     focusInput();
   };
@@ -65,18 +67,27 @@ export const InputMention = (p: Props) => {
       const newValue = p.value.replace(/@\S+\s?/, '').trim();
       p.onChange(newValue);
 
-      // if (!isWebsiteIndexed(link)) {
-      const newIndexedWebsiteContent =
-        await webScraperService.fetchWebsiteContent(link);
-      p;
-      window.electron.ipcRenderer.invoke(
-        'langchain-learn',
-        newIndexedWebsiteContent,
-      );
-      addWebsiteToIndexedWebsites({
-        url: link,
-        scrapedContent: [],
-      });
+      if (!isWebsiteIndexed(link)) {
+        setisLoading(true);
+
+        const newIndexedWebsiteContent =
+          await webScraperService.fetchWebsiteContent(link);
+        p;
+        await window.electron.ipcRenderer.invoke(
+          'langchain-learn',
+          newIndexedWebsiteContent,
+        );
+
+        addWebsiteToIndexedWebsites({
+          url: link,
+          scrapedContent: newIndexedWebsiteContent.map((website) => ({
+            url: website.url,
+            htmlContent: '',
+            sizeKb: website.sizeKb,
+          })),
+        });
+        setisLoading(false);
+      }
     }
   };
 
@@ -85,14 +96,15 @@ export const InputMention = (p: Props) => {
       <MentionsInput
         id="ai-search-input"
         className="interactive"
-        onClickCapture={() => console.log('CLICK')}
         ref={(r) => {
           inputRef.current = r;
         }}
         autoFocus
         singleLine
         value={p.value}
-        onChange={(e) => p.onChange(e.target.value)}
+        onChange={(e) => {
+          p.onChange(e.target.value);
+        }}
         style={mentionInListStyle}
         customSuggestionsContainer={(children) => (
           <div className="absolute right-0 top-[0.64rem]">{children}</div>
@@ -121,7 +133,7 @@ export const InputMention = (p: Props) => {
       >
         <ArrowRight className="size-4" />
       </Button>
-      <BadgeSuggestionList />
+      <BadgeSuggestionList isLoading={isLoading} />
       {currentSuggestion && (
         <DialogLinkInput
           isOpen={isDialogOpen}

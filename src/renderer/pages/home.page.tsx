@@ -97,11 +97,12 @@ export function HomePage() {
       }
 
       if (currentSearchSuggestions.length > 0) {
-        console.log('Looking for relevant document context');
+        console.log("invoke to get relevant doc")
         const context = await window.electron.ipcRenderer.invoke(
           'langchain-find-relevant-document',
           submittedText,
         );
+        console.log("context found", context)
         addMessageToCurrentConversation({
           role: 'user',
           content: `Answer the question based on the documentation provided. If code is asked include the imports in answer. And provide full code. And make sure to use the right programming language.
@@ -219,14 +220,14 @@ export function HomePage() {
                   {clearButton}
                   {(isLoading ||
                     (streamedResponse && streamedResponse !== '')) && (
-                    <RichResponse
-                      key={submitedPrompt}
-                      output={streamedResponse}
-                      isStreamFinished={isStreamingFinished}
-                      question={submitedPrompt}
-                      isLoading={isLoading}
-                    />
-                  )}
+                      <RichResponse
+                        key={submitedPrompt}
+                        output={streamedResponse}
+                        isStreamFinished={isStreamingFinished}
+                        question={submitedPrompt}
+                        isLoading={isLoading}
+                      />
+                    )}
                   {error && <Error errorMessage={error} />}
                 </div>
               </div>

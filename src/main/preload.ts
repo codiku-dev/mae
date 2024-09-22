@@ -30,7 +30,9 @@ export type Channels =
   | 'set-app-auto-launch'
   | 'sandbox-request'
   | 'langchain-learn'
-  | 'langchain-find-relevant-document';
+  | 'langchain-find-relevant-document'
+  | 'delete-langchain-doc'
+  | 'delete-all-langchain-doc';
 
 const electronHandler = {
   ipcRenderer: {

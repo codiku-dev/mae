@@ -8,6 +8,8 @@ import {
 import { X } from 'lucide-react';
 import { Badge } from '../../ui/badge';
 import { useAppStore } from '@/renderer/hooks/use-app-store';
+import { Skeleton } from '../../ui/skeleton';
+import { LoadingSpinner } from '../../ui/loading-spinner';
 
 interface Link {
   id: string;
@@ -15,9 +17,11 @@ interface Link {
   link: string;
 }
 
-interface BadgeSelectedSuggestionProps {}
+interface Props {
+  isLoading: boolean;
+}
 
-const BadgeSuggestionList: React.FC<BadgeSelectedSuggestionProps> = () => {
+const BadgeSuggestionList = (p: Props) => {
   const { currentSearchSuggestions, setCurrentSearchSuggestions } =
     useAppStore();
   const removeLink = (id: string) => {
@@ -38,13 +42,19 @@ const BadgeSuggestionList: React.FC<BadgeSelectedSuggestionProps> = () => {
               <div className="inline-block">
                 <Badge
                   id={'ai-badge-' + suggestion.link}
-                  className=" interactive pr-1 flex items-center cursor-pointer"
+                  className=" h-6 interactive pr-1 flex items-center cursor-pointer"
                 >
+
                   <span>
-                    {suggestion.suggestion.toUpperCase()}{' '}
-                    {formatLinkForDisplay(suggestion.link)}
+                    {p.isLoading ? <span className='flex justify-between'>Learning from {formatLinkForDisplay(suggestion.link)}<LoadingSpinner /></span> :
+                      <>
+                        {suggestion.suggestion.toUpperCase()}{' '}
+                        {formatLinkForDisplay(suggestion.link)}
+                      </>
+                    }
                   </span>
-                  <button
+
+                  {!p.isLoading && <button
                     onClick={(e) => {
                       e.stopPropagation();
                       removeLink(suggestion.id);
@@ -53,7 +63,7 @@ const BadgeSuggestionList: React.FC<BadgeSelectedSuggestionProps> = () => {
                     aria-label="Remove link"
                   >
                     <X size={12} />
-                  </button>
+                  </button>}
                 </Badge>
               </div>
             </TooltipTrigger>

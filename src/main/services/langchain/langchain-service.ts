@@ -7,7 +7,6 @@ import path from 'path';
 import { HNSWLib } from '@langchain/community/vectorstores/hnswlib';
 import { ChatPromptTemplate } from '@langchain/core/prompts';
 import { getResourcesPath } from '@/libs/utils';
-import { createStuffDocumentsChain } from 'langchain/chains/combine_documents';
 import { WebsiteScrapedContent } from '@/renderer/hooks/use-app-store';
 
 export class LangchainService {
@@ -64,20 +63,16 @@ export class LangchainService {
 
   public async searchDocs(query: string, qty: number) {
     console.log('Searching docs');
-    // const retriever = this.vectorStore?.asRetriever(qty);
-    const response = await this.vectorStore?.similaritySearchWithScore(
-      query,
-      qty,
-    );
-    // // excluse bad similarity score
-    // const goodResponse = response?.filter((doc) => doc[1] > 0.15);
-    // console.log('goodResponse', goodResponse);
-    // display similarity score
-
+    const retriever = this.vectorStore?.asRetriever(qty);
+    const response = await retriever?.invoke(query);
+    console.log('the response', response);
     return response;
   }
 
-  public async getDoc(id: string) {
+  public async getDoc(
+    id: string,
+  ): Promise<{ recordId: string; document: Document } | null> {
+    console.log('calling getDoc');
     const entries = this.vectorStore!.docstore._docs.entries();
     const doc = Array.from(entries).find((doc) => doc[1].id === id);
     if (!doc) {
@@ -86,12 +81,42 @@ export class LangchainService {
     return { recordId: doc[0], document: doc[1] };
   }
 
+  public async getDocsByMetadata(
+    metadata: Record<string, string>,
+    partial = false,
+  ): Promise<{ recordId: string; document: Document }[]> {
+    const entries = this.vectorStore?.docstore._docs.entries();
+    const matchingDocs: { recordId: string; document: Document }[] = [];
+    if (entries) {
+      for (const [recordId, document] of entries) {
+        const isMatch = Object.entries(metadata).every(
+          ([key, value]) =>
+            document.metadata[key] === value ||
+            (partial && document.metadata[key]?.includes(value)),
+        );
+
+        if (isMatch) {
+          matchingDocs.push({ recordId, document });
+        }
+      }
+
+      return matchingDocs.length > 0 ? matchingDocs : [];
+    }
+    return [];
+  }
+
   public async deleteDoc(documentId: string) {
     const doc = await this.getDoc(documentId);
     if (!doc) {
       return;
     }
     this.vectorStore!.docstore._docs.delete(doc.recordId);
+    await this.vectorStore!.save(this.vectorStorePath);
+    return documentId;
+  }
+
+  public async deleteAllDocs() {
+    this.vectorStore!.docstore._docs.clear();
     await this.vectorStore!.save(this.vectorStorePath);
   }
 

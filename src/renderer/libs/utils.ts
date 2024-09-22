@@ -56,12 +56,11 @@ export function areUrlsEqual(url1: string, url2: string) {
   return normalizeUrl(url1) === normalizeUrl(url2);
 }
 
-export function formatBytesSize(bytes: number): string {
-  if (bytes < 1024) return `${bytes}B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(2)}KB`;
-  if (bytes < 1024 * 1024 * 1024)
-    return `${(bytes / (1024 * 1024)).toFixed(2)}MB`;
-  return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)}GB`;
+export function formatKbSize(kb: number): string {
+  if (kb < 1) return `${(kb * 1024).toFixed(0)}B`;
+  if (kb < 1024) return `${kb.toFixed(0)}KB`;
+  if (kb < 1024 * 1024) return `${(kb / 1024).toFixed(2)}MB`;
+  return `${(kb / (1024 * 1024)).toFixed(2)}GB`;
 }
 
 export function isValidUrl(url: string) {
