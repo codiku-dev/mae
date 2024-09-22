@@ -1,6 +1,6 @@
 import { MentionsInput, Mention } from 'react-mentions';
 import { Button } from '../../ui/button';
-import { ArrowRight, Square } from 'lucide-react';
+import { ArrowRight, Square, PlusCircle, Book } from 'lucide-react';
 import { BadgeSuggestionList } from './badge-suggestion-list';
 import { DialogLinkInput } from './dialog-link-input';
 import { useRef, useState } from 'react';
@@ -24,7 +24,7 @@ const ENTRY_IDS = {
 }
 const optionList = [
   // { id: 1, display: 'web' },
-  { id: 2, display: '+ Add doc', type: 'add-doc' },
+  { id: 2, display: 'Add doc', type: 'add-doc' },
 ];
 export const Searchbar = (p: Props) => {
   let inputRef = useRef<HTMLInputElement>();
@@ -61,7 +61,7 @@ export const Searchbar = (p: Props) => {
   const handleDialogClose = () => {
     setIsDialogOpen(false);
     // remove any part that start with @[+ Add doc]* from the input but keep the rest around spaces
-    p.onChange(p.value.replace(/@\[\+ Add doc\]\S+\s?/, '').trim());
+    p.onChange(p.value.replace(/@\[\Add doc\]\S+\s?/, '').trim());
     // setCurrentSuggestion(undefined);
     focusInput();
   };
@@ -79,7 +79,7 @@ export const Searchbar = (p: Props) => {
       ]);
 
       // Remove any word starting with "@" from the input
-      let newValue = p.value.replace(/@ \+ Add doc\S+\s?/, '').trim();
+      let newValue = p.value.replace(/@ \Add doc\S+\s?/, '').trim();
 
       // remove also anything of this form @[anything](anything) 
       newValue = newValue.replace(/@\[.*?\]\S+\s?/, '')
@@ -162,7 +162,17 @@ export const Searchbar = (p: Props) => {
             }
           }}
           renderSuggestion={(entry) => {
-            return <div>{entry.display}</div>;
+            return (
+              <div className="flex items-center gap-2">
+                {entry.id === ENTRY_IDS.ADD_DOC ? (
+                  <PlusCircle className="w-4 h-4" />
+                ) : (
+                  <Book className="w-4 h-4" />
+                )}
+                <span>{entry.display}</span>
+              </div>
+            );
+
           }}
         />
       </MentionsInput>
@@ -229,7 +239,7 @@ export const mentionInListStyle = {
       fontSize: 14,
     },
     item: {
-      padding: '5px 15px',
+      padding: '5px 5px',
       borderBottom: '1px solid rgba(0,0,0,0.15)',
       '&focused': {
         backgroundColor: '#d1edfd',

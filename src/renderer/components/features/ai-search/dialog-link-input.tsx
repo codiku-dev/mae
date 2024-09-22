@@ -107,7 +107,7 @@ export function DialogLinkInput({
     >
       <DialogContent className="interactive" id="ai-dialog-link-learn">
         <DialogHeader>
-          <DialogTitle>Search in:</DialogTitle>
+          <DialogTitle>Add documentation from :</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="relative mt-4 space-y-4">
