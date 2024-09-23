@@ -42,7 +42,7 @@ const BadgeSuggestionList = (p: Props) => {
               <div className="inline-block">
                 <Badge
                   id={'ai-badge-' + suggestion.link}
-                  className=" h-6 interactive pr-1 flex items-center cursor-pointer"
+                  className="border-sky-100 shadow-lg h-6 interactive pr-1 flex items-center cursor-pointer"
                 >
 
                   <span>

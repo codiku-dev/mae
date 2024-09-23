@@ -78,75 +78,73 @@ export function HomePage() {
 
   const handleSubmit = async (submittedText: string) => {
     stopAndResetAll();
-    setTimeout(async () => {
-      // remove all @docs and @web from submittedText
-      submittedText = submittedText.replace(/@docs/g, '');
-      submittedText = submittedText.replace(/@web/g, '');
-      let responseContent = '';
-      setIsAIWorking(true);
-      setSubmitedPrompt(submittedText);
-      setStreamedResponse('');
-      setIsLoading(true);
-      setIsStreamingFinished(false);
-      setValue('');
-      setError('');
+    // remove all @docs and @web from submittedText
+    submittedText = submittedText.replace(/@docs/g, '');
+    submittedText = submittedText.replace(/@web/g, '');
+    let responseContent = '';
+    setIsAIWorking(true);
+    setSubmitedPrompt(submittedText);
+    setStreamedResponse('');
+    setIsLoading(true);
+    setIsStreamingFinished(false);
+    setValue('');
+    setError('');
 
-      if (!getCurrentConversation()) {
-        await createNewConversation(submittedText.slice(0, 30) + '...');
-      }
+    if (!getCurrentConversation()) {
+      await createNewConversation(submittedText.slice(0, 30) + '...');
+    }
 
-      if (currentSearchSuggestions.length > 0) {
-        console.log("invoke to get relevant doc")
-        const context = await window.electron.ipcRenderer.invoke(
-          'langchain-find-relevant-document',
-          submittedText,
-        );
-        console.log("context found")
-        addMessageToCurrentConversation({
-          role: 'user',
-          content: `Answer the question based on the documentation provided. ONLY if code is asked include the imports in answer, and only if code is asked provide full code. Only if code is asked sure to use the right programming language.
+    if (currentSearchSuggestions.length > 0) {
+      console.log("invoke to get relevant doc")
+      const context = await window.electron.ipcRenderer.invoke(
+        'langchain-find-relevant-document',
+        submittedText,
+      );
+      console.log("context found")
+      addMessageToCurrentConversation({
+        role: 'user',
+        content: `Answer the question based on the documentation provided. ONLY if code is asked include the imports in answer, and only if code is asked provide full code. Only if code is asked sure to use the right programming language.
           Context: ${context}
           Question: ${submittedText}`,
-        });
-      } else {
-        addMessageToCurrentConversation({
-          role: 'user',
-          content: submittedText,
-        });
-      }
-      ollamaService.requestLlamaStream(
-        getCurrentConversation()?.messages || [],
-        (chunk) => {
-          responseContent += chunk.message.content;
-          if (chunk.done === false) {
-            setStreamedResponse((prev) => prev + chunk.message.content);
-            setIsLoading(false);
-          } else {
-            setIsStreamingFinished(true);
-            setIsAIWorking(false);
-            setIsLoading(false);
-            addMessageToCurrentConversation({
-              role: 'assistant',
-              content: responseContent,
-            });
-          }
-        },
-        (error) => {
+      });
+    } else {
+      addMessageToCurrentConversation({
+        role: 'user',
+        content: submittedText,
+      });
+    }
+    ollamaService.requestLlamaStream(
+      getCurrentConversation()?.messages || [],
+      (chunk) => {
+        responseContent += chunk.message.content;
+        if (chunk.done === false) {
+          setStreamedResponse((prev) => prev + chunk.message.content);
+          setIsLoading(false);
+        } else {
+          setIsStreamingFinished(true);
+          setIsAIWorking(false);
+          setIsLoading(false);
           addMessageToCurrentConversation({
             role: 'assistant',
             content: responseContent,
           });
-          if (error.name !== 'AbortError') {
-            console.log('ERROR aborted...');
-          } else {
-            console.log('ERROR', error);
-          }
-          setIsLoading(false);
-          setIsStreamingFinished(true);
-          setIsAIWorking(false);
-        },
-      );
-    }, 500);
+        }
+      },
+      (error) => {
+        addMessageToCurrentConversation({
+          role: 'assistant',
+          content: responseContent,
+        });
+        if (error.name !== 'AbortError') {
+          console.log('ERROR aborted...');
+        } else {
+          console.log('ERROR', error);
+        }
+        setIsLoading(false);
+        setIsStreamingFinished(true);
+        setIsAIWorking(false);
+      },
+    );
   };
 
   const clearButton = (

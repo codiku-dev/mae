@@ -23,8 +23,8 @@ const ENTRY_IDS = {
   ADD_DOC: 2
 }
 const optionList = [
-  // { id: 1, display: 'web' },
-  { id: 2, display: 'Add doc', type: 'doc' },
+  { id: 1, display: 'web' },
+  { id: 2, display: 'Add doc', type: 'add-doc' },
 ];
 export const Searchbar = (p: Props) => {
   let inputRef = useRef<HTMLInputElement>();
@@ -60,9 +60,7 @@ export const Searchbar = (p: Props) => {
   };
   const handleDialogClose = () => {
     setIsDialogOpen(false);
-    // remove any part that start with @[+ Add doc]* from the input but keep the rest around spaces
     p.onChange(p.value.replace(/@\[\Add doc\]\S+\s?/, '').trim());
-    // setCurrentSuggestion(undefined);
     focusInput();
   };
 
@@ -213,7 +211,6 @@ export const mentionInListStyle = {
     marginTop: 10,
     display: 'inline-block',
     width: '100%',
-    color: 'black',
 
     // Removed all style properies
     highlighter: {
@@ -237,10 +234,11 @@ export const mentionInListStyle = {
       backgroundColor: 'white',
       border: '1px solid rgba(0,0,0,0.15)',
       fontSize: 14,
+      borderRadius: '0.2rem',
     },
     item: {
+      borderRadius: '0rem',
       padding: '5px 5px',
-      borderBottom: '1px solid rgba(0,0,0,0.15)',
       '&focused': {
         backgroundColor: '#d1edfd',
       },
@@ -251,4 +249,5 @@ export const mentionInListStyle = {
 const mentionInInputStyle = {
   backgroundColor: '#d1edfd',
   paddingTop: 4,
+
 };

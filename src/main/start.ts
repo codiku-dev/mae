@@ -1,9 +1,6 @@
 import { App, BrowserWindow } from 'electron';
 import { EventListenersService } from './services/event-listeners/event-listener.service';
-import {
-  LangchainService,
-  langchainService,
-} from './services/langchain/langchain-service';
+import { DocVectorStoreService } from './services/doc-vector-store/doc-vector-service';
 
 export async function start(app: App, mainWindow: BrowserWindow) {
   mainWindow.setFocusable(true);
@@ -16,6 +13,6 @@ export async function start(app: App, mainWindow: BrowserWindow) {
     app,
   );
   eventListenerService.addMainEventListeners();
-  LangchainService.mainWindow = mainWindow;
+  DocVectorStoreService.mainWindow = mainWindow;
   console.log('Mia: Starting window.');
 }

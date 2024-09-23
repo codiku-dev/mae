@@ -104,7 +104,7 @@ export function DialogLinkInput({
         onClose();
       }}
     >
-      <DialogContent className="interactive" id="ai-dialog-link-learn">
+      <DialogContent className="top-[15%] interactive" id="ai-dialog-link-learn">
         <DialogHeader>
           <DialogTitle>Add documentation from :</DialogTitle>
         </DialogHeader>
