@@ -6,7 +6,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useAppStore } from '../hooks/use-app-store';
-import { Searchbar } from '../components/features/ai-search/searchbar';
+import { Searchbar } from '../components/features/ai-search/searchbar/searchbar';
 
 export function HomePage() {
   const [value, setValue] = useState<string>('');

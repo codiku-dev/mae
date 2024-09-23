@@ -7,7 +7,6 @@ import {
 import { v4 as uuidv4 } from 'uuid';
 import { LanguageCode, LANGUAGES } from '@/libs/languages';
 import { Model } from '@/types/model-type';
-import { SearchSuggestion } from '../components/features/ai-search/searchbar_';
 import { areUrlsEqual } from '../libs/utils';
 
 const KEYS_TO_NOT_STORE = [
@@ -19,7 +18,6 @@ const KEYS_TO_NOT_STORE = [
   'currentSearchSuggestions',
 ];
 
-export type SearchSuggestionTag = 'web' | 'doc';
 type Command = { command: string; url: string };
 export type WebsiteScrapedContent = {
   commandName?: string;
@@ -31,6 +29,11 @@ export type IndexedWebsite = {
   commandName: string;
   url: string;
   subwebsite: WebsiteScrapedContent[];
+};
+type SearchSuggestion = {
+  id: string;
+  link: string;
+  suggestion: string;
 };
 export type Store = {
   indexedWebsitesContent: IndexedWebsite[];

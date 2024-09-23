@@ -6,7 +6,6 @@ import {
   DialogTitle,
 } from '@/renderer/components/ui/dialog';
 import { Input } from '@/renderer/components/ui/input';
-import { SearchSuggestionTag } from '@/renderer/hooks/use-app-store';
 import { isValidUrl } from '@/renderer/libs/utils';
 import { useToast } from '@/renderer/hooks/use-toast';
 
@@ -14,7 +13,7 @@ interface DialogLinkInputProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (link: string, commandName: string) => void;
-  currentSuggestion: SearchSuggestionTag;
+  currentSuggestion: string;
 }
 
 export function DialogLinkInput({

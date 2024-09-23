@@ -1,15 +1,15 @@
 import { MentionsInput, Mention } from 'react-mentions';
-import { Button } from '../../ui/button';
-import { ArrowRight, Square, PlusCircle, Book } from 'lucide-react';
-import { BadgeSuggestionList } from './badge-suggestion-list';
-import { DialogLinkInput } from './dialog-link-input';
+import { Button } from '../../../ui/button';
+import { ArrowRight, Square, PlusCircle, Book, Globe } from 'lucide-react';
+import { BadgeSuggestionList } from '../badge-suggestion-list';
+import { DialogLinkInput } from '../dialog-link-input';
 import { useRef, useState } from 'react';
 import {
-  SearchSuggestionTag,
   useAppStore,
 } from '@/renderer/hooks/use-app-store';
 import { webScraperService } from '@/main/services/web-scapper/web-scrapper-service';
 import { v4 as uuidv4 } from 'uuid';
+import { mentionInInputStyle, mentionInListStyle } from './searchbar-style';
 
 type Props = {
   value: string;
@@ -20,10 +20,11 @@ type Props = {
   onClickStop: () => void;
 };
 const ENTRY_IDS = {
-  ADD_DOC: 2
+  SEARCH_WEB: 1,
+  ADD_DOC: 2,
 }
 const optionList = [
-  { id: 1, display: 'web' },
+  { id: 1, display: 'web', type: "search-web" },
   { id: 2, display: 'Add doc', type: 'add-doc' },
 ];
 export const Searchbar = (p: Props) => {
@@ -39,7 +40,7 @@ export const Searchbar = (p: Props) => {
   const [isLoading, setisLoading] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [currentSuggestion, setCurrentSuggestion] =
-    useState<SearchSuggestionTag>();
+    useState<string>();
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -109,6 +110,43 @@ export const Searchbar = (p: Props) => {
     }
   };
 
+  const getDropdownItemIcon = () => {
+    switch (currentSuggestion) {
+      case "search-web":
+        return Globe;
+      case "add-doc":
+        return PlusCircle
+      default:
+        return Book
+    }
+  }
+
+  const onSelectSuggestion = (entryId: string | number, entry: string) => {
+    switch (entryId) {
+      case ENTRY_IDS.ADD_DOC:
+        setIsDialogOpen(true);
+        break;
+      case ENTRY_IDS.SEARCH_WEB:
+        break;
+      default:
+        const command = getCommands().find(c => c.command === entry);
+        if (command && command.url) {
+          setCurrentSearchSuggestions([
+            {
+              id: uuidv4(),
+              link: command.url,
+              suggestion: "doc"
+            },
+          ]);
+
+          const newValue = p.value.replace(/(.*)@/, '$1')
+          p.onChange(newValue);
+        }
+        break;
+    }
+    setCurrentSuggestion(entry);
+
+  }
   return (
     <form onSubmit={handleSubmit} className="relative">
       <MentionsInput
@@ -138,35 +176,12 @@ export const Searchbar = (p: Props) => {
           }))]
           }
           style={mentionInInputStyle}
-          onAdd={(entryId, entry) => {
-            setCurrentSuggestion(entry as SearchSuggestionTag);
-            if (entryId === ENTRY_IDS.ADD_DOC) {
-              setIsDialogOpen(true);
-            } else {
-              const command = getCommands().find(c => c.command === entry);
-              if (command) {
-                setCurrentSearchSuggestions([
-
-                  {
-                    id: uuidv4(),
-                    link: command?.url!,
-                    suggestion: "doc"
-                  },
-                ]);
-
-                const newValue = p.value.replace(/(.*)@/, '$1')
-                p.onChange(newValue);
-              }
-            }
-          }}
+          onAdd={onSelectSuggestion}
           renderSuggestion={(entry) => {
+            const Icon = getDropdownItemIcon();
             return (
               <div className="flex items-center gap-2">
-                {entry.id === ENTRY_IDS.ADD_DOC ? (
-                  <PlusCircle className="w-4 h-4" />
-                ) : (
-                  <Book className="w-4 h-4" />
-                )}
+                <Icon className="w-4 h-4" />
                 <span>{entry.display}</span>
               </div>
             );
@@ -197,57 +212,3 @@ export const Searchbar = (p: Props) => {
   );
 };
 
-export const mentionInListStyle = {
-  control: {
-    // fontSize: 14,
-    // fontWeight: 'normal',
-    // color: 'black',
-
-    paddingTop: 10,
-    paddingLeft: 20,
-  },
-
-  '&singleLine': {
-    marginTop: 10,
-    display: 'inline-block',
-    width: '100%',
-
-    // Removed all style properies
-    highlighter: {
-      padding: 1,
-      border: 'unset',
-    },
-    input: {
-      fontSize: 14,
-      backgroundColor: 'white',
-      paddingLeft: 20,
-      paddingRight: 60, // Add right padding to accommodate the button
-      outline: 'none', // Add this line to remove the focus ring
-      border: '1px solid rgba(0,0,0,0.08)',
-      borderRadius: '2rem',
-      height: 40,
-    },
-  },
-
-  suggestions: {
-    list: {
-      backgroundColor: 'white',
-      border: '1px solid rgba(0,0,0,0.15)',
-      fontSize: 14,
-      borderRadius: '0.2rem',
-    },
-    item: {
-      borderRadius: '0rem',
-      padding: '5px 5px',
-      '&focused': {
-        backgroundColor: '#d1edfd',
-      },
-    },
-  },
-};
-
-const mentionInInputStyle = {
-  backgroundColor: '#d1edfd',
-  paddingTop: 4,
-
-};
