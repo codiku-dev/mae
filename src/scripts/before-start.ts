@@ -21,5 +21,5 @@ export async function beforeStart() {
     console.error('Mia: Error preloading model:', error);
   }
   console.log('Mia: Preloading model done.');
-  console.log('[Before start scripts executed successfully.]');
+  console.log('Mia: [Before start scripts executed successfully.]');
 }

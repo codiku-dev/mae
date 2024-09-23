@@ -35,7 +35,7 @@ export class DocVectorStoreService {
       DocVectorStoreService.mainWindow,
       'Initializing DocVectorStoreService',
     );
-    console.log('Init vector store at ', this.vectorStorePath);
+    console.log('Mia: Init vector store at ', this.vectorStorePath);
     this.llmEmbeddings = new OllamaEmbeddings({
       model: 'mxbai-embed-large',
       baseUrl: 'http://localhost:11434',
@@ -60,7 +60,7 @@ export class DocVectorStoreService {
           DocVectorStoreService.mainWindow,
           'Creating new vector store',
         );
-        console.log('Creating new vector store...');
+        console.log('Mia: Creating new vector store...');
         this.vectorStore = new HNSWLib(this.llmEmbeddings, { space: 'cosine' });
       }
     }
