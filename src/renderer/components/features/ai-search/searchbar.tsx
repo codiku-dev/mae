@@ -24,7 +24,7 @@ const ENTRY_IDS = {
 }
 const optionList = [
   // { id: 1, display: 'web' },
-  { id: 2, display: 'Add doc', type: 'add-doc' },
+  { id: 2, display: 'Add doc', type: 'doc' },
 ];
 export const Searchbar = (p: Props) => {
   let inputRef = useRef<HTMLInputElement>();

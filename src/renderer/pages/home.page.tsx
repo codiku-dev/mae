@@ -104,7 +104,7 @@ export function HomePage() {
         console.log("context found")
         addMessageToCurrentConversation({
           role: 'user',
-          content: `Answer the question based on the documentation provided. If code is asked include the imports in answer. And provide full code. And make sure to use the right programming language.
+          content: `Answer the question based on the documentation provided. ONLY if code is asked include the imports in answer, and only if code is asked provide full code. Only if code is asked sure to use the right programming language.
           Context: ${context}
           Question: ${submittedText}`,
         });

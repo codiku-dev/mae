@@ -48,7 +48,7 @@ const BadgeSuggestionList = (p: Props) => {
                   <span>
                     {p.isLoading ? <span className='flex justify-between'>Learning from {formatLinkForDisplay(suggestion.link)}<LoadingSpinner /></span> :
                       <>
-                        {suggestion.suggestion.toUpperCase()}{' '}
+                        DOC{" "}
                         {getCommands().find(command => command.url === suggestion.link)?.command}
                       </>
                     }

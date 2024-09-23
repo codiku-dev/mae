@@ -6,14 +6,17 @@ import llama3Tokenizer from 'llama3-tokenizer-js';
 import { HNSWLib } from '@langchain/community/vectorstores/hnswlib';
 import { getResourcesPath, logToRenderer } from '@/libs/utils';
 import { WebsiteScrapedContent } from '@/renderer/hooks/use-app-store';
-import { BrowserWindow } from 'electron';
+import { app, BrowserWindow } from 'electron';
+import path from 'path';
+
 export class LangchainService {
   private static instance: LangchainService;
   public static mainWindow: BrowserWindow | null = null;
   private vectorStore: HNSWLib | null = null;
   private llmEmbeddings: OllamaEmbeddings | null = null;
-  private vectorStorePath: string = getResourcesPath(
-    '/assets/vectorStore.index',
+  private vectorStorePath: string = path.join(
+    app.getPath('userData'),
+    'mia-documents-learning-vector-store.index',
   );
 
   private constructor() {
