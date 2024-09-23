@@ -18,10 +18,15 @@ export class DocVectorStoreService {
   private inMemoryVectorStore: MemoryVectorStore | null = null;
   private vectorStorePath: string = path.join(
     app.getPath('userData'),
-    'mia-documents-learning-vector-store.index',
+    'hnswlib.index',
   );
 
-  private constructor() {}
+  private constructor() {
+    this.llmEmbeddings = new OllamaEmbeddings({
+      model: 'mxbai-embed-large',
+      baseUrl: 'http://localhost:11434',
+    });
+  }
 
   public static getInstance(): DocVectorStoreService {
     if (!DocVectorStoreService.instance) {
@@ -31,45 +36,35 @@ export class DocVectorStoreService {
   }
 
   public async init() {
-    logToRenderer(
-      DocVectorStoreService.mainWindow,
-      'Initializing DocVectorStoreService',
-    );
     console.log('Mia: DocVectorStoreService init()');
-
-    this.llmEmbeddings = new OllamaEmbeddings({
-      model: 'mxbai-embed-large',
-      baseUrl: 'http://localhost:11434',
-    });
-
-    if (!this.vectorStore) {
-      logToRenderer(
-        DocVectorStoreService.mainWindow,
-        'Vector store not initialized',
-      );
-      console.log(
-        'CHECKING THE PATH',
-        this.vectorStorePath,
-        fs.existsSync(this.vectorStorePath),
-      );
+    try {
       if (fs.existsSync(this.vectorStorePath + '/docstore.json')) {
-        logToRenderer(
-          DocVectorStoreService.mainWindow,
-          'Loading existing vector store',
+        console.log(
+          'Loading existing vector store from path : ' + this.vectorStorePath,
         );
-        console.log('Loading existing vector store...');
         this.vectorStore = await HNSWLib.load(
           this.vectorStorePath,
-          this.llmEmbeddings,
+          this.llmEmbeddings!,
         );
+        console.log('Existing vector store loaded successfully');
       } else {
-        logToRenderer(
-          DocVectorStoreService.mainWindow,
-          'Creating new vector store',
-        );
-        console.log('Mia: Creating new vector store...');
-        this.vectorStore = new HNSWLib(this.llmEmbeddings, { space: 'cosine' });
+        console.log('No existing vector store found, creating new one');
+        this.vectorStore = new HNSWLib(this.llmEmbeddings!, {
+          space: 'cosine',
+        });
+        // Optionally add an initial document
+        await this.vectorStore.addDocuments([
+          new Document({
+            pageContent: 'Initial document',
+            metadata: { source: 'initialization' },
+          }),
+        ]);
+        await this.vectorStore.save(this.vectorStorePath);
+        console.log('New vector store created and saved');
       }
+    } catch (error) {
+      console.error('Error initializing vector store:', error);
+      throw new Error('Failed to initialize vector store');
     }
   }
 
@@ -118,12 +113,12 @@ export class DocVectorStoreService {
     console.log(
       'is the vector store ok ?',
       this.vectorStore?.docstore._docs.size,
+      this.vectorStore?.docstore._docs.entries(),
     );
-    const retriever = this.vectorStore?.asRetriever(qty);
+    const response = await this.vectorStore?.similaritySearch(query, qty);
     console.log('retriever is set');
-    const response = await retriever?.invoke(query);
+    // const response = await retriever?.invoke(query);
     logToRenderer(DocVectorStoreService.mainWindow, 'Search completed');
-    console.log('the response', response);
     return response;
   }
 
@@ -204,6 +199,7 @@ export class DocVectorStoreService {
     }
     this.vectorStore!.docstore._docs.delete(doc.recordId);
     await this.vectorStore!.save(this.vectorStorePath);
+
     logToRenderer(
       DocVectorStoreService.mainWindow,
       'Document deleted and vector store saved',
@@ -213,13 +209,8 @@ export class DocVectorStoreService {
 
   public async deleteAllDocs() {
     logToRenderer(DocVectorStoreService.mainWindow, 'Deleting all documents');
-    // this.vectorStore!.docstore._docs.clear();
-    await this.vectorStore?.delete({ directory: this.vectorStorePath });
-    // await this.vectorStore!.save(this.vectorStorePath);
-    logToRenderer(
-      DocVectorStoreService.mainWindow,
-      'All documents deleted and vector store saved',
-    );
+    await this.vectorStore!.delete({ directory: this.vectorStorePath });
+    // await this.vectorStore?.save(this.vectorStorePath);
   }
 
   chunkifyDocs = async (

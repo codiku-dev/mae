@@ -10,6 +10,7 @@ import {
 import { webScraperService } from '@/main/services/web-scapper/web-scrapper-service';
 import { v4 as uuidv4 } from 'uuid';
 import { mentionInInputStyle, mentionInListStyle } from './searchbar-style';
+import { logToMain } from '@/renderer/libs/utils';
 
 type Props = {
   value: string;
@@ -156,9 +157,12 @@ export const Searchbar = (p: Props) => {
   }
 
   const onDeleteBadge = () => {
-    setCurrentSuggestionId(undefined)
+    logToMain("the current suggestion au delete" + JSON.stringify(currentSuggestion))
+    if (currentSuggestionId === SUGGESTION_OPTIONS_ID.SEARCH_WEB) {
+      window.electron.ipcRenderer.invoke('delete-all-doc-in-memory');
+    }
     setCurrentSearchSuggestions([])
-    window.electron.ipcRenderer.invoke('delete-all-doc-in-memory');
+    setCurrentSuggestionId(undefined)
   }
   return (
     <form onSubmit={handleSubmit} className="relative">

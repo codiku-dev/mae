@@ -12,9 +12,9 @@ export async function start(app: App, mainWindow: BrowserWindow) {
     mainWindow,
     app,
   );
-  await DocVectorStoreService.getInstance().init();
   eventListenerService.addMainEventListeners();
 
   DocVectorStoreService.mainWindow = mainWindow;
+  await DocVectorStoreService.getInstance().init();
   console.log('Mia: Starting window.');
 }

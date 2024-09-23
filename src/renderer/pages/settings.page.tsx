@@ -24,8 +24,11 @@ export function SettingsPage() {
   const {
     isAppLaunchedOnStartup,
     assistantLanguage,
+    conversationHistory,
     setIsAppLaunchedOnStartup,
     setAssistantLanguage,
+    indexedWebsitesContent
+
   } = useAppStore();
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
@@ -107,9 +110,11 @@ export function SettingsPage() {
 
         <StartupSection name="isAppLaunchedOnStartup" />
 
-        <HistorySection />
+        {conversationHistory.length > 0 && <HistorySection />}
 
-        <IndexedWebsiteSection />
+        {indexedWebsitesContent.length > 0 && (
+          <IndexedWebsiteSection />
+        )}
 
         <Button type="submit" disabled={isLoading}>
           {!isLoading ? (
