@@ -24,8 +24,8 @@ const ENTRY_IDS = {
   ADD_DOC: 2,
 }
 const optionList = [
-  { id: 1, display: 'web', type: "search-web" },
-  { id: 2, display: 'Add doc', type: 'add-doc' },
+  { id: ENTRY_IDS.SEARCH_WEB, display: 'web', type: "search-web" },
+  { id: ENTRY_IDS.ADD_DOC, display: 'Add doc', type: 'add-doc' },
 ];
 export const Searchbar = (p: Props) => {
   let inputRef = useRef<HTMLInputElement>();
@@ -39,9 +39,9 @@ export const Searchbar = (p: Props) => {
 
   const [isLoading, setisLoading] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [currentSuggestion, setCurrentSuggestion] =
-    useState<string>();
-
+  const [currentSuggestionId, setCurrentSuggestionId] =
+    useState<number>();
+  const currentSuggestion = optionList.find(o => o.id === currentSuggestionId);
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -73,7 +73,7 @@ export const Searchbar = (p: Props) => {
         {
           id: uuidv4(),
           link,
-          suggestion: currentSuggestion,
+          suggestion: currentSuggestion?.display,
         },
       ]);
 
@@ -109,12 +109,13 @@ export const Searchbar = (p: Props) => {
       }
     }
   };
+  console.log('***', currentSuggestionId)
+  const getDropdownItemIcon = (suggestionId: number) => {
 
-  const getDropdownItemIcon = () => {
-    switch (currentSuggestion) {
-      case "search-web":
+    switch (suggestionId) {
+      case ENTRY_IDS.SEARCH_WEB:
         return Globe;
-      case "add-doc":
+      case ENTRY_IDS.ADD_DOC:
         return PlusCircle
       default:
         return Book
@@ -144,7 +145,7 @@ export const Searchbar = (p: Props) => {
         }
         break;
     }
-    setCurrentSuggestion(entry);
+    setCurrentSuggestionId(entryId as number);
 
   }
   return (
@@ -173,12 +174,12 @@ export const Searchbar = (p: Props) => {
             id: command.command,
             display: command.command,
             type: 'doc'
-          }))]
-          }
+          })).sort((a, b) => a.display.localeCompare(b.display))
+          ]}
           style={mentionInInputStyle}
           onAdd={onSelectSuggestion}
           renderSuggestion={(entry) => {
-            const Icon = getDropdownItemIcon();
+            const Icon = getDropdownItemIcon(entry.id as number);
             return (
               <div className="flex items-center gap-2">
                 <Icon className="w-4 h-4" />
@@ -205,7 +206,7 @@ export const Searchbar = (p: Props) => {
           isOpen={isDialogOpen}
           onClose={handleDialogClose}
           onSubmit={handleDialogSubmit}
-          currentSuggestion={currentSuggestion}
+          currentSuggestion={currentSuggestion.display}
         />
       )}
     </form>

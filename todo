@@ -5,20 +5,21 @@ V2
 - [x] virtualize list language
 - [x]Page de settings
 - [x] Language selector
-- launch on Startup
-- Créer un mode a partir de preprompt
-- Historique des chats
+- [x] launch on Startup
+- Fix : delete de doc in vector db not working
+- [ ] Rechercher sur internet
 
 ==============================================
 
 V3
 
-Rechercher sur internet
-Apprentissage à partir de lien
-Mémoire morte
-Envoyer fichier
-Make the app signed
-
+- [] spliter les vector database en plusieurs index
+- [x] Apprentissage à partir de lien
+- [x] Mémoire morte
+      Envoyer fichier
+      Make the app signed
+- Créer un mode a partir de preprompt
+- Historique des chats
 - Own server with cron to get the ollama models and return them
 - Retirer model par défaut lors de install
 

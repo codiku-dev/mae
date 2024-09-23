@@ -23,7 +23,7 @@ export function Toaster() {
               )}
             </div>
             {action}
-            <ToastClose />
+            <ToastClose className='interactive' id="ai-toast-close-button" />
           </Toast>
         );
       })}

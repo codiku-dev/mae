@@ -1,6 +1,7 @@
 import { BrowserWindow, ipcMain } from 'electron';
 import { WebsiteScrapedContent } from '@/renderer/hooks/use-app-store';
 import { docVectorStoreService } from '../doc-vector-store/doc-vector-service';
+import { logToRenderer } from '@/libs/utils';
 
 export function addLangchainListeners(mainWindow: BrowserWindow | null) {
   ipcMain.handle('sandbox-request', () => {});
@@ -14,12 +15,18 @@ export function addLangchainListeners(mainWindow: BrowserWindow | null) {
 
   ipcMain.handle(
     'delete-langchain-doc',
-    async (event, url: string, partial: boolean) => {
+    async (event, data: { url: string; partial: boolean }) => {
       const docsToDelete = await docVectorStoreService.getDocsByMetadata(
-        { url: url },
-        partial,
+        'url',
+        data.url,
+        data.partial,
       );
+
       const deletePromises = docsToDelete.map((doc) => {
+        logToRenderer(
+          mainWindow,
+          `Preparing delete promise for documentId ${doc.recordId}`,
+        );
         return docVectorStoreService.deleteDoc(doc.recordId);
       });
 

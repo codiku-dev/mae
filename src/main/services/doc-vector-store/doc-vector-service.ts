@@ -98,11 +98,12 @@ export class DocVectorStoreService {
   }
 
   public async getDoc(
-    id: string,
+    recordId: string,
   ): Promise<{ recordId: string; document: Document } | null> {
-    logToRenderer(DocVectorStoreService.mainWindow, 'Getting document by ID');
+    logToRenderer(DocVectorStoreService.mainWindow, `getDoc (${recordId})`);
     const entries = this.vectorStore!.docstore._docs.entries();
-    const doc = Array.from(entries).find((doc) => doc[1].id === id);
+
+    const doc = Array.from(entries).find((doc) => doc[0] === recordId);
     if (!doc) {
       logToRenderer(DocVectorStoreService.mainWindow, 'Document not found');
       return null;
@@ -112,7 +113,8 @@ export class DocVectorStoreService {
   }
 
   public async getDocsByMetadata(
-    metadata: Record<string, string>,
+    metaDataKey: string,
+    metaDataValue: string,
     partial = false,
   ): Promise<{ recordId: string; document: Document }[]> {
     logToRenderer(
@@ -120,24 +122,25 @@ export class DocVectorStoreService {
       'Getting documents by metadata',
     );
     const entries = this.vectorStore?.docstore._docs.entries();
+    logToRenderer(DocVectorStoreService.mainWindow, `entries : ${entries}`);
     const matchingDocs: { recordId: string; document: Document }[] = [];
     if (entries) {
       for (const [recordId, document] of entries) {
-        const isMatch = Object.entries(metadata).every(
-          ([key, value]) =>
-            document.metadata[key] === value ||
-            (partial && document.metadata[key]?.includes(value)),
-        );
-
-        if (isMatch) {
-          matchingDocs.push({ recordId, document });
+        if (partial === false) {
+          if (document.metadata[metaDataKey] === metaDataValue) {
+            matchingDocs.push({ recordId, document });
+          }
+        } else {
+          if (document.metadata[metaDataKey]?.includes(metaDataValue)) {
+            matchingDocs.push({ recordId, document });
+          }
         }
       }
 
       if (matchingDocs.length > 0) {
         logToRenderer(
           DocVectorStoreService.mainWindow,
-          'Matching documents found',
+          `Matching documents found ${matchingDocs.length}`,
         );
         return matchingDocs;
       } else {
@@ -155,9 +158,13 @@ export class DocVectorStoreService {
     return [];
   }
 
-  public async deleteDoc(documentId: string) {
-    logToRenderer(DocVectorStoreService.mainWindow, 'Deleting document');
-    const doc = await this.getDoc(documentId);
+  public async deleteDoc(recordId: string) {
+    logToRenderer(
+      DocVectorStoreService.mainWindow,
+      `In function deleteDoc (${recordId})`,
+    );
+    const doc = await this.getDoc(recordId);
+
     if (!doc) {
       logToRenderer(
         DocVectorStoreService.mainWindow,
@@ -171,7 +178,7 @@ export class DocVectorStoreService {
       DocVectorStoreService.mainWindow,
       'Document deleted and vector store saved',
     );
-    return documentId;
+    return recordId;
   }
 
   public async deleteAllDocs() {

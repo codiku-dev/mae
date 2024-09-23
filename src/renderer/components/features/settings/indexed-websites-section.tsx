@@ -17,7 +17,7 @@ import {
 } from '@/renderer/components/ui/accordion';
 import { formatKbSize } from '@/renderer/libs/utils';
 
-export function DeleteLearnedDataSection() {
+export function IndexedWebsiteSection() {
   const {
     indexedWebsitesContent,
     setIndexedWebsitesContent,
@@ -51,8 +51,8 @@ export function DeleteLearnedDataSection() {
     if (isConfirmed) {
       console.log("start delete")
       deleteIndexedWebsite(url);
-      const docsToDelete = await window.electron.ipcRenderer.invoke('delete-langchain-doc', url, true);
-      console.log("docs to delete", docsToDelete)
+      const docsToDelete = await window.electron.ipcRenderer.invoke('delete-langchain-doc', { url: url, partial: true });
+      console.log("main : docs to delete", docsToDelete)
       toast({
         title: 'Indexed website deleted',
         description: `All data for ${url} has been removed.`,
@@ -60,34 +60,27 @@ export function DeleteLearnedDataSection() {
     }
   };
 
-  const handleDeleteScrapedContent = (
-    indexedUrl: string,
-    scrapedUrl: string,
+  const deleteSubwebsitesDocs = async (
+    parentUrl: string,
+    childUrl: string,
   ) => {
     const isConfirmed = window.confirm(
-      `Are you sure you want to delete the scraped content for ${scrapedUrl}?`,
+      `Are you sure you want to delete the scraped content for ${childUrl}?`,
     );
 
     if (isConfirmed) {
-      deleteWebsiteScrapedContent(indexedUrl, scrapedUrl);
-      toast({
-        title: 'Scraped content deleted',
-        description: `Scraped content for ${scrapedUrl} has been removed.`,
-      });
+      const deletedDocs = await window.electron.ipcRenderer.invoke('delete-langchain-doc', { url: childUrl, partial: false });
+      if (deletedDocs.length > 0) {
+        deleteWebsiteScrapedContent(parentUrl, childUrl);
+        toast({
+          title: 'Scraped content deleted',
+          description: `Scraped content for ${childUrl} has been removed.`,
+        });
+      }
     }
   };
 
-  const handleClickTrash = async (parentURL: string, childUrl: string) => {
-    console.log("click trash")
 
-    const deletedDocs = await window.electron.ipcRenderer.invoke('delete-langchain-doc', childUrl);
-    console.log("docs to delete", deletedDocs)
-    handleDeleteScrapedContent(
-      parentURL,
-      childUrl,
-    );
-  }
-  console.table(getCommands())
   return (
     <Card>
       <CardHeader>
@@ -118,7 +111,7 @@ export function DeleteLearnedDataSection() {
                             size="sm"
                             onClick={(e) => {
                               e.preventDefault();
-                              handleClickTrash(indexedWebsite.url, content.url)
+                              deleteSubwebsitesDocs(indexedWebsite.url, content.url)
 
                             }}
                           >
