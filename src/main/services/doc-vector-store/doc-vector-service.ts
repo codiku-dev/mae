@@ -21,9 +21,7 @@ export class DocVectorStoreService {
     'mia-documents-learning-vector-store.index',
   );
 
-  private constructor() {
-    this.init();
-  }
+  private constructor() {}
 
   public static getInstance(): DocVectorStoreService {
     if (!DocVectorStoreService.instance) {
@@ -32,30 +30,13 @@ export class DocVectorStoreService {
     return DocVectorStoreService.instance;
   }
 
-  public async addDocInMemory(htmlFiles: WebsiteScrapedContent[]) {
-    if (!this.inMemoryVectorStore) {
-      this.inMemoryVectorStore = new MemoryVectorStore(this.llmEmbeddings!);
-    }
-    const documentsChunks = await this.chunkifyDocs(htmlFiles);
-    this.inMemoryVectorStore?.addDocuments(documentsChunks);
-  }
-
-  public async searchDocsInMemory(query: string, qty: number) {
-    const result = await this.inMemoryVectorStore?.similaritySearch(query, qty);
-    console.log('result', result);
-    return result;
-  }
-
-  public async deleteAllDocsInMemory() {
-    this.inMemoryVectorStore = null;
-  }
-
   public async init() {
     logToRenderer(
       DocVectorStoreService.mainWindow,
       'Initializing DocVectorStoreService',
     );
-    console.log('Mia: Init vector store at ', this.vectorStorePath);
+    console.log('Mia: DocVectorStoreService init()');
+
     this.llmEmbeddings = new OllamaEmbeddings({
       model: 'mxbai-embed-large',
       baseUrl: 'http://localhost:11434',
@@ -66,7 +47,12 @@ export class DocVectorStoreService {
         DocVectorStoreService.mainWindow,
         'Vector store not initialized',
       );
-      if (fs.existsSync(this.vectorStorePath + '')) {
+      console.log(
+        'CHECKING THE PATH',
+        this.vectorStorePath,
+        fs.existsSync(this.vectorStorePath),
+      );
+      if (fs.existsSync(this.vectorStorePath + '/docstore.json')) {
         logToRenderer(
           DocVectorStoreService.mainWindow,
           'Loading existing vector store',
@@ -85,6 +71,24 @@ export class DocVectorStoreService {
         this.vectorStore = new HNSWLib(this.llmEmbeddings, { space: 'cosine' });
       }
     }
+  }
+
+  public async addDocInMemory(htmlFiles: WebsiteScrapedContent[]) {
+    if (!this.inMemoryVectorStore) {
+      this.inMemoryVectorStore = new MemoryVectorStore(this.llmEmbeddings!);
+    }
+    const documentsChunks = await this.chunkifyDocs(htmlFiles);
+    this.inMemoryVectorStore?.addDocuments(documentsChunks);
+  }
+
+  public async searchDocsInMemory(query: string, qty: number) {
+    const result = await this.inMemoryVectorStore?.similaritySearch(query, qty);
+    console.log('result', result);
+    return result;
+  }
+
+  public async deleteAllDocsInMemory() {
+    this.inMemoryVectorStore = null;
   }
 
   public async addDocs(htmlFiles: WebsiteScrapedContent[]) {
@@ -111,7 +115,12 @@ export class DocVectorStoreService {
   public async searchDocs(query: string, qty: number) {
     logToRenderer(DocVectorStoreService.mainWindow, 'Searching docs');
     console.log('Searching docs');
+    console.log(
+      'is the vector store ok ?',
+      this.vectorStore?.docstore._docs.size,
+    );
     const retriever = this.vectorStore?.asRetriever(qty);
+    console.log('retriever is set');
     const response = await retriever?.invoke(query);
     logToRenderer(DocVectorStoreService.mainWindow, 'Search completed');
     console.log('the response', response);
@@ -204,8 +213,9 @@ export class DocVectorStoreService {
 
   public async deleteAllDocs() {
     logToRenderer(DocVectorStoreService.mainWindow, 'Deleting all documents');
-    this.vectorStore!.docstore._docs.clear();
-    await this.vectorStore!.save(this.vectorStorePath);
+    // this.vectorStore!.docstore._docs.clear();
+    await this.vectorStore?.delete({ directory: this.vectorStorePath });
+    // await this.vectorStore!.save(this.vectorStorePath);
     logToRenderer(
       DocVectorStoreService.mainWindow,
       'All documents deleted and vector store saved',
@@ -338,32 +348,5 @@ export class DocVectorStoreService {
   };
 }
 
+// Update the export to be async
 export const docVectorStoreService = DocVectorStoreService.getInstance();
-
-export async function demo() {
-  // const htmlFiles = await DocVectorStoreService.getAllHTMLFilesContent(
-  //   getResourcesPath('src/main/services/langchain/docs'),
-  // );
-  // await DocVectorStoreService.addDocs(htmlFiles);
-  // const searchResults = await DocVectorStoreService.searchDocs(
-  //   'How to add an avatar to a button?',
-  //   1,
-  // );
-}
-
-// getAllHTMLFilesContent = async (
-//   folderPath: string,
-// ): Promise<Array<{ url: string; content: string }>> => {
-//   const htmlFilesName = fs
-//     .readdirSync(folderPath)
-//     .filter((file) => file.endsWith('.html'));
-//   console.log('htmlFiles', htmlFilesName);
-//   const filesData: Array<{ url: string; content: string }> = [];
-//   for (const url of htmlFilesName) {
-//     const filePath = path.join(folderPath, url);
-//     const content = await fs.promises.readFile(filePath, 'utf-8');
-//     filesData.push({ url, content });
-//   }
-
-//   return filesData;
-// };

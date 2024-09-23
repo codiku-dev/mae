@@ -5,7 +5,7 @@ import { start } from './start';
 export function initWindow() {
   // const { width, height } = screen.getPrimaryDisplay().workAreaSize;
   // global.DEBUG = !app.isPackaged;
-  global.DEBUG = false;
+  global.DEBUG = true;
   let mainWindow: BrowserWindow | null = new BrowserWindow({
     height: screen.getPrimaryDisplay().workAreaSize.height,
     width: screen.getPrimaryDisplay().workAreaSize.width,
