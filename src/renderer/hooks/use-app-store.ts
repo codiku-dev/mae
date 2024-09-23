@@ -30,7 +30,7 @@ export type IndexedWebsite = {
   url: string;
   subwebsite: WebsiteScrapedContent[];
 };
-type SearchSuggestion = {
+export type SearchSuggestion = {
   id: string;
   link: string;
   suggestion: string;
@@ -100,6 +100,12 @@ const useAppStore = create(
             lastFetchAvailableModelsISODate: '',
             indexedWebsitesContent: [],
           });
+        },
+        getCommandByUrl: (url: string) => {
+          const { getCommands } = get();
+          return getCommands().find((website) =>
+            areUrlsEqual(website.url, url),
+          );
         },
         getCommands: () => {
           const { indexedWebsitesContent } = get();

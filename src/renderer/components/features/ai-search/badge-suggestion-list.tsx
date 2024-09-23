@@ -7,7 +7,7 @@ import {
 } from '@/renderer/components/ui/tooltip';
 import { X } from 'lucide-react';
 import { Badge } from '../../ui/badge';
-import { useAppStore } from '@/renderer/hooks/use-app-store';
+import { SearchSuggestion, useAppStore } from '@/renderer/hooks/use-app-store';
 import { Skeleton } from '../../ui/skeleton';
 import { LoadingSpinner } from '../../ui/loading-spinner';
 import { SUGGESTION_OPTIONS_ID } from './searchbar/searchbar';
@@ -20,7 +20,7 @@ interface Link {
 
 interface Props {
   isLoading: boolean;
-  currentSuggestion: { id: number; display: string, type: string };
+  currentSuggestion: SearchSuggestion;
   onRemoveLink: (id: string) => void;
 }
 

@@ -21,6 +21,7 @@ export function IndexedWebsiteSection() {
   const {
     indexedWebsitesContent,
     setIndexedWebsitesContent,
+    setCurrentSearchSuggestions,
     deleteIndexedWebsite,
     deleteWebsiteScrapedContent,
     getCommands,
@@ -36,6 +37,7 @@ export function IndexedWebsiteSection() {
     if (isConfirmed) {
       setIndexedWebsitesContent([]);
       window.electron.ipcRenderer.invoke('delete-all-langchain-doc');
+      setCurrentSearchSuggestions([])
       toast({
         title: 'All learned data deleted',
         description: 'All learned website data has been removed.',

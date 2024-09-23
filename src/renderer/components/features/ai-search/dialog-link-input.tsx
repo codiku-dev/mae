@@ -9,29 +9,27 @@ import { Input } from '@/renderer/components/ui/input';
 import { isValidUrl } from '@/renderer/libs/utils';
 import { useToast } from '@/renderer/hooks/use-toast';
 import { Globe, Plus } from 'lucide-react';
-import { SUGGESTION_OPTIONS_ID } from './searchbar/searchbar';
+import { optionList, SUGGESTION_OPTIONS_ID } from './searchbar/searchbar';
+import { SearchSuggestion } from '@/renderer/hooks/use-app-store';
 
 interface DialogLinkInputProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (link: string, commandName: string) => void;
-  currentSuggestion: {
-    id: number;
-    display: string;
-    type: string;
-  };
+  dialogMode: "1" | "2"
 }
 
 export function DialogLinkInput({
   isOpen,
   onClose,
   onSubmit,
-  currentSuggestion,
+  dialogMode,
 }: DialogLinkInputProps) {
   const [linkInput, setLinkInput] = useState('');
   const [commandName, setCommandName] = useState('');
   const commandNameRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+  const currentOption = optionList.find(option => option.id == dialogMode);
 
   const submitLink = (link: string, command: string) => {
     console.log("the link is ", link)
@@ -86,7 +84,7 @@ export function DialogLinkInput({
           setLinkInput(pastedText);
           console.log("setLinkInput to ", pastedText)
           setCommandName(pastedText.split('://')[1]?.split(/[.\-_]/)[0] || '');
-          if (currentSuggestion.id == SUGGESTION_OPTIONS_ID.SEARCH_WEB) {
+          if (currentOption?.id == SUGGESTION_OPTIONS_ID.SEARCH_WEB) {
             submitLink(pastedText, pastedText.split('://')[1]?.split(/[.\-_]/)[0] || '');
           }
           commandNameRef.current?.focus();
@@ -115,7 +113,7 @@ export function DialogLinkInput({
         <DialogHeader>
           <DialogTitle>
             <div className='flex gap-2'>
-              {currentSuggestion.id == SUGGESTION_OPTIONS_ID.SEARCH_WEB ?
+              {dialogMode == SUGGESTION_OPTIONS_ID.SEARCH_WEB ?
                 <><Globe className="w-4 h-4 mr-2" />Search the web</> :
                 <> <Plus className="w-4 h-4 mr-2" />Add documentation</>
               }
@@ -128,9 +126,9 @@ export function DialogLinkInput({
               value={linkInput}
               onChange={(e) => { setLinkInput(e.target.value); console.log("linkInput is set in onchange to ", linkInput) }}
               placeholder="super-website.com"
-              aria-label={`Enter ${currentSuggestion} link`}
+              aria-label={`Enter ${currentOption?.display} link`}
             />
-            {currentSuggestion.id == SUGGESTION_OPTIONS_ID.ADD_DOC && <Input
+            {currentOption?.id == SUGGESTION_OPTIONS_ID.ADD_DOC && <Input
               ref={commandNameRef}
               value={commandName}
               onChange={(e) => setCommandName(e.target.value.slice(0, 15))}

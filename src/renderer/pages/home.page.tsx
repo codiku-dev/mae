@@ -98,18 +98,16 @@ export function HomePage() {
       console.log("CURRENT SUGGESTION IN SUBMIT", currentSearchSuggestions[0].id)
 
       let context = ""
-      if (currentSearchSuggestions[0].suggestion === "web") {
+      if (currentSearchSuggestions[0].id === SUGGESTION_OPTIONS_ID.SEARCH_WEB) {
         context = await window.electron.ipcRenderer.invoke(
           'search-doc-in-memory',
           submittedText,
         );
       } else {
-        if (currentSearchSuggestions[0].suggestion) {
-          context = await window.electron.ipcRenderer.invoke(
-            'langchain-find-relevant-document',
-            submittedText,
-          );
-        }
+        context = await window.electron.ipcRenderer.invoke(
+          'langchain-find-relevant-document',
+          submittedText,
+        );
       }
       console.log("context found====>", context)
       addMessageToCurrentConversation({

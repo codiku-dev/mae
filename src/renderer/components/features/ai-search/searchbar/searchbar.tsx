@@ -11,6 +11,7 @@ import { webScraperService } from '@/main/services/web-scapper/web-scrapper-serv
 import { v4 as uuidv4 } from 'uuid';
 import { mentionInInputStyle, mentionInListStyle } from './searchbar-style';
 import { logToMain } from '@/renderer/libs/utils';
+import { dialog } from 'electron';
 
 type Props = {
   value: string;
@@ -21,10 +22,10 @@ type Props = {
   onClickStop: () => void;
 };
 export const SUGGESTION_OPTIONS_ID = {
-  SEARCH_WEB: 1,
-  ADD_DOC: 2,
+  SEARCH_WEB: "1",
+  ADD_DOC: "2",
 }
-const optionList = [
+export const optionList = [
   { id: SUGGESTION_OPTIONS_ID.SEARCH_WEB, display: 'web', type: "search-web" },
   { id: SUGGESTION_OPTIONS_ID.ADD_DOC, display: 'Add doc', type: 'add-doc' },
 ];
@@ -33,6 +34,7 @@ export const Searchbar = (p: Props) => {
 
   const {
     setCurrentSearchSuggestions,
+    currentSearchSuggestions,
     isWebsiteIndexed,
     addWebsiteToIndexedWebsites,
     getCommands
@@ -40,9 +42,11 @@ export const Searchbar = (p: Props) => {
 
   const [isLoading, setisLoading] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [currentSuggestionId, setCurrentSuggestionId] =
-    useState<number>();
-  const currentSuggestion = optionList.find(o => o.id === currentSuggestionId);
+  const [dialogMode, setDialogMode] =
+    useState<"1" | "2">();
+  const selectedSuggestion = currentSearchSuggestions?.[0]
+  logToMain(`the current suggestion is ${JSON.stringify(currentSearchSuggestions)}`)
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -91,36 +95,43 @@ export const Searchbar = (p: Props) => {
     }
   }
   const handleDialogSubmit = async (link: string, command: string) => {
-    if (currentSuggestion) {
-      // first add the "@suggestion" to the input
+
+    // first add the "@suggestion" to the input
+
+
+    // Remove any word starting with "@" from the input
+    // let newValue = p.value.replace(/@ \Add doc\S+\s?/, '').trim();
+
+    // remove also anything of this form @[anything](anything) 
+    let newValue = p.value.replace(/@\[.*?\]\S+\s?/, '')
+    p.onChange(newValue);
+    logToMain(`the dialog mode is  ${dialogMode}`)
+    if (dialogMode == SUGGESTION_OPTIONS_ID.ADD_DOC) {
+      fetchAndStoreDocumentation(link, command);
       setCurrentSearchSuggestions([
-        // ...currentSearchSuggestions,
         {
-          id: uuidv4(),
+          id: SUGGESTION_OPTIONS_ID.ADD_DOC,
           link,
-          suggestion: currentSuggestion?.display,
+          suggestion: selectedSuggestion?.suggestion,
         },
       ]);
+    } else if (dialogMode == SUGGESTION_OPTIONS_ID.SEARCH_WEB) {
+      setisLoading(true);
+      setCurrentSearchSuggestions([
+        {
+          id: SUGGESTION_OPTIONS_ID.SEARCH_WEB,
+          link,
+          suggestion: selectedSuggestion?.suggestion,
+        },
+      ]);
+      await window.electron.ipcRenderer.invoke('delete-all-doc-in-memory');
+      const websiteContent = await webScraperService.fetchWebsiteContent(link);
+      await window.electron.ipcRenderer.invoke('add-doc-in-memory', websiteContent);
 
-      // Remove any word starting with "@" from the input
-      // let newValue = p.value.replace(/@ \Add doc\S+\s?/, '').trim();
-
-      // remove also anything of this form @[anything](anything) 
-      let newValue = p.value.replace(/@\[.*?\]\S+\s?/, '')
-      p.onChange(newValue);
-
-      if (currentSuggestion.id == SUGGESTION_OPTIONS_ID.ADD_DOC) {
-        fetchAndStoreDocumentation(link, command);
-      } else if (currentSuggestion.id == SUGGESTION_OPTIONS_ID.SEARCH_WEB) {
-        setisLoading(true);
-        await window.electron.ipcRenderer.invoke('delete-all-doc-in-memory');
-        const websiteContent = await webScraperService.fetchWebsiteContent(link);
-        await window.electron.ipcRenderer.invoke('add-doc-in-memory', websiteContent);
-        setisLoading(false);
-      }
+      setisLoading(false);
     }
   };
-  const getDropdownItemIcon = (suggestionId: number) => {
+  const getDropdownItemIcon = (suggestionId: string) => {
 
     switch (suggestionId) {
       case SUGGESTION_OPTIONS_ID.SEARCH_WEB:
@@ -132,20 +143,25 @@ export const Searchbar = (p: Props) => {
     }
   }
 
-  const onSelectSuggestion = (entryId: string | number, entry: string) => {
+  const onSelectSuggestion = (entryId: string, entry: string) => {
+    logToMain(`Selecting suggestion ${entryId}`)
     switch (entryId) {
       case SUGGESTION_OPTIONS_ID.ADD_DOC:
       case SUGGESTION_OPTIONS_ID.SEARCH_WEB:
+        logToMain(`Opening dialog for ${entryId}`)
         setIsDialogOpen(true);
+        setDialogMode(entryId as "1" | "2");
         break;
       default:
         const command = getCommands().find(c => c.command === entry);
+        logToMain(`Selecting command ${command?.command} `)
         if (command && command.url) {
+          const newSuggestionId = uuidv4()
           setCurrentSearchSuggestions([
             {
-              id: uuidv4(),
+              id: newSuggestionId,
               link: command.url,
-              suggestion: "doc"
+              suggestion: "doc",
             },
           ]);
         }
@@ -153,16 +169,15 @@ export const Searchbar = (p: Props) => {
     }
     const newValue = p.value.replace(/(.*)@/, '$1')
     p.onChange(newValue);
-    setCurrentSuggestionId(entryId as number);
   }
 
+
+
   const onDeleteBadge = () => {
-    logToMain("the current suggestion au delete" + JSON.stringify(currentSuggestion))
-    if (currentSuggestionId === SUGGESTION_OPTIONS_ID.SEARCH_WEB) {
+    if (dialogMode === SUGGESTION_OPTIONS_ID.SEARCH_WEB) {
       window.electron.ipcRenderer.invoke('delete-all-doc-in-memory');
     }
     setCurrentSearchSuggestions([])
-    setCurrentSuggestionId(undefined)
   }
   return (
     <form onSubmit={handleSubmit} className="relative">
@@ -193,9 +208,11 @@ export const Searchbar = (p: Props) => {
           })).sort((a, b) => a.display.localeCompare(b.display))
           ]}
           style={mentionInInputStyle}
-          onAdd={onSelectSuggestion}
+          onAdd={(entryId, entry) => {
+            onSelectSuggestion(entryId as string, entry as string);
+          }}
           renderSuggestion={(entry) => {
-            const Icon = getDropdownItemIcon(entry.id as number);
+            const Icon = getDropdownItemIcon(entry.id as string);
             return (
               <div className="flex items-center gap-2">
                 <Icon className="w-4 h-4" />
@@ -216,15 +233,13 @@ export const Searchbar = (p: Props) => {
       >
         {!p.isStreamingFinished ? <Square className="size-4" /> : <ArrowRight className="size-4" />}
       </Button>
-      {currentSuggestion && <BadgeSuggestionList currentSuggestion={currentSuggestion} isLoading={isLoading} onRemoveLink={onDeleteBadge} />}
-      {currentSuggestion && (
-        <DialogLinkInput
-          isOpen={isDialogOpen}
-          onClose={handleDialogClose}
-          onSubmit={handleDialogSubmit}
-          currentSuggestion={currentSuggestion}
-        />
-      )}
+      {selectedSuggestion && <BadgeSuggestionList currentSuggestion={selectedSuggestion} isLoading={isLoading} onRemoveLink={onDeleteBadge} />}
+      {dialogMode && <DialogLinkInput
+        isOpen={isDialogOpen}
+        onClose={handleDialogClose}
+        onSubmit={handleDialogSubmit}
+        dialogMode={dialogMode}
+      />}
     </form>
   );
 };
