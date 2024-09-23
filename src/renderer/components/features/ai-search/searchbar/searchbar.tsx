@@ -154,6 +154,12 @@ export const Searchbar = (p: Props) => {
     p.onChange(newValue);
     setCurrentSuggestionId(entryId as number);
   }
+
+  const onDeleteBadge = () => {
+    setCurrentSuggestionId(undefined)
+    setCurrentSearchSuggestions([])
+    window.electron.ipcRenderer.invoke('delete-all-doc-in-memory');
+  }
   return (
     <form onSubmit={handleSubmit} className="relative">
       <MentionsInput
@@ -206,11 +212,7 @@ export const Searchbar = (p: Props) => {
       >
         {!p.isStreamingFinished ? <Square className="size-4" /> : <ArrowRight className="size-4" />}
       </Button>
-      {currentSuggestion && <BadgeSuggestionList currentSuggestion={currentSuggestion} isLoading={isLoading} onRemoveLink={() => {
-        setCurrentSuggestionId(undefined)
-        setCurrentSearchSuggestions([])
-        window.electron.ipcRenderer.invoke('delete-all-doc-in-memory');
-      }} />}
+      {currentSuggestion && <BadgeSuggestionList currentSuggestion={currentSuggestion} isLoading={isLoading} onRemoveLink={onDeleteBadge} />}
       {currentSuggestion && (
         <DialogLinkInput
           isOpen={isDialogOpen}
