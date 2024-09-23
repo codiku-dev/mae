@@ -19,13 +19,13 @@ type Props = {
   isLoading: boolean;
   onClickStop: () => void;
 };
-const ENTRY_IDS = {
+export const SUGGESTION_OPTIONS_ID = {
   SEARCH_WEB: 1,
   ADD_DOC: 2,
 }
 const optionList = [
-  { id: ENTRY_IDS.SEARCH_WEB, display: 'web', type: "search-web" },
-  { id: ENTRY_IDS.ADD_DOC, display: 'Add doc', type: 'add-doc' },
+  { id: SUGGESTION_OPTIONS_ID.SEARCH_WEB, display: 'web', type: "search-web" },
+  { id: SUGGESTION_OPTIONS_ID.ADD_DOC, display: 'Add doc', type: 'add-doc' },
 ];
 export const Searchbar = (p: Props) => {
   let inputRef = useRef<HTMLInputElement>();
@@ -65,6 +65,30 @@ export const Searchbar = (p: Props) => {
     focusInput();
   };
 
+  const fetchAndStoreDocumentation = async (link: string, command: string) => {
+    if (!isWebsiteIndexed(link)) {
+      setisLoading(true);
+
+      const newIndexedWebsiteContent =
+        await webScraperService.fetchWebsiteContent(link);
+
+      await window.electron.ipcRenderer.invoke(
+        'langchain-learn',
+        newIndexedWebsiteContent,
+      );
+
+      addWebsiteToIndexedWebsites({
+        url: link,
+        commandName: command,
+        subwebsite: newIndexedWebsiteContent.map((website) => ({
+          url: website.url,
+          htmlContent: '',
+          sizeKb: website.sizeKb,
+        })),
+      });
+      setisLoading(false);
+    }
+  }
   const handleDialogSubmit = async (link: string, command: string) => {
     if (currentSuggestion) {
       // first add the "@suggestion" to the input
@@ -78,44 +102,29 @@ export const Searchbar = (p: Props) => {
       ]);
 
       // Remove any word starting with "@" from the input
-      let newValue = p.value.replace(/@ \Add doc\S+\s?/, '').trim();
+      // let newValue = p.value.replace(/@ \Add doc\S+\s?/, '').trim();
 
       // remove also anything of this form @[anything](anything) 
-      newValue = newValue.replace(/@\[.*?\]\S+\s?/, '')
-
+      let newValue = p.value.replace(/@\[.*?\]\S+\s?/, '')
       p.onChange(newValue);
 
-      if (!isWebsiteIndexed(link)) {
+      if (currentSuggestion.id == SUGGESTION_OPTIONS_ID.ADD_DOC) {
+        fetchAndStoreDocumentation(link, command);
+      } else if (currentSuggestion.id == SUGGESTION_OPTIONS_ID.SEARCH_WEB) {
         setisLoading(true);
-
-        const newIndexedWebsiteContent =
-          await webScraperService.fetchWebsiteContent(link);
-
-        await window.electron.ipcRenderer.invoke(
-          'langchain-learn',
-          newIndexedWebsiteContent,
-        );
-
-        addWebsiteToIndexedWebsites({
-          url: link,
-          commandName: command,
-          subwebsite: newIndexedWebsiteContent.map((website) => ({
-            url: website.url,
-            htmlContent: '',
-            sizeKb: website.sizeKb,
-          })),
-        });
+        await window.electron.ipcRenderer.invoke('delete-all-doc-in-memory');
+        const websiteContent = await webScraperService.fetchWebsiteContent(link);
+        await window.electron.ipcRenderer.invoke('add-doc-in-memory', websiteContent);
         setisLoading(false);
       }
     }
   };
-  console.log('***', currentSuggestionId)
   const getDropdownItemIcon = (suggestionId: number) => {
 
     switch (suggestionId) {
-      case ENTRY_IDS.SEARCH_WEB:
+      case SUGGESTION_OPTIONS_ID.SEARCH_WEB:
         return Globe;
-      case ENTRY_IDS.ADD_DOC:
+      case SUGGESTION_OPTIONS_ID.ADD_DOC:
         return PlusCircle
       default:
         return Book
@@ -124,10 +133,9 @@ export const Searchbar = (p: Props) => {
 
   const onSelectSuggestion = (entryId: string | number, entry: string) => {
     switch (entryId) {
-      case ENTRY_IDS.ADD_DOC:
+      case SUGGESTION_OPTIONS_ID.ADD_DOC:
+      case SUGGESTION_OPTIONS_ID.SEARCH_WEB:
         setIsDialogOpen(true);
-        break;
-      case ENTRY_IDS.SEARCH_WEB:
         break;
       default:
         const command = getCommands().find(c => c.command === entry);
@@ -139,14 +147,12 @@ export const Searchbar = (p: Props) => {
               suggestion: "doc"
             },
           ]);
-
-          const newValue = p.value.replace(/(.*)@/, '$1')
-          p.onChange(newValue);
         }
         break;
     }
+    const newValue = p.value.replace(/(.*)@/, '$1')
+    p.onChange(newValue);
     setCurrentSuggestionId(entryId as number);
-
   }
   return (
     <form onSubmit={handleSubmit} className="relative">
@@ -200,13 +206,17 @@ export const Searchbar = (p: Props) => {
       >
         {!p.isStreamingFinished ? <Square className="size-4" /> : <ArrowRight className="size-4" />}
       </Button>
-      <BadgeSuggestionList isLoading={isLoading} />
+      {currentSuggestion && <BadgeSuggestionList currentSuggestion={currentSuggestion} isLoading={isLoading} onRemoveLink={() => {
+        setCurrentSuggestionId(undefined)
+        setCurrentSearchSuggestions([])
+        window.electron.ipcRenderer.invoke('delete-all-doc-in-memory');
+      }} />}
       {currentSuggestion && (
         <DialogLinkInput
           isOpen={isDialogOpen}
           onClose={handleDialogClose}
           onSubmit={handleDialogSubmit}
-          currentSuggestion={currentSuggestion.display}
+          currentSuggestion={currentSuggestion}
         />
       )}
     </form>

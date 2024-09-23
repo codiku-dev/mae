@@ -3,7 +3,7 @@ import { WebsiteScrapedContent } from '@/renderer/hooks/use-app-store';
 import { docVectorStoreService } from '../doc-vector-store/doc-vector-service';
 import { logToRenderer } from '@/libs/utils';
 
-export function addLangchainListeners(mainWindow: BrowserWindow | null) {
+export function addDocVectorStoreListeners(mainWindow: BrowserWindow | null) {
   ipcMain.handle('sandbox-request', () => {});
 
   ipcMain.handle(
@@ -53,4 +53,28 @@ export function addLangchainListeners(mainWindow: BrowserWindow | null) {
       return aggregation;
     },
   );
+
+  ipcMain.handle(
+    'add-doc-in-memory',
+    async (event, websites: WebsiteScrapedContent[]) => {
+      await docVectorStoreService.addDocInMemory(websites);
+    },
+  );
+
+  ipcMain.handle('search-doc-in-memory', async (event, question: string) => {
+    const relevantDocuments = await docVectorStoreService.searchDocsInMemory(
+      question,
+      3,
+    );
+    const relevantDocAggregation = relevantDocuments
+      ?.map((r) => r.pageContent)
+      .join('');
+    return relevantDocAggregation;
+  });
+
+  ipcMain.handle('delete-all-doc-in-memory', async (event) => {
+    console.log('delete-all-doc-in-memory');
+    await docVectorStoreService.deleteAllDocsInMemory();
+    return 'ok';
+  });
 }

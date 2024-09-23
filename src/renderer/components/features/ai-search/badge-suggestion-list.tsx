@@ -10,6 +10,7 @@ import { Badge } from '../../ui/badge';
 import { useAppStore } from '@/renderer/hooks/use-app-store';
 import { Skeleton } from '../../ui/skeleton';
 import { LoadingSpinner } from '../../ui/loading-spinner';
+import { SUGGESTION_OPTIONS_ID } from './searchbar/searchbar';
 
 interface Link {
   id: string;
@@ -19,15 +20,16 @@ interface Link {
 
 interface Props {
   isLoading: boolean;
+  currentSuggestion: { id: number; display: string, type: string };
+  onRemoveLink: (id: string) => void;
 }
 
 const BadgeSuggestionList = (p: Props) => {
-  const { currentSearchSuggestions, setCurrentSearchSuggestions, getCommands } =
+  const { currentSearchSuggestions, getCommands } =
     useAppStore();
+
   const removeLink = (id: string) => {
-    setCurrentSearchSuggestions(
-      currentSearchSuggestions.filter((link) => link.id !== id),
-    );
+    p.onRemoveLink(id);
   };
 
   const formatLinkForDisplay = (link: string) => {
@@ -35,44 +37,49 @@ const BadgeSuggestionList = (p: Props) => {
   };
   return (
     <div className="mt-2 flex flex-wrap gap-2">
-      {currentSearchSuggestions.map((suggestion) => (
-        <TooltipProvider key={suggestion.id}>
-          <Tooltip delayDuration={200}>
-            <TooltipTrigger asChild>
-              <div className="inline-block">
-                <Badge
-                  id={'ai-badge-' + suggestion.link}
-                  className="border-sky-100 shadow-lg h-6 interactive pr-1 flex items-center cursor-pointer"
-                >
-
-                  <span>
-                    {p.isLoading ? <span className='flex justify-between'>Learning from {formatLinkForDisplay(suggestion.link)}<LoadingSpinner /></span> :
-                      <>
-                        Using{" "}
-                        {getCommands().find(command => command.url === suggestion.link)?.command}
-                      </>
-                    }
-                  </span>
-
-                  {!p.isLoading && <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      removeLink(suggestion.id);
-                    }}
-                    className="ml-1 text-xs hover:text-red-500 focus:outline-none"
-                    aria-label="Remove link"
+      {currentSearchSuggestions.map(suggestion => {
+        const command = getCommands().find(command => command.url === suggestion.link);
+        return (
+          <TooltipProvider key={suggestion.id}>
+            <Tooltip delayDuration={200}>
+              <TooltipTrigger asChild>
+                <div className="inline-block">
+                  <Badge
+                    id={'ai-badge-' + suggestion.link}
+                    className="border-sky-100 shadow-lg h-6 interactive pr-1 flex items-center cursor-pointer"
                   >
-                    <X size={12} />
-                  </button>}
-                </Badge>
-              </div>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>{suggestion.link}</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      ))}
+
+                    <span>
+                      {p.isLoading ? <span className='flex justify-between'>{p.currentSuggestion.id === SUGGESTION_OPTIONS_ID.ADD_DOC ? "Learning" : "Fetching"} from {formatLinkForDisplay(suggestion.link)}<LoadingSpinner /></span> :
+                        <>
+                          Using{" "}
+                          {command ? getCommands().find(command => command.url === suggestion.link)?.command : formatLinkForDisplay(suggestion.link)}
+                        </>
+                      }
+                    </span>
+
+                    {!p.isLoading && <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeLink(suggestion.id);
+                      }}
+                      className="ml-1 text-xs hover:text-red-500 focus:outline-none"
+                      aria-label="Remove link"
+                    >
+                      <X size={12} />
+                    </button>}
+                  </Badge>
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{suggestion.link}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        )
+      })}
+
+
     </div>
   );
 };

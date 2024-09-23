@@ -6,7 +6,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useAppStore } from '../hooks/use-app-store';
-import { Searchbar } from '../components/features/ai-search/searchbar/searchbar';
+import { SUGGESTION_OPTIONS_ID, Searchbar } from '../components/features/ai-search/searchbar/searchbar';
 
 export function HomePage() {
   const [value, setValue] = useState<string>('');
@@ -95,15 +95,28 @@ export function HomePage() {
     }
 
     if (currentSearchSuggestions.length > 0) {
-      console.log("invoke to get relevant doc")
-      const context = await window.electron.ipcRenderer.invoke(
-        'langchain-find-relevant-document',
-        submittedText,
-      );
-      console.log("context found")
+      console.log("CURRENT SUGGESTION IN SUBMIT", currentSearchSuggestions[0].id)
+
+      let context = ""
+      if (currentSearchSuggestions[0].suggestion === "doc") {
+        context = await window.electron.ipcRenderer.invoke(
+          'langchain-find-relevant-document',
+          submittedText,
+        );
+      } else if (currentSearchSuggestions[0].suggestion === "web") {
+        context = await window.electron.ipcRenderer.invoke(
+          'search-doc-in-memory',
+          submittedText,
+        );
+      }
+      console.log("context found====>", context)
       addMessageToCurrentConversation({
         role: 'user',
-        content: `Answer the question based on the documentation provided. ONLY if code is asked include the imports in answer, and only if code is asked provide full code. Only if code is asked sure to use the right programming language.
+        content: `Answer the question based on the documentation provided. 
+          if code is askedinclude the imports in answer. 
+          if code is asked provide full code.
+          if code is asked use the right programming language.
+          Provide code only if necessary.
           Context: ${context}
           Question: ${submittedText}`,
       });

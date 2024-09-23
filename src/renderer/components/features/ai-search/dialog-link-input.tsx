@@ -8,12 +8,18 @@ import {
 import { Input } from '@/renderer/components/ui/input';
 import { isValidUrl } from '@/renderer/libs/utils';
 import { useToast } from '@/renderer/hooks/use-toast';
+import { Globe, Plus } from 'lucide-react';
+import { SUGGESTION_OPTIONS_ID } from './searchbar/searchbar';
 
 interface DialogLinkInputProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (link: string, commandName: string) => void;
-  currentSuggestion: string;
+  currentSuggestion: {
+    id: number;
+    display: string;
+    type: string;
+  };
 }
 
 export function DialogLinkInput({
@@ -80,7 +86,9 @@ export function DialogLinkInput({
           setLinkInput(pastedText);
           console.log("setLinkInput to ", pastedText)
           setCommandName(pastedText.split('://')[1]?.split(/[.\-_]/)[0] || '');
-          //submitLink(pastedText, pastedText.split('://')[1]?.split(/[.\-_]/)[0] || '');
+          if (currentSuggestion.id == SUGGESTION_OPTIONS_ID.SEARCH_WEB) {
+            submitLink(pastedText, pastedText.split('://')[1]?.split(/[.\-_]/)[0] || '');
+          }
           commandNameRef.current?.focus();
         }
       }
@@ -105,7 +113,14 @@ export function DialogLinkInput({
     >
       <DialogContent className="top-[15%] interactive" id="ai-dialog-link-learn">
         <DialogHeader>
-          <DialogTitle>Add documentation from :</DialogTitle>
+          <DialogTitle>
+            <div className='flex gap-2'>
+              {currentSuggestion.id == SUGGESTION_OPTIONS_ID.SEARCH_WEB ?
+                <><Globe className="w-4 h-4 mr-2" />Search the web</> :
+                <> <Plus className="w-4 h-4 mr-2" />Add documentation</>
+              }
+            </div>
+          </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="relative mt-4 space-y-4">
@@ -115,7 +130,7 @@ export function DialogLinkInput({
               placeholder="super-website.com"
               aria-label={`Enter ${currentSuggestion} link`}
             />
-            <Input
+            {currentSuggestion.id == SUGGESTION_OPTIONS_ID.ADD_DOC && <Input
               ref={commandNameRef}
               value={commandName}
               onChange={(e) => setCommandName(e.target.value.slice(0, 15))}
@@ -123,6 +138,7 @@ export function DialogLinkInput({
               aria-label="Enter command name"
               maxLength={15}
             />
+            }
             <kbd className="pointer-events-none absolute right-[0.5rem] -top-[0.3rem] hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
               <span className="text-xs">paste</span>
             </kbd>

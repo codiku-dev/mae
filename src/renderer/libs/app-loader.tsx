@@ -52,7 +52,7 @@ export const AppLoader = () => {
   }
   return (
     <>
-      {/* <DevTool /> */}
+      <DevTool />
       <Toaster />
       <Outlet />
     </>

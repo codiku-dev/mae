@@ -31,6 +31,9 @@ export type Channels =
   | 'sandbox-request'
   | 'langchain-learn'
   | 'langchain-find-relevant-document'
+  | 'add-doc-in-memory'
+  | 'search-doc-in-memory'
+  | 'delete-all-doc-in-memory'
   | 'delete-langchain-doc'
   | 'delete-all-langchain-doc';
 

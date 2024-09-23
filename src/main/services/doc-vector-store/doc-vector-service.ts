@@ -8,12 +8,14 @@ import { logToRenderer } from '@/libs/utils';
 import { WebsiteScrapedContent } from '@/renderer/hooks/use-app-store';
 import { app, BrowserWindow } from 'electron';
 import path from 'path';
+import { MemoryVectorStore } from 'langchain/vectorstores/memory';
 
 export class DocVectorStoreService {
   private static instance: DocVectorStoreService;
   public static mainWindow: BrowserWindow | null = null;
   private vectorStore: HNSWLib | null = null;
   private llmEmbeddings: OllamaEmbeddings | null = null;
+  private inMemoryVectorStore: MemoryVectorStore | null = null;
   private vectorStorePath: string = path.join(
     app.getPath('userData'),
     'mia-documents-learning-vector-store.index',
@@ -30,6 +32,24 @@ export class DocVectorStoreService {
     return DocVectorStoreService.instance;
   }
 
+  public async addDocInMemory(htmlFiles: WebsiteScrapedContent[]) {
+    if (!this.inMemoryVectorStore) {
+      this.inMemoryVectorStore = new MemoryVectorStore(this.llmEmbeddings!);
+    }
+    const documentsChunks = await this.chunkifyDocs(htmlFiles);
+    this.inMemoryVectorStore?.addDocuments(documentsChunks);
+  }
+
+  public async searchDocsInMemory(query: string, qty: number) {
+    const result = await this.inMemoryVectorStore?.similaritySearch(query, qty);
+    console.log('result', result);
+    return result;
+  }
+
+  public async deleteAllDocsInMemory() {
+    this.inMemoryVectorStore = null;
+  }
+
   public async init() {
     logToRenderer(
       DocVectorStoreService.mainWindow,
@@ -40,6 +60,7 @@ export class DocVectorStoreService {
       model: 'mxbai-embed-large',
       baseUrl: 'http://localhost:11434',
     });
+
     if (!this.vectorStore) {
       logToRenderer(
         DocVectorStoreService.mainWindow,
