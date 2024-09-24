@@ -12,8 +12,9 @@ V2
 ==============================================
 
 V3
-
-- [] spliter les vector database en plusieurs index
+- [ ] conversation complete
+- [ ] conversations history navigation
+- [ ] spliter les vector database en plusieurs index
 - [x] Apprentissage à partir de lien
 - [x] Mémoire morte
       Envoyer fichier

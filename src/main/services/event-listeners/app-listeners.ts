@@ -1,4 +1,4 @@
-import { App, BrowserWindow, clipboard, ipcMain, shell } from 'electron';
+import { app, App, BrowserWindow, clipboard, ipcMain, shell } from 'electron';
 import { username } from 'username';
 import { initMenu } from '@/main/menu/menu';
 import { beforeStart } from '@/scripts/before-start';
@@ -51,5 +51,9 @@ export function addAppListeners(mainWindow: BrowserWindow | null) {
       console.log('Mia: disabling auto launch');
       miaAutoLauncher.disable();
     }
+  });
+
+  ipcMain.handle('is-app-packaged', () => {
+    return app.isPackaged;
   });
 }

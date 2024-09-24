@@ -1,11 +1,12 @@
 import { app, BrowserWindow /* ,screen */, screen } from 'electron';
 import path from 'path';
 import { start } from './start';
+import { useAppStore } from '@/renderer/hooks/use-app-store';
 
 export function initWindow() {
   // const { width, height } = screen.getPrimaryDisplay().workAreaSize;
   // global.DEBUG = !app.isPackaged;
-  global.DEBUG = false;
+  global.DEBUG = true;
   let mainWindow: BrowserWindow | null = new BrowserWindow({
     height: screen.getPrimaryDisplay().workAreaSize.height,
     width: screen.getPrimaryDisplay().workAreaSize.width,
@@ -32,6 +33,7 @@ export function initWindow() {
         : path.join(__dirname, '../../.erb/dll/preload.js'),
     },
   });
+  console.log('DEBUG is set to ', global.DEBUG);
 
   //open dev tools
 

@@ -35,7 +35,8 @@ export type Channels =
   | 'search-doc-in-memory'
   | 'delete-all-doc-in-memory'
   | 'delete-langchain-doc'
-  | 'delete-all-langchain-doc';
+  | 'delete-all-langchain-doc'
+  | 'is-app-packaged';
 
 const electronHandler = {
   ipcRenderer: {

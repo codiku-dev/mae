@@ -36,6 +36,7 @@ export type SearchSuggestion = {
   suggestion: string;
 };
 export type Store = {
+  isDialogLinkInputOpen: boolean;
   indexedWebsitesContent: IndexedWebsite[];
   isAppLaunchedOnStartup: boolean;
   isAppLoading: boolean;
@@ -46,7 +47,7 @@ export type Store = {
   lastFetchAvailableModelsISODate: string;
   currentSearchSuggestions: SearchSuggestion[];
   availableModels: Model[];
-
+  setIsDialogLinkInputOpen: (isDialogLinkInputOpen: boolean) => void;
   setCurrentSearchSuggestions: (suggestions: SearchSuggestion[]) => void;
   setIsAppLaunchedOnStartup: (isAppLaunchedOnStartup: boolean) => void;
   setIsAppLoading: (isAppLoading: boolean) => void;
@@ -87,6 +88,10 @@ const useAppStore = create(
         availableModels: [],
         lastFetchAvailableModelsISODate: '',
         indexedWebsitesContent: [],
+        isDialogLinkInputOpen: false,
+        setIsDialogLinkInputOpen: (isDialogLinkInputOpen: boolean) => {
+          set({ isDialogLinkInputOpen });
+        },
         resetStore: () => {
           set({
             currentSearchSuggestions: [],

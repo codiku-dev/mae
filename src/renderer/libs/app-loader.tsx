@@ -1,25 +1,33 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { SplashScreen } from '../components/features/splash-screen';
 import { Toaster } from '../components/ui/toaster';
 import { useAppStore } from '../hooks/use-app-store';
 import { ROUTES } from './routes';
-import { makeInteractiveClassClickable } from './utils';
+import { logToMain, makeInteractiveClassClickable } from './utils';
 import { DevTool } from '../components/features/dev-tools';
 
 // TODO: Add a global listener to handle the navigate event
 
 export const AppLoader = () => {
   const navigate = useNavigate();
-  const { setIsAppLoading, isAppLoading, isAppLaunchedOnStartup, resetStore } =
+  const [isDebug, setIsDebug] = useState(false);
+  const { setIsAppLoading, isAppLoading, isAppLaunchedOnStartup } =
     useAppStore();
+
+  const loadIsDebug = async () => {
+    const isPackaged = await window.electron.ipcRenderer.invoke('is-app-packaged');
+    setIsDebug(!isPackaged);
+  }
   useEffect(() => {
+    loadIsDebug();
     window.electron.ipcRenderer.sendMessage('request-before-start');
     const unsubscribeBeforeStartReply = window.electron.ipcRenderer.on(
       'before-start-reply',
       () => {
         setIsAppLoading(false);
         window.electron.ipcRenderer.sendMessage('navigate', ROUTES.home);
+        loadIsDebug()
         // clearAllHistory();
         // resetStore()
       },
@@ -48,11 +56,11 @@ export const AppLoader = () => {
   }, []);
 
   if (isAppLoading) {
-    return isAppLaunchedOnStartup ? null : <SplashScreen />;
+    return isAppLaunchedOnStartup || isDebug ? null : <SplashScreen />;
   }
   return (
     <>
-      {/* <DevTool /> */}
+      {isDebug && <DevTool />}
       <Toaster />
       <Outlet />
     </>

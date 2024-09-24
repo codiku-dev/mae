@@ -37,11 +37,12 @@ export const Searchbar = (p: Props) => {
     currentSearchSuggestions,
     isWebsiteIndexed,
     addWebsiteToIndexedWebsites,
-    getCommands
+    getCommands,
+    setIsDialogLinkInputOpen,
+    isDialogLinkInputOpen
   } = useAppStore();
 
   const [isLoading, setisLoading] = useState(false);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [dialogMode, setDialogMode] =
     useState<"1" | "2">();
   const selectedSuggestion = currentSearchSuggestions?.[0]
@@ -64,7 +65,7 @@ export const Searchbar = (p: Props) => {
     }, 50);
   };
   const handleDialogClose = () => {
-    setIsDialogOpen(false);
+    setIsDialogLinkInputOpen(false);
     p.onChange(p.value.replace(/@\[\Add doc\]\S+\s?/, '').trim());
     focusInput();
   };
@@ -146,7 +147,7 @@ export const Searchbar = (p: Props) => {
     switch (entryId) {
       case SUGGESTION_OPTIONS_ID.ADD_DOC:
       case SUGGESTION_OPTIONS_ID.SEARCH_WEB:
-        setIsDialogOpen(true);
+        setIsDialogLinkInputOpen(true);
         setDialogMode(entryId as "1" | "2");
         break;
       default:
@@ -232,7 +233,7 @@ export const Searchbar = (p: Props) => {
       </Button>
       {selectedSuggestion && <BadgeSuggestionList currentSuggestion={selectedSuggestion} isLoading={isLoading} onRemoveLink={onDeleteBadge} />}
       {dialogMode && <DialogLinkInput
-        isOpen={isDialogOpen}
+        isOpen={isDialogLinkInputOpen}
         onClose={handleDialogClose}
         onSubmit={handleDialogSubmit}
         dialogMode={dialogMode}

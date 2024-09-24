@@ -25,10 +25,13 @@ export function DialogLinkInput({
   onSubmit,
   dialogMode,
 }: DialogLinkInputProps) {
+
   const [linkInput, setLinkInput] = useState('');
   const [commandName, setCommandName] = useState('');
   const commandNameRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+
+
   const currentOption = optionList.find(option => option.id == dialogMode);
 
   const submitLink = (link: string, command: string) => {
@@ -91,7 +94,9 @@ export function DialogLinkInput({
       onOpenChange={() => {
         setLinkInput('');
         setCommandName('');
-        onClose();
+        setTimeout(() => {
+          onClose();
+        }, 100);
       }}
     >
       <DialogContent className="top-[15%] interactive" id="ai-dialog-link-learn">

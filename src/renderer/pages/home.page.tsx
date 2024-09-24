@@ -7,6 +7,7 @@ import { X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useAppStore } from '../hooks/use-app-store';
 import { SUGGESTION_OPTIONS_ID, Searchbar } from '../components/features/ai-search/searchbar/searchbar';
+import { logToMain } from '../libs/utils';
 
 export function HomePage() {
   const [value, setValue] = useState<string>('');
@@ -17,7 +18,7 @@ export function HomePage() {
   const [submitedPrompt, setSubmitedPrompt] = useState('');
   const [error, setError] = useState('');
   const [isAIWorking, setIsAIWorking] = useState(false);
-  const { currentSearchSuggestions } =
+  const { currentSearchSuggestions, isDialogLinkInputOpen } =
     useAppStore();
   const {
     addMessageToCurrentConversation,
@@ -59,6 +60,8 @@ export function HomePage() {
     });
   }, []);
 
+  logToMain(`isDialogLinkInputOpen  ${isDialogLinkInputOpen}`)
+
   useEffect(function addOpenCloseListener() {
     const unsubscribeGlobalShortcut = window.electron.ipcRenderer.on(
       'global-shortcut',
@@ -74,7 +77,21 @@ export function HomePage() {
     return () => {
       unsubscribeGlobalShortcut();
     };
+
   }, []);
+
+  useEffect(() => {
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (!isDialogLinkInputOpen && e.key === 'Escape') {
+        setIsVisible(false);
+      }
+    };
+    document.addEventListener('keyup', handleKeyUp);
+    return () => {
+      document.removeEventListener('keyup', handleKeyUp);
+    };
+  }, [isDialogLinkInputOpen]);
+
 
   const handleSubmit = async (submittedText: string) => {
     stopAndResetAll();
