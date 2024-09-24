@@ -8,9 +8,10 @@ import {
 import { useToast } from '@/renderer/hooks/use-toast';
 import { Trash } from 'lucide-react';
 import { useAppStore } from '@/renderer/hooks/use-app-store';
+import { useConversations } from '@/renderer/hooks/use-conversations';
 export const HistorySection = () => {
   const { toast } = useToast();
-  const { clearAllHistory } = useAppStore();
+  const { clearAllHistory } = useConversations();
   const handleDeleteConversationHistory = (
     e: React.MouseEvent<HTMLButtonElement>,
   ) => {

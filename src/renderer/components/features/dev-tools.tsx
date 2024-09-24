@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useAppStore } from '@/renderer/hooks/use-app-store';
+import { useConversations } from '@/renderer/hooks/use-conversations';
 
 export const DevTool: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [storeContent, setStoreContent] = useState<string>('');
-  const { clearAllHistory } = useAppStore();
+  const { clearAllHistory } = useConversations();
 
   useEffect(() => {
     const updateStoreContent = () => {
@@ -41,7 +42,7 @@ export const DevTool: React.FC = () => {
               Clear History
             </button>
           </div>
-          <pre className=" whitespace-pre-wrap text-xs">{storeContent}</pre>
+          <pre className="whitespace-pre-wrap text-xs">{storeContent}</pre>
         </div>
       )}
     </>

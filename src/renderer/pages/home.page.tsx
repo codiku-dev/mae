@@ -8,6 +8,9 @@ import { useEffect, useState } from 'react';
 import { useAppStore } from '../hooks/use-app-store';
 import { SUGGESTION_OPTIONS_ID, Searchbar } from '../components/features/ai-search/searchbar/searchbar';
 import { logToMain } from '../libs/utils';
+import { useConversations } from '@/renderer/hooks/use-conversations';
+import { useSettings } from '@/renderer/hooks/use-settings';
+import { useSearch } from '@/renderer/hooks/use-search';
 
 export function HomePage() {
   const [value, setValue] = useState<string>('');
@@ -18,13 +21,17 @@ export function HomePage() {
   const [submitedPrompt, setSubmitedPrompt] = useState('');
   const [error, setError] = useState('');
   const [isAIWorking, setIsAIWorking] = useState(false);
-  const { currentSearchSuggestions, isDialogLinkInputOpen } =
-    useAppStore();
+
+  const { isDialogOpen } = useAppStore();
+
   const {
+    createNewConversation,
     addMessageToCurrentConversation,
     getCurrentConversation,
-    createNewConversation,
-  } = useAppStore();
+    getCurrentConversationMessages,
+  } = useConversations();
+
+  const { currentSearchSuggestions } = useSearch();
 
   const stopAndResetAll = () => {
     console.log('stopAndResetAll');
@@ -60,8 +67,6 @@ export function HomePage() {
     });
   }, []);
 
-  logToMain(`isDialogLinkInputOpen  ${isDialogLinkInputOpen}`)
-
   useEffect(function addOpenCloseListener() {
     const unsubscribeGlobalShortcut = window.electron.ipcRenderer.on(
       'global-shortcut',
@@ -82,7 +87,7 @@ export function HomePage() {
 
   useEffect(() => {
     const handleKeyUp = (e: KeyboardEvent) => {
-      if (!isDialogLinkInputOpen && e.key === 'Escape') {
+      if (!isDialogOpen && e.key === 'Escape') {
         setIsVisible(false);
       }
     };
@@ -90,7 +95,7 @@ export function HomePage() {
     return () => {
       document.removeEventListener('keyup', handleKeyUp);
     };
-  }, [isDialogLinkInputOpen]);
+  }, [isDialogOpen]);
 
 
   const handleSubmit = async (submittedText: string) => {
@@ -125,7 +130,6 @@ export function HomePage() {
           submittedText,
         );
       }
-      console.log("context found====>", context)
       addMessageToCurrentConversation({
         role: 'user',
         content: `Answer the question based on the documentation provided. 
@@ -143,7 +147,7 @@ export function HomePage() {
       });
     }
     ollamaService.requestLlamaStream(
-      getCurrentConversation()?.messages || [],
+      getCurrentConversationMessages() || [],
       (chunk) => {
         responseContent += chunk.message.content;
         if (chunk.done === false) {

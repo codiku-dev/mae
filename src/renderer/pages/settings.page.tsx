@@ -14,22 +14,19 @@ import { ROUTES } from '../libs/routes';
 import { HistorySection } from '../components/features/settings/history-section';
 import { StartupSection } from '../components/features/settings/startup-section';
 import { IndexedWebsiteSection } from '../components/features/settings/indexed-websites-section';
-import { useAppStore } from '../hooks/use-app-store';
+import { useSettings } from '../hooks/use-settings';
+import { useConversations } from '../hooks/use-conversations';
+import { useSearch } from '../hooks/use-search';
 
 type FormValues = {
   isAppLaunchedOnStartup: boolean;
   assistantLanguage: LanguageCode;
 };
 export function SettingsPage() {
-  const {
-    isAppLaunchedOnStartup,
-    assistantLanguage,
-    conversationHistory,
-    setIsAppLaunchedOnStartup,
-    setAssistantLanguage,
-    indexedWebsitesContent
+  const { indexedWebsitesContent } = useSearch();
+  const { conversationHistory } = useConversations();
+  const { isAppLaunchedOnStartup, assistantLanguage, setIsAppLaunchedOnStartup, setAssistantLanguage, } = useSettings();
 
-  } = useAppStore();
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 

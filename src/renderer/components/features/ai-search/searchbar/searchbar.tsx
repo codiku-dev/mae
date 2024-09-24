@@ -12,6 +12,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { mentionInInputStyle, mentionInListStyle } from './searchbar-style';
 import { logToMain } from '@/renderer/libs/utils';
 import { dialog } from 'electron';
+import { useSearch } from '@/renderer/hooks/use-search';
 
 type Props = {
   value: string;
@@ -33,14 +34,17 @@ export const Searchbar = (p: Props) => {
   let inputRef = useRef<HTMLInputElement>();
 
   const {
+    setIsDialogOpen,
+    isDialogOpen
+  } = useAppStore();
+
+  const {
     setCurrentSearchSuggestions,
     currentSearchSuggestions,
     isWebsiteIndexed,
     addWebsiteToIndexedWebsites,
     getCommands,
-    setIsDialogLinkInputOpen,
-    isDialogLinkInputOpen
-  } = useAppStore();
+  } = useSearch();
 
   const [isLoading, setisLoading] = useState(false);
   const [dialogMode, setDialogMode] =
@@ -65,7 +69,7 @@ export const Searchbar = (p: Props) => {
     }, 50);
   };
   const handleDialogClose = () => {
-    setIsDialogLinkInputOpen(false);
+    setIsDialogOpen(false);
     p.onChange(p.value.replace(/@\[\Add doc\]\S+\s?/, '').trim());
     focusInput();
   };
@@ -147,7 +151,7 @@ export const Searchbar = (p: Props) => {
     switch (entryId) {
       case SUGGESTION_OPTIONS_ID.ADD_DOC:
       case SUGGESTION_OPTIONS_ID.SEARCH_WEB:
-        setIsDialogLinkInputOpen(true);
+        setIsDialogOpen(true);
         setDialogMode(entryId as "1" | "2");
         break;
       default:
@@ -233,7 +237,7 @@ export const Searchbar = (p: Props) => {
       </Button>
       {selectedSuggestion && <BadgeSuggestionList currentSuggestion={selectedSuggestion} isLoading={isLoading} onRemoveLink={onDeleteBadge} />}
       {dialogMode && <DialogLinkInput
-        isOpen={isDialogLinkInputOpen}
+        isOpen={isDialogOpen}
         onClose={handleDialogClose}
         onSubmit={handleDialogSubmit}
         dialogMode={dialogMode}

@@ -17,15 +17,15 @@ import { Switch } from '@/renderer/components/ui/switch';
 import { Loader2, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { ollamaService } from '@/main/services/ollama/ollama.service';
-import { useAppStore } from '@/renderer/hooks/use-app-store';
 import { Model } from '@/types/model-type';
+import { useSettings } from '@/renderer/hooks/use-settings';
 export const ModelSelection = () => {
   const {
     availableModels,
     setAvailableModels,
     lastFetchAvailableModelsISODate,
     setLastFetchAvailableModelsISODate,
-  } = useAppStore();
+  } = useSettings();
 
   const [installedModels, setInstalledModels] = useState<Model[]>([]);
   const [installingModel, setInstallingModel] = useState<string | null>(null);
@@ -34,8 +34,8 @@ export const ModelSelection = () => {
     const shouldFetch =
       lastFetchAvailableModelsISODate === '' ||
       new Date().getTime() -
-        new Date(lastFetchAvailableModelsISODate).getTime() >
-        7 * 24 * 60 * 60 * 1000;
+      new Date(lastFetchAvailableModelsISODate).getTime() >
+      7 * 24 * 60 * 60 * 1000;
 
     if (shouldFetch) {
       ollamaService.fetchAvailableModels().then((modelsName) => {

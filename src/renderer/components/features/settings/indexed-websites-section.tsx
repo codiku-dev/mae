@@ -6,7 +6,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/renderer/components/ui/card';
-import { useAppStore } from '@/renderer/hooks/use-app-store';
 import { useToast } from '@/renderer/hooks/use-toast';
 import { Trash } from 'lucide-react';
 import {
@@ -16,6 +15,7 @@ import {
   AccordionTrigger,
 } from '@/renderer/components/ui/accordion';
 import { formatKbSize } from '@/renderer/libs/utils';
+import { useSearch } from '@/renderer/hooks/use-search';
 
 export function IndexedWebsiteSection() {
   const {
@@ -25,7 +25,7 @@ export function IndexedWebsiteSection() {
     deleteIndexedWebsite,
     deleteWebsiteScrapedContent,
     getCommands,
-  } = useAppStore();
+  } = useSearch();
   const { toast } = useToast();
 
   const handleDeleteAllData = (e: React.MouseEvent<HTMLButtonElement>) => {

@@ -7,10 +7,10 @@ import {
 } from '@/renderer/components/ui/tooltip';
 import { X } from 'lucide-react';
 import { Badge } from '../../ui/badge';
-import { SearchSuggestion, useAppStore } from '@/renderer/hooks/use-app-store';
 import { Skeleton } from '../../ui/skeleton';
 import { LoadingSpinner } from '../../ui/loading-spinner';
 import { SUGGESTION_OPTIONS_ID } from './searchbar/searchbar';
+import { SearchSuggestion, useSearch } from '@/renderer/hooks/use-search';
 
 interface Link {
   id: string;
@@ -26,7 +26,7 @@ interface Props {
 
 const BadgeSuggestionList = (p: Props) => {
   const { currentSearchSuggestions, getCommands } =
-    useAppStore();
+    useSearch();
 
   const removeLink = (id: string) => {
     p.onRemoveLink(id);
