@@ -50,7 +50,7 @@ export const RichResponse = (p: {
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('user-info-request');
     window.electron.ipcRenderer.on('user-info-reply', (username) => {
-
+      setUserName(username);
     });
   }, []);
 

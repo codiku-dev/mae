@@ -13,10 +13,17 @@ import { useSettings } from '../hooks/use-settings';
 export const AppLoader = () => {
   const navigate = useNavigate();
   const [isDebug, setIsDebug] = useState(false);
-  const { setIsAppLoading, isAppLoading } =
+  const { setIsAppLoading, isAppLoading, setUserName } =
     useAppStore();
 
   const { isAppLaunchedOnStartup } = useSettings();
+
+  useEffect(() => {
+    window.electron.ipcRenderer.sendMessage('user-info-request');
+    window.electron.ipcRenderer.on('user-info-reply', (username) => {
+      setUserName(username);
+    });
+  }, []);
 
   const loadIsDebug = async () => {
     const isPackaged = await window.electron.ipcRenderer.invoke('is-app-packaged');

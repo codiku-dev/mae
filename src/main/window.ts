@@ -6,7 +6,7 @@ import { useAppStore } from '@/renderer/hooks/use-app-store';
 export function initWindow() {
   // const { width, height } = screen.getPrimaryDisplay().workAreaSize;
   // global.DEBUG = !app.isPackaged;
-  global.DEBUG = true;
+  global.DEBUG = false;
   let mainWindow: BrowserWindow | null = new BrowserWindow({
     height: screen.getPrimaryDisplay().workAreaSize.height,
     width: screen.getPrimaryDisplay().workAreaSize.width,
@@ -33,7 +33,6 @@ export function initWindow() {
         : path.join(__dirname, '../../.erb/dll/preload.js'),
     },
   });
-  console.log('DEBUG is set to ', global.DEBUG);
 
   //open dev tools
 

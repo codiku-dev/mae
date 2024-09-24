@@ -1,4 +1,3 @@
-import { LLMMessage } from "@/main/services/ollama/ollama-type";
 import logo from '../../../../assets/icon.png';
 import { MarkdownRenderer } from "@/renderer/components/ui/markdown-renderer";
 import {
@@ -11,8 +10,6 @@ import { markdownLookBack } from '@llm-ui/markdown';
 import { useLLMOutput } from '@llm-ui/react';
 import { CodeRenderer } from '../../../ui/code-renderer';
 
-//@ts-ignore
-import { throttleBasic } from '@llm-ui/react';
 import { Skeleton } from "@/renderer/components/ui/skeleton";
 export function AIMessage(p: { message: string, isLoading?: boolean }) {
 
@@ -46,7 +43,7 @@ export function AIMessage(p: { message: string, isLoading?: boolean }) {
     return (
         <div className="flex flex-col gap-2">
             {avatarAssistant}
-            <div className="relative bg-sky-200/20 p-3 rounded-lg rounded-tr-none min-h-12">
+            <div className="relative bg-[#e5f0ff] p-3 rounded-lg rounded-tr-none min-h-12">
                 {p.isLoading ? <div className="w-full flex flex-col gap-1">
                     <Skeleton className="w-full h-6" />
                 </div> :
