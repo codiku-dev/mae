@@ -6,7 +6,7 @@ import {
   DialogTitle,
 } from '@/renderer/components/ui/dialog';
 import { Input } from '@/renderer/components/ui/input';
-import { isValidUrl } from '@/renderer/libs/utils';
+import { isValidUrl, logToMain } from '@/renderer/libs/utils';
 import { useToast } from '@/renderer/hooks/use-toast';
 import { Globe, Plus } from 'lucide-react';
 import { optionList, SUGGESTION_OPTIONS_ID } from './searchbar/searchbar';
@@ -32,10 +32,8 @@ export function DialogLinkInput({
   const currentOption = optionList.find(option => option.id == dialogMode);
 
   const submitLink = (link: string, command: string) => {
-    console.log("the link is ", link)
     if (link) {
       if (isValidUrl(link)) {
-        console.log("it's a valid link ", link);
         onSubmit(link, command);
         setLinkInput('');
         setCommandName('');
@@ -58,40 +56,27 @@ export function DialogLinkInput({
 
   const handleKeyDown = (e: KeyboardEvent) => {
     if (isOpen) {
-      console.log('handleKeyDown', e.key);
-      if (e.key === 'Escape') {
-        onClose();
-      }
       if (e.key === 'Enter') {
         console.log('submit link');
         submitLink(linkInput, commandName);
       }
     }
   }
-
-
-
-
-
-
-  useEffect(() => {
-    const handlePaste = (e: ClipboardEvent) => {
-      console.log('handlePaste');
-      if (isOpen) {
-        e.preventDefault();
-        const pastedText = e.clipboardData?.getData('text');
-        if (pastedText) {
-          setLinkInput(pastedText);
-          console.log("setLinkInput to ", pastedText)
-          setCommandName(pastedText.split('://')[1]?.split(/[.\-_]/)[0] || '');
-          if (currentOption?.id == SUGGESTION_OPTIONS_ID.SEARCH_WEB) {
-            submitLink(pastedText, pastedText.split('://')[1]?.split(/[.\-_]/)[0] || '');
-          }
-          commandNameRef.current?.focus();
+  const handlePaste = (e: ClipboardEvent) => {
+    if (isOpen) {
+      e.preventDefault();
+      const pastedText = e.clipboardData?.getData('text');
+      if (pastedText) {
+        setLinkInput(pastedText);
+        setCommandName(pastedText.split('://')[1]?.split(/[.\-_]/)[0] || '');
+        if (currentOption?.id == SUGGESTION_OPTIONS_ID.SEARCH_WEB) {
+          submitLink(pastedText, pastedText.split('://')[1]?.split(/[.\-_]/)[0] || '');
         }
+        commandNameRef.current?.focus();
       }
-    };
-
+    }
+  };
+  useEffect(() => {
     document.addEventListener('paste', handlePaste);
     document.addEventListener('keydown', handleKeyDown);
     return () => {

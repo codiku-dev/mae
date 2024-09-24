@@ -16,10 +16,4 @@ export function addShortcutListeners(mainWindow: BrowserWindow | null) {
       });
     }
   });
-
-  //   globalShortcut.register('Escape', () => {
-  //     mainWindow?.webContents.send('global-shortcut', {
-  //       data: { shortcut: 'Escape' },
-  //     });
-  //   });
 }

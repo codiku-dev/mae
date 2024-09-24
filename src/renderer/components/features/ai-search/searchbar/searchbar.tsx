@@ -45,7 +45,6 @@ export const Searchbar = (p: Props) => {
   const [dialogMode, setDialogMode] =
     useState<"1" | "2">();
   const selectedSuggestion = currentSearchSuggestions?.[0]
-  logToMain(`the current suggestion is ${JSON.stringify(currentSearchSuggestions)}`)
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -144,11 +143,9 @@ export const Searchbar = (p: Props) => {
   }
 
   const onSelectSuggestion = (entryId: string, entry: string) => {
-    logToMain(`Selecting suggestion ${entryId}`)
     switch (entryId) {
       case SUGGESTION_OPTIONS_ID.ADD_DOC:
       case SUGGESTION_OPTIONS_ID.SEARCH_WEB:
-        logToMain(`Opening dialog for ${entryId}`)
         setIsDialogOpen(true);
         setDialogMode(entryId as "1" | "2");
         break;

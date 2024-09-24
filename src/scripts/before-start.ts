@@ -6,7 +6,7 @@ export async function beforeStart() {
   await restartOllama();
   console.log('Mia: Preloading model');
   try {
-    const response = await fetch('http://localhost:11434/api/chat', {
+    await fetch('http://localhost:11434/api/chat', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -17,7 +17,6 @@ export async function beforeStart() {
         stream: false,
       }),
     });
-    console.log('Mia: Preloading model response:', response);
   } catch (error) {
     console.error('Mia: Error preloading model:', error);
   }
