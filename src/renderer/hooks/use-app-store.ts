@@ -4,11 +4,13 @@ import { devtools, persist, subscribeWithSelector } from 'zustand/middleware';
 const KEYS_TO_NOT_STORE = ['isAppLoading'];
 
 export type Store = {
+  userName: string;
   isDialogOpen: boolean;
   isAppLoading: boolean;
   setIsDialogOpen: (isDialogOpen: boolean) => void;
   setIsAppLoading: (isAppLoading: boolean) => void;
   resetStore: () => void;
+  setUserName: (userName: string) => void;
 };
 
 const useAppStore = create(
@@ -17,7 +19,11 @@ const useAppStore = create(
       subscribeWithSelector<Store>((set) => ({
         //STATE
         isAppLoading: true,
+        userName: '',
         isDialogOpen: false,
+        setUserName: (userName: string) => {
+          set({ userName });
+        },
         setIsDialogOpen: (isDialogOpen: boolean) => {
           set({ isDialogOpen });
         },

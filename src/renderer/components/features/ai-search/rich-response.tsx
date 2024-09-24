@@ -14,6 +14,7 @@ import { MarkdownRenderer } from '../../ui/markdown-renderer';
 import { throttleBasic } from '@llm-ui/react';
 
 import { Skeleton } from '../../ui/skeleton';
+import { useAppStore } from '@/renderer/hooks/use-app-store';
 
 export const RichResponse = (p: {
   question: string;
@@ -21,9 +22,8 @@ export const RichResponse = (p: {
   isLoading: boolean;
   isStreamFinished: boolean;
 }) => {
-  const [userName, setUsername] = useState<any>(null);
   const [userHasScrolled, setUserHasScrolled] = useState(false);
-
+  const { userName, setUserName } = useAppStore();
   const scrollRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const handleScroll = () => {
@@ -50,7 +50,7 @@ export const RichResponse = (p: {
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('user-info-request');
     window.electron.ipcRenderer.on('user-info-reply', (username) => {
-      setUsername(username);
+
     });
   }, []);
 
