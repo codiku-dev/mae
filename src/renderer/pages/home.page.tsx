@@ -112,7 +112,6 @@ export function HomePage() {
     }
 
     if (currentSearchSuggestions.length > 0) {
-      console.log("CURRENT SUGGESTION IN SUBMIT", currentSearchSuggestions[0].id)
 
       let context = ""
       if (currentSearchSuggestions[0].id === SUGGESTION_OPTIONS_ID.SEARCH_WEB) {
