@@ -251,7 +251,6 @@ export function AiSearch() {
 
                                     {(isLoading ||
                                         (streamedResponse && streamedResponse !== '')) && (
-
                                             <RichResponse
                                                 key={submitedPrompt}
                                                 output={streamedResponse}
