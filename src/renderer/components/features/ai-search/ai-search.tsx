@@ -20,7 +20,6 @@ export function AiSearch() {
     const [submitedPrompt, setSubmitedPrompt] = useState('');
     const [error, setError] = useState('');
     const [isAIWorking, setIsAIWorking] = useState(false);
-
     const { isDialogOpen } = useAppStore();
 
     const {
@@ -29,7 +28,8 @@ export function AiSearch() {
         getCurrentConversation,
         getCurrentConversationMessages,
     } = useConversations();
-
+    const currentConversation = getCurrentConversation()
+    const hasMsgInCurrentConv = currentConversation?.messages && currentConversation?.messages.length > 0
     const { currentSearchSuggestions } = useSearch();
 
     const stopAndResetAll = () => {
@@ -102,6 +102,7 @@ export function AiSearch() {
         stopAndResetAll();
         createNewConversation("");
         setStreamedResponse("")
+
     };
     const handleSubmit = async (submittedText: string) => {
         stopAndResetAll();
@@ -117,7 +118,7 @@ export function AiSearch() {
         setValue('');
         setError('');
 
-        if (!getCurrentConversation()) {
+        if (!currentConversation) {
             await createNewConversation(submittedText.slice(0, 30) + '...');
         }
 
@@ -253,20 +254,9 @@ export function AiSearch() {
                                     />
                                 </div>
                                 <div id="ai-response" className="interactive w-3/5">
-                                    {newConversationButton}
+                                    {hasMsgInCurrentConv && newConversationButton}
+                                    {hasMsgInCurrentConv && <Conversation isStreamFinished={isStreamingFinished} currentStreamedResponse={streamedResponse} isLoading={isLoading} />}
 
-
-                                    <Conversation isStreamFinished={isStreamingFinished} currentStreamedResponse={streamedResponse} isLoading={isLoading} />
-                                    {/* {(isLoading ||
-                                        (streamedResponse && streamedResponse !== '')) && (
-                                            <RichResponse
-                                                key={submitedPrompt}
-                                                output={streamedResponse}
-                                                isStreamFinished={isStreamingFinished}
-                                                question={submitedPrompt}
-                                                isLoading={isLoading}
-                                            />
-                                        )} */}
                                     {error && <Error errorMessage={error} />}
                                 </div>
                             </div>

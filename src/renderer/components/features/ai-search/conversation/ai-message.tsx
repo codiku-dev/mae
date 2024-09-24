@@ -14,15 +14,9 @@ import { CodeRenderer } from '../../../ui/code-renderer';
 //@ts-ignore
 import { throttleBasic } from '@llm-ui/react';
 import { Skeleton } from "@/renderer/components/ui/skeleton";
-export function AIHistoryMessage(p: { message: string, isLoading?: boolean }) {
+export function AIMessage(p: { message: string, isLoading?: boolean }) {
 
-    const throttle = throttleBasic({
-        readAheadChars: 10,
-        targetBufferChars: 7,
-        adjustPercentage: 0.35,
-        frameLookBackMs: 1000,
-        windowLookBackMs: 1000,
-    });
+
     const { blockMatches } = useLLMOutput({
         throttle: undefined,
         llmOutput: p.message,

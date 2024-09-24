@@ -1,7 +1,7 @@
 import { useAppStore } from "@/renderer/hooks/use-app-store";
 import { useState } from "react";
 
-export function UserHistoryMessage(p: { message: string }) {
+export function UserMessage(p: { message: string }) {
     const { userName } = useAppStore();
     return (
         <div className="flex flex-col gap-2 max-w-[80%]">
