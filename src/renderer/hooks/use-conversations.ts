@@ -26,6 +26,7 @@ type ConversationStore = {
   clearAllHistory: () => void;
   setCurrentConversationTitle: (title: string) => void;
   setCurrentConversationIndex: (index: number) => void;
+  clear: () => void;
 };
 
 const useConversations = create(
@@ -35,6 +36,13 @@ const useConversations = create(
         currentConversationId: undefined,
         conversationHistory: [],
         currentConversationIndex: 0,
+        clear: () => {
+          set({
+            currentConversationId: undefined,
+            conversationHistory: [],
+            currentConversationIndex: 0,
+          });
+        },
         setConversationHistory: (
           conversationHistory: LLMConversationHistory[],
         ) => {
@@ -67,6 +75,7 @@ const useConversations = create(
           set({
             conversationHistory: [...conversationHistory, newConversation],
             currentConversationId: id,
+            currentConversationIndex: conversationHistory.length,
           });
           return id;
         },

@@ -65,7 +65,7 @@ export const RichResponse = (p: {
     throttle,
     llmOutput: p.output,
     fallbackBlock: {
-      component: MarkdownRenderer,
+      component: (p: any) => <MarkdownRenderer markdownText={p.blockMatch.output} />,
       lookBack: markdownLookBack(),
     },
     blocks: [

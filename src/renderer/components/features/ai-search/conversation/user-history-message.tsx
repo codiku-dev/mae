@@ -1,8 +1,7 @@
-import { LLMMessage } from "@/main/services/ollama/ollama-type";
 import { useAppStore } from "@/renderer/hooks/use-app-store";
 import { useState } from "react";
 
-export function UserHistoryMessage(p: { message: LLMMessage }) {
+export function UserHistoryMessage(p: { message: string }) {
     const { userName } = useAppStore();
     return (
         <div className="flex flex-col gap-2 max-w-[80%]">
@@ -13,7 +12,7 @@ export function UserHistoryMessage(p: { message: LLMMessage }) {
                 <span className="text-sm text-gray-500">{userName || 'User'}</span>
             </div>
             <div className="bg-gray-200 p-3 rounded-lg rounded-tl-none">
-                <p>{p.message.content}</p>
+                <p>{p.message}</p>
             </div>
         </div>
     );

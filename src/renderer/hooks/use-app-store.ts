@@ -9,7 +9,7 @@ export type Store = {
   isAppLoading: boolean;
   setIsDialogOpen: (isDialogOpen: boolean) => void;
   setIsAppLoading: (isAppLoading: boolean) => void;
-  resetStore: () => void;
+  clear: () => void;
   setUserName: (userName: string) => void;
 };
 
@@ -27,9 +27,11 @@ const useAppStore = create(
         setIsDialogOpen: (isDialogOpen: boolean) => {
           set({ isDialogOpen });
         },
-        resetStore: () => {
+        clear: () => {
           set({
             isAppLoading: true,
+            userName: '',
+            isDialogOpen: false,
           });
         },
         setIsAppLoading: (isAppLoading: boolean) => {

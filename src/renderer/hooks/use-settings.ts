@@ -13,6 +13,7 @@ type SettingsStore = {
   setAssistantLanguage: (language: LanguageCode) => void;
   setAvailableModels: (models: Model[]) => void;
   setLastFetchAvailableModelsISODate: (date: string) => void;
+  clear: () => void;
 };
 
 const useSettings = create(
@@ -23,6 +24,14 @@ const useSettings = create(
         assistantLanguage: 'en',
         availableModels: [],
         lastFetchAvailableModelsISODate: '',
+        clear: () => {
+          set({
+            isAppLaunchedOnStartup: false,
+            assistantLanguage: 'en',
+            availableModels: [],
+            lastFetchAvailableModelsISODate: '',
+          });
+        },
         setIsAppLaunchedOnStartup: (isAppLaunchedOnStartup: boolean) => {
           set({ isAppLaunchedOnStartup });
         },

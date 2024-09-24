@@ -4,6 +4,7 @@ import { initMenu } from '@/main/menu/menu';
 import { beforeStart } from '@/scripts/before-start';
 import { ROUTES } from '@/renderer/libs/routes';
 import { useAppStore } from '@/renderer/hooks/use-app-store';
+import { useSettings } from '@/renderer/hooks/use-settings';
 var AutoLaunch = require('auto-launch');
 
 export function addAppListeners(mainWindow: BrowserWindow | null) {
@@ -44,7 +45,7 @@ export function addAppListeners(mainWindow: BrowserWindow | null) {
       name: 'Mia',
       path: '/Applications/Mia.app',
     });
-    if (useAppStore.getState().isAppLaunchedOnStartup) {
+    if (useSettings.getState().isAppLaunchedOnStartup) {
       console.log('Mia: enabling auto launch');
       miaAutoLauncher.enable();
     } else {

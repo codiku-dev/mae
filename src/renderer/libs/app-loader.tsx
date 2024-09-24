@@ -6,14 +6,17 @@ import { useAppStore } from '../hooks/use-app-store';
 import { ROUTES } from './routes';
 import { logToMain, makeInteractiveClassClickable } from './utils';
 import { DevTool } from '../components/features/dev-tools';
+import { useSettings } from '../hooks/use-settings';
 
 // TODO: Add a global listener to handle the navigate event
 
 export const AppLoader = () => {
   const navigate = useNavigate();
   const [isDebug, setIsDebug] = useState(false);
-  const { setIsAppLoading, isAppLoading, isAppLaunchedOnStartup } =
+  const { setIsAppLoading, isAppLoading } =
     useAppStore();
+
+  const { isAppLaunchedOnStartup } = useSettings();
 
   const loadIsDebug = async () => {
     const isPackaged = await window.electron.ipcRenderer.invoke('is-app-packaged');

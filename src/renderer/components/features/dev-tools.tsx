@@ -1,23 +1,36 @@
 import React, { useState, useEffect } from 'react';
 import { useAppStore } from '@/renderer/hooks/use-app-store';
 import { useConversations } from '@/renderer/hooks/use-conversations';
+import { useSettings } from '@/renderer/hooks/use-settings';
+
+const stores = {
+  appStore: useAppStore,
+  conversationStore: useConversations,
+  settingsStore: useSettings,
+};
 
 export const DevTool: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [storeContent, setStoreContent] = useState<string>('');
+  const [activeTab, setActiveTab] = useState<keyof typeof stores>('appStore');
+  const [storeContents, setStoreContents] = useState<Record<string, string>>({});
   const { clearAllHistory } = useConversations();
 
   useEffect(() => {
-    const updateStoreContent = () => {
-      const content = JSON.stringify(useAppStore.getState(), null, 2);
-      setStoreContent(content);
+    const updateStoreContents = () => {
+      const contents = Object.entries(stores).reduce((acc, [key, store]) => {
+        acc[key] = JSON.stringify(store.getState(), null, 2);
+        return acc;
+      }, {} as Record<string, string>);
+      setStoreContents(contents);
     };
 
-    updateStoreContent();
-    const unsubscribe = useAppStore.subscribe(updateStoreContent);
+    updateStoreContents();
+    const unsubscribes = Object.values(stores).map(store =>
+      (store.subscribe as (listener: () => void) => () => void)(updateStoreContents)
+    );
 
-    return () => unsubscribe();
-  }, [useAppStore]);
+    return () => unsubscribes.forEach(unsubscribe => unsubscribe());
+  }, []);
 
   return (
     <>
@@ -34,15 +47,26 @@ export const DevTool: React.FC = () => {
           className="interactive fixed bottom-16 right-4 z-50 max-h-[80vh] w-96 overflow-auto rounded-lg bg-white p-4 shadow-xl"
         >
           <div className="flex justify-between items-center mb-2">
-            <h2 className="text-lg font-bold">Zustand Store Content</h2>
             <button
               className="bg-red-500 text-white px-2 py-1 rounded text-xs"
-              onClick={clearAllHistory}
+              onClick={stores[activeTab].getState().clear}
             >
-              Clear History
+              Clear store
             </button>
           </div>
-          <pre className="whitespace-pre-wrap text-xs">{storeContent}</pre>
+          <h2 className="text-lg font-bold">{activeTab}</h2>
+          <pre className="whitespace-pre-wrap text-xs">{storeContents[activeTab]}</pre>
+          <div className="flex mt-4">
+            {Object.keys(stores).map((storeName) => (
+              <button
+                key={storeName}
+                className={`mr-2 px-2 py-1 rounded text-xs ${activeTab === storeName ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+                onClick={() => setActiveTab(storeName as keyof typeof stores)}
+              >
+                {storeName}
+              </button>
+            ))}
+          </div>
         </div>
       )}
     </>

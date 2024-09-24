@@ -43,6 +43,8 @@ export function AiSearch() {
         setIsAIWorking(false);
     };
 
+
+
     const handleStopStream = () => {
         console.log('handleStopStream');
         ollamaService.abortAllRequests();
@@ -96,7 +98,11 @@ export function AiSearch() {
         };
     }, [isDialogOpen]);
 
-
+    const newConversation = () => {
+        stopAndResetAll();
+        createNewConversation("");
+        setStreamedResponse("")
+    };
     const handleSubmit = async (submittedText: string) => {
         stopAndResetAll();
         // remove all @docs and @web from submittedText
@@ -179,20 +185,20 @@ export function AiSearch() {
         );
     };
 
-    const clearButton = (
+    const newConversationButton = (
         <div className="flex justify-end h-6">
-            {streamedResponse && (
-                <Button
-                    id="ai-clear-button"
-                    className="interactive"
-                    onClick={stopAndResetAll}
-                    size="sm"
-                    variant={'outline'}
-                >
-                    <X className="h-4 w-4 mr-2" />
-                    Clear
-                </Button>
-            )}
+
+            <Button
+                id="ai-clear-button"
+                className="interactive"
+                onClick={newConversation}
+                size="sm"
+                variant={'outline'}
+            >
+                <X className="h-4 w-4 mr-2" />
+                New conversation
+            </Button>
+
         </div>
     );
 
@@ -247,9 +253,11 @@ export function AiSearch() {
                                     />
                                 </div>
                                 <div id="ai-response" className="interactive w-3/5">
-                                    {clearButton}
+                                    {newConversationButton}
 
-                                    {(isLoading ||
+
+                                    <Conversation isStreamFinished={isStreamingFinished} currentStreamedResponse={streamedResponse} isLoading={isLoading} />
+                                    {/* {(isLoading ||
                                         (streamedResponse && streamedResponse !== '')) && (
                                             <RichResponse
                                                 key={submitedPrompt}
@@ -258,8 +266,7 @@ export function AiSearch() {
                                                 question={submitedPrompt}
                                                 isLoading={isLoading}
                                             />
-                                        )}
-                                    {/* <Conversation /> */}
+                                        )} */}
                                     {error && <Error errorMessage={error} />}
                                 </div>
                             </div>

@@ -13,8 +13,7 @@ import {
   TableRow,
 } from './table';
 
-export const MarkdownRenderer = (p: { blockMatch: any }) => {
-  const markdown = p.blockMatch.output;
+export const MarkdownRenderer = (p: { markdownText: string }) => {
 
   return (
     <ReactMarkdown
@@ -157,7 +156,7 @@ export const MarkdownRenderer = (p: { blockMatch: any }) => {
         ),
       }}
     >
-      {markdown}
+      {p.markdownText}
     </ReactMarkdown>
   );
 };

@@ -31,6 +31,7 @@ export type SearchStore = {
   deleteIndexedWebsite: (url: string) => void;
   getCommands: () => Command[];
   setCurrentSearchSuggestions: (suggestions: SearchSuggestion[]) => void;
+  clear: () => void;
 };
 
 const useSearch = create(
@@ -40,6 +41,12 @@ const useSearch = create(
         //STATE
         indexedWebsitesContent: [],
         currentSearchSuggestions: [],
+        clear: () => {
+          set({
+            indexedWebsitesContent: [],
+            currentSearchSuggestions: [],
+          });
+        },
         isWebsiteIndexed: (url: string) => {
           const { indexedWebsitesContent } = get();
           return indexedWebsitesContent.some(
