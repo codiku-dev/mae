@@ -30,7 +30,6 @@ export const optionList = [
   { id: SUGGESTION_OPTIONS_ID.ADD_DOC, display: 'Add doc', type: 'add-doc' },
 ];
 export const Searchbar = forwardRef<HTMLInputElement, Props>((p: Props, inputRef) => {
-  console.log(" input ref from props ", inputRef)
   const {
     setIsDialogOpen,
     isDialogOpen

@@ -1,4 +1,4 @@
-import { app, BrowserWindow, screen } from 'electron';
+import { app, BrowserWindow /* ,screen */, screen } from 'electron';
 import path from 'path';
 import { start } from './start';
 
@@ -41,8 +41,7 @@ export function initWindow() {
     mainWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
   }
   // mainWindow.setIgnoreMouseEvents(true);
-  // global.ignoreMouseEvent = global.DEBUG ? false : true
-  global.ignoreMouseEvent = false;
+  global.ignoreMouseEvent = global.DEBUG ? false : true;
   // mainWindow.setAlwaysOnTop(true, 'screen-saver', 1);
   start(app, mainWindow);
   mainWindow.on('ready-to-show', () => {
