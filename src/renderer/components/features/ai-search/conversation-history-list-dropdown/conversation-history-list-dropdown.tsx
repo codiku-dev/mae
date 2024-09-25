@@ -11,8 +11,8 @@ import { useConversations } from '@/renderer/hooks/use-conversations';
 import { ButtonTooltipIcon } from '../toolbar/button-tooltip-icon';
 import { formatTimeAgo } from '@/renderer/libs/utils';
 
-export const ConversationHistoryListDropdown = () => {
-    const { conversationHistory } = useConversations();
+export const ConversationHistoryListDropdown = (p: { onClickConversationItem: () => void }) => {
+    const { conversationHistory, currentConversationId, setCurrentConversationId } = useConversations();
     const [searchTerm, setSearchTerm] = useState('');
     const [filteredConversations, setFilteredConversations] = useState(conversationHistory);
     const [isOpen, setIsOpen] = useState(false);
@@ -39,7 +39,7 @@ export const ConversationHistoryListDropdown = () => {
                 <div onBlur={() => setIsOpen(false)}>
                     <div className="p-2 interactive">
                         <div className="  flex items-center space-x-2">
-                            <Search className="w-4 h-4 opacity-50" />
+                            <Search className="absolute left-8 w-4 h-4 opacity-50" />
                             <Input
                                 onClick={(e) => {
                                     console.log("STOP PROPAGATION INPUT")
@@ -50,20 +50,25 @@ export const ConversationHistoryListDropdown = () => {
                                 placeholder="Search conversations"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className=" h-8 w-full"
+                                className="pl-8 h-8 w-full"
                             />
                         </div>
                     </div>
-                    <div className="mt-2 max-h-[500px] overflow-y-auto">
+                    <div id="ai-conversation-history-list-dropdown-content" className="interactive mt-2 max-h-[500px] overflow-y-auto">
                         {filteredConversations.map((conversation) => (
                             <div key={conversation.id} className="flex flex-col px-2 py-1">
                                 <span className="text-xs text-gray-500 mb-1">
                                     {formatTimeAgo(conversation.createdAt)}
                                 </span>
                                 <Button
-                                    onClick={(e) => e.stopPropagation()}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setCurrentConversationId(conversation.id);
+                                        setIsOpen(false);
+                                        p.onClickConversationItem()
+                                    }}
                                     variant="ghost"
-                                    className="w-full justify-start"
+                                    className={`w-full justify-start ${currentConversationId === conversation.id && 'bg-main'}`}
                                 >
                                     {conversation.title}
                                 </Button>

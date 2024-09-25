@@ -3,12 +3,12 @@ import { ButtonTooltipIcon } from "./button-tooltip-icon";
 import { ConversationHistoryListDropdown } from "../conversation-history-list-dropdown/conversation-history-list-dropdown";
 
 
-export function Toolbar(p: { onClickNewConversation: () => void }) {
+export function Toolbar(p: { onClickNewConversation: () => void, onClickConversationItem: () => void }) {
 
 
     return (
         <div className="flex justify-end h-6">
-            <ConversationHistoryListDropdown />
+            <ConversationHistoryListDropdown onClickConversationItem={p.onClickConversationItem} />
             <ButtonTooltipIcon
                 id="ai-new-conversation-button"
                 onClick={p.onClickNewConversation}

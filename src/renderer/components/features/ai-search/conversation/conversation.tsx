@@ -7,7 +7,7 @@ import { AIMessage } from "./ai-message";
 import { cn } from "@/renderer/libs/utils";
 import { Toolbar } from "../toolbar/toolbar";
 
-export function Conversation(p: { onClickNewConversation: () => void, currentStreamedResponse: string, isStreamFinished: boolean, isLoading: boolean }) {
+export function Conversation(p: { onClickNewConversation: () => void, currentStreamedResponse: string, isStreamFinished: boolean, isLoading: boolean, onClickConversationItem: () => void }) {
     const [userHasScrolled, setUserHasScrolled] = useState(false);
     const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -49,7 +49,7 @@ export function Conversation(p: { onClickNewConversation: () => void, currentStr
 
     const displayAiMessage = (message: LLMMessage, index: number) => {
         // if last message
-        if (index === currentConversation?.messages.length - 1 && p.isStreamFinished) {
+        if (index === currentConversation?.messages.length - 1 && !p.isStreamFinished) {
             return null
         } else {
             return <AIMessage message={message.content} />
@@ -62,9 +62,9 @@ export function Conversation(p: { onClickNewConversation: () => void, currentStr
                 e.preventDefault();
                 e.stopPropagation();
             }}
-            className="interactive mt-4 p-4 rounded-md bg-white animate-in flex flex-col gap-4 relative w-full shadow-xl"
+            className="interactive mt-4 p-4 rounded-md bg-white animate-in flex flex-col gap-4 relative w-full shadow-2xl"
         >
-            <Toolbar onClickNewConversation={p.onClickNewConversation} />
+            <Toolbar onClickNewConversation={p.onClickNewConversation} onClickConversationItem={p.onClickConversationItem} />
             <div
                 ref={scrollRef}
                 className="flex flex-col max-h-[500px] overflow-y-auto"
@@ -78,7 +78,7 @@ export function Conversation(p: { onClickNewConversation: () => void, currentStr
                     </div>
                 })}
 
-                {p.currentStreamedResponse && <AIMessage message={p.currentStreamedResponse} isLoading={p.isLoading} />}
+                {p.currentStreamedResponse && !p.isStreamFinished && <AIMessage message={p.currentStreamedResponse} isLoading={p.isLoading} />}
             </div>
         </div>
     );

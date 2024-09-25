@@ -110,9 +110,12 @@ export function AiSearch() {
 
     const newConversation = () => {
         stopAndResetAll();
-        createNewConversation("");
-        setStreamedResponse("")
         inputRef.current?.focus();
+        setStreamedResponse("")
+        setTimeout(() => {
+            createNewConversation("");
+        }, 200)
+
 
     };
     const handleSubmit = async (submittedText: string) => {
@@ -214,6 +217,7 @@ export function AiSearch() {
         }, 100);
     };
 
+
     return (
         <div id="container">
             <AnimatePresence>
@@ -255,7 +259,7 @@ export function AiSearch() {
                                 </div>
                                 <div id="ai-response" className="interactive w-3/5">
 
-                                    {hasMsgInCurrentConv && <Conversation onClickNewConversation={newConversation} isStreamFinished={isStreamingFinished} currentStreamedResponse={streamedResponse} isLoading={isLoading} />}
+                                    {hasMsgInCurrentConv && <Conversation onClickConversationItem={stopAndResetAll} onClickNewConversation={newConversation} isStreamFinished={isStreamingFinished} currentStreamedResponse={streamedResponse} isLoading={isLoading} />}
 
                                     {error && <Error errorMessage={error} />}
                                 </div>
