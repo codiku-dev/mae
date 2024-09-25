@@ -1,4 +1,4 @@
-import { ListRestart, Plus, LucideIcon } from "lucide-react";
+import { Plus } from "lucide-react";
 import { ButtonTooltipIcon } from "./button-tooltip-icon";
 import { ConversationHistoryListDropdown } from "../conversation-history-list-dropdown/conversation-history-list-dropdown";
 

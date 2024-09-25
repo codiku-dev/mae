@@ -29,6 +29,7 @@ export function AiSearch() {
         addMessageToCurrentConversation,
         getCurrentConversation,
         getCurrentConversationMessages,
+        setCurrentConversationTitle,
     } = useConversations();
     const currentConversation = getCurrentConversation()
     const hasMsgInCurrentConv = currentConversation?.messages && currentConversation?.messages.length > 0
@@ -130,6 +131,8 @@ export function AiSearch() {
 
         if (!currentConversation) {
             await createNewConversation(submittedText.slice(0, 30) + '...');
+        } else if (currentConversation.title === "") {
+            setCurrentConversationTitle(submittedText.slice(0, 30) + '...');
         }
 
         if (currentSearchSuggestions.length > 0) {
