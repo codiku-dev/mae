@@ -83,9 +83,9 @@ export const RichResponse = (p: {
     <div className="flex items-center gap-1">
       <span className="text-xs text-gray-400">is thinking</span>
       <div className="flex gap-0.5 mt-[6px]">
-        <div className="w-1 h-1 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-        <div className="w-1 h-1 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-        <div className="w-1 h-1 bg-gray-400 rounded-full animate-bounce"></div>
+        <div className="w-1 h-1 bg-gray-300 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+        <div className="w-1 h-1 bg-gray-300 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+        <div className="w-1 h-1 bg-gray-300 rounded-full animate-bounce"></div>
       </div>
     </div>
   );
@@ -142,7 +142,7 @@ export const RichResponse = (p: {
         e.preventDefault();
         e.stopPropagation();
       }}
-      className="interactive mt-4 p-4 rounded-md bg-white animate-in flex flex-col gap-4 relative w-full shadow-xl"
+      className="interactive mt-4 p-4 rounded-md  animate-in flex flex-col gap-4 relative w-full shadow-xl"
     >
       <>
         <div

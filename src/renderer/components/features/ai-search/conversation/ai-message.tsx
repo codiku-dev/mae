@@ -43,7 +43,7 @@ export function AIMessage(p: { message: string, isLoading?: boolean }) {
     return (
         <div className="flex flex-col gap-2">
             {avatarAssistant}
-            <div className="relative bg-main p-3 rounded-lg rounded-tr-none min-h-12">
+            <div className="relative bg-primary text-background p-3 rounded-lg rounded-tr-none min-h-12">
                 {p.isLoading ? <div className="w-full flex flex-col gap-1">
                     <Skeleton className="w-full h-6" />
                 </div> :

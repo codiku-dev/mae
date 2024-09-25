@@ -62,7 +62,7 @@ export function Conversation(p: { onClickNewConversation: () => void, currentStr
                 e.preventDefault();
                 e.stopPropagation();
             }}
-            className="interactive mt-4 p-4 rounded-md bg-white animate-in flex flex-col gap-4 relative w-full shadow-2xl"
+            className="interactive mt-4 p-4 rounded-md bg-background animate-in flex flex-col gap-4 relative w-full shadow-2xl"
         >
             <Toolbar onClickNewConversation={p.onClickNewConversation} onClickConversationItem={p.onClickConversationItem} />
             <div

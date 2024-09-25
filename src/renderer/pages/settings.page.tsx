@@ -95,7 +95,7 @@ export function SettingsPage() {
   return (
     <FormProvider {...form}>
       <form
-        className="h-screen w-screen p-4 space-y-6 bg-white relative"
+        className="h-screen w-screen p-4 space-y-6 bg-background relative"
         onSubmit={handleSubmit(submit)}
       >
         <div className="flex justify-between items-center">
