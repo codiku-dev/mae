@@ -68,7 +68,7 @@ export const ConversationHistoryListDropdown = (p: { onClickConversationItem: ()
                                         p.onClickConversationItem()
                                     }}
                                     variant="ghost"
-                                    className={`w-full justify-start ${currentConversationId === conversation.id && 'bg-accent'}`}
+                                    className={`w-full justify-start ${currentConversationId === conversation.id && ' bg-primary-foreground'}`}
                                 >
                                     {conversation.title}
                                 </Button>
