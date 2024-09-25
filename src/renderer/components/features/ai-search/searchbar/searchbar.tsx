@@ -9,7 +9,7 @@ import {
 } from '@/renderer/hooks/use-app-store';
 import { webScraperService } from '@/main/services/web-scapper/web-scrapper-service';
 import { v4 as uuidv4 } from 'uuid';
-import { mentionInInputStyle, mentionInListStyle } from './searchbar-style';
+import { getMentionInListStyle, mentionInInputStyle } from './searchbar-style';
 import { logToMain } from '@/renderer/libs/utils';
 import { useSearch } from '@/renderer/hooks/use-search';
 
@@ -30,6 +30,7 @@ export const optionList = [
   { id: SUGGESTION_OPTIONS_ID.ADD_DOC, display: 'Add doc', type: 'add-doc' },
 ];
 export const Searchbar = forwardRef<HTMLInputElement, Props>((p: Props, inputRef) => {
+  const [isFocused, setIsFocused] = useState(false);
   const {
     setIsDialogOpen,
     isDialogOpen
@@ -183,15 +184,21 @@ export const Searchbar = forwardRef<HTMLInputElement, Props>((p: Props, inputRef
       <MentionsInput
         placeholder="How can I help you?"
         id="ai-search-input"
-        className="interactive"
+        className="interactive "
         inputRef={inputRef}
+        onFocus={() => {
+          setIsFocused(true);
+        }}
+        onBlur={() => {
+          setIsFocused(false);
+        }}
         autoFocus
         singleLine
         value={p.value}
         onChange={(e) => {
           p.onChange(e.target.value);
         }}
-        style={mentionInListStyle}
+        style={getMentionInListStyle({ isFocused })}
         customSuggestionsContainer={(children) => (
           <div className="absolute top-[0.9rem]">{children}</div>
         )}
@@ -225,7 +232,7 @@ export const Searchbar = forwardRef<HTMLInputElement, Props>((p: Props, inputRef
         variant="outline"
         size="icon"
         id="ai-search-button"
-        className="interactive cursor-pointer shadow-md w-[3.35rem] h-[2.50rem] absolute right-0 top-[0.64rem] transform  rounded-full bg-black text-white"
+        className="interactive cursor-pointer shadow-md w-[3.35rem] h-[2.40rem] absolute right-[0.05rem] top-[0.68rem] transform  rounded-full bg-black text-white"
         type="submit"
       >
         {!p.isStreamingFinished ? <Square className="size-4" /> : <ArrowRight className="size-4" />}

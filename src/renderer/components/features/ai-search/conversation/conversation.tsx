@@ -7,10 +7,9 @@ import { AIMessage } from "./ai-message";
 import { cn } from "@/renderer/libs/utils";
 import { Button } from "@/renderer/components/ui/button";
 import { Plus } from "lucide-react";
+import { Toolbar } from "../toolbar/toolbar";
 
 export function Conversation(p: { onClickNewConversation: () => void, currentStreamedResponse: string, isStreamFinished: boolean, isLoading: boolean }) {
-
-
     const [userHasScrolled, setUserHasScrolled] = useState(false);
     const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -58,27 +57,7 @@ export function Conversation(p: { onClickNewConversation: () => void, currentStr
         } else {
             return <AIMessage message={message.content} />
         }
-
     }
-
-
-    const newConversationButton = (
-        <div className="flex justify-end h-6">
-
-            <Button
-                id="ai-clear-button"
-                className="interactive text-xs text-gray-400"
-                onClick={p.onClickNewConversation}
-                size="sm"
-                variant={'ghost'}
-
-            >
-                <Plus className=" mr-2" size={12} />
-                New conversation
-            </Button>
-
-        </div>
-    );
 
     return (
         <div
@@ -88,7 +67,7 @@ export function Conversation(p: { onClickNewConversation: () => void, currentStr
             }}
             className="interactive mt-4 p-4 rounded-md bg-white animate-in flex flex-col gap-4 relative w-full shadow-xl"
         >
-            {newConversationButton}
+            <Toolbar onClickNewConversation={p.onClickNewConversation} />
             <div
                 ref={scrollRef}
                 className="flex flex-col max-h-[500px] overflow-y-auto"
