@@ -10,7 +10,6 @@ import { isValidUrl, logToMain } from '@/renderer/libs/utils';
 import { useToast } from '@/renderer/hooks/use-toast';
 import { Globe, Plus } from 'lucide-react';
 import { optionList, SUGGESTION_OPTIONS_ID } from './searchbar/searchbar';
-import { SearchSuggestion } from '@/renderer/hooks/use-app-store';
 
 interface DialogLinkInputProps {
   isOpen: boolean;
@@ -96,7 +95,7 @@ export function DialogLinkInput({
         setCommandName('');
         setTimeout(() => {
           onClose();
-        }, 100);
+        }, 200);
       }}
     >
       <DialogContent className="top-[15%] interactive" id="ai-dialog-link-learn">
