@@ -5,8 +5,10 @@ import { UserMessage } from "./user-message";
 import { AIMessage } from "./ai-message";
 
 import { cn } from "@/renderer/libs/utils";
+import { Button } from "@/renderer/components/ui/button";
+import { Plus } from "lucide-react";
 
-export function Conversation(p: { currentStreamedResponse: string, isStreamFinished: boolean, isLoading: boolean }) {
+export function Conversation(p: { onClickNewConversation: () => void, currentStreamedResponse: string, isStreamFinished: boolean, isLoading: boolean }) {
 
 
     const [userHasScrolled, setUserHasScrolled] = useState(false);
@@ -59,6 +61,25 @@ export function Conversation(p: { currentStreamedResponse: string, isStreamFinis
 
     }
 
+
+    const newConversationButton = (
+        <div className="flex justify-end h-6">
+
+            <Button
+                id="ai-clear-button"
+                className="interactive text-xs"
+                onClick={p.onClickNewConversation}
+                size="sm"
+                variant={'outline'}
+
+            >
+                <Plus className=" mr-2" size={12} />
+                New conversation
+            </Button>
+
+        </div>
+    );
+
     return (
         <div
             onClick={(e) => {
@@ -67,6 +88,7 @@ export function Conversation(p: { currentStreamedResponse: string, isStreamFinis
             }}
             className="interactive mt-4 p-4 rounded-md bg-white animate-in flex flex-col gap-4 relative w-full shadow-xl"
         >
+            {newConversationButton}
             <div
                 ref={scrollRef}
                 className="flex flex-col max-h-[500px] overflow-y-auto"

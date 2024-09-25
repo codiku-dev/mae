@@ -1,12 +1,11 @@
-import { app, BrowserWindow /* ,screen */, screen } from 'electron';
+import { app, BrowserWindow, screen } from 'electron';
 import path from 'path';
 import { start } from './start';
-import { useAppStore } from '@/renderer/hooks/use-app-store';
 
 export function initWindow() {
   // const { width, height } = screen.getPrimaryDisplay().workAreaSize;
   // global.DEBUG = !app.isPackaged;
-  global.DEBUG = false;
+  global.DEBUG = true;
   let mainWindow: BrowserWindow | null = new BrowserWindow({
     height: screen.getPrimaryDisplay().workAreaSize.height,
     width: screen.getPrimaryDisplay().workAreaSize.width,
@@ -42,7 +41,8 @@ export function initWindow() {
     mainWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
   }
   // mainWindow.setIgnoreMouseEvents(true);
-  global.ignoreMouseEvent = global.DEBUG ? false : true;
+  // global.ignoreMouseEvent = global.DEBUG ? false : true
+  global.ignoreMouseEvent = false;
   // mainWindow.setAlwaysOnTop(true, 'screen-saver', 1);
   start(app, mainWindow);
   mainWindow.on('ready-to-show', () => {

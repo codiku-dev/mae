@@ -34,6 +34,7 @@ export function makeInteractiveClassClickable() {
       }
     });
   };
+
   window.addEventListener('mousemove', mouseMoveHandler);
 
   function unsubscribe() {

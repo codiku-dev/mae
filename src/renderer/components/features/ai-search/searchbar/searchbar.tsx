@@ -3,7 +3,7 @@ import { Button } from '../../../ui/button';
 import { ArrowRight, Square, PlusCircle, Book, Globe } from 'lucide-react';
 import { BadgeSuggestionList } from '../badge-suggestion-list';
 import { DialogLinkInput } from '../dialog-link-input';
-import { useRef, useState } from 'react';
+import { useState, forwardRef } from 'react';
 import {
   useAppStore,
 } from '@/renderer/hooks/use-app-store';
@@ -11,7 +11,6 @@ import { webScraperService } from '@/main/services/web-scapper/web-scrapper-serv
 import { v4 as uuidv4 } from 'uuid';
 import { mentionInInputStyle, mentionInListStyle } from './searchbar-style';
 import { logToMain } from '@/renderer/libs/utils';
-import { dialog } from 'electron';
 import { useSearch } from '@/renderer/hooks/use-search';
 
 type Props = {
@@ -30,9 +29,8 @@ export const optionList = [
   { id: SUGGESTION_OPTIONS_ID.SEARCH_WEB, display: 'web', type: "search-web" },
   { id: SUGGESTION_OPTIONS_ID.ADD_DOC, display: 'Add doc', type: 'add-doc' },
 ];
-export const Searchbar = (p: Props) => {
-  let inputRef = useRef<HTMLInputElement>();
-
+export const Searchbar = forwardRef<HTMLInputElement, Props>((p: Props, inputRef) => {
+  console.log(" input ref from props ", inputRef)
   const {
     setIsDialogOpen,
     isDialogOpen
@@ -65,7 +63,7 @@ export const Searchbar = (p: Props) => {
 
   const focusInput = () => {
     setTimeout(() => {
-      (inputRef.current as any).inputElement.focus();
+      (inputRef as any).current.focus();
     }, 50);
   };
   const handleDialogClose = () => {
@@ -187,9 +185,7 @@ export const Searchbar = (p: Props) => {
         placeholder="How can I help you?"
         id="ai-search-input"
         className="interactive"
-        ref={(r) => {
-          (inputRef.current as any) = r;
-        }}
+        inputRef={inputRef}
         autoFocus
         singleLine
         value={p.value}
@@ -244,5 +240,6 @@ export const Searchbar = (p: Props) => {
       />}
     </form>
   );
-};
+});
 
+Searchbar.displayName = 'Searchbar';

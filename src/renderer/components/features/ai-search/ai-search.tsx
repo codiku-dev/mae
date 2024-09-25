@@ -3,8 +3,8 @@ import { Error } from '@/renderer/components/features/ai-search/error';
 import { RichResponse } from '@/renderer/components/features/ai-search/rich-response';
 import { Button } from '@/renderer/components/ui/button';
 import { AnimatePresence, motion } from 'framer-motion';
-import { X } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { Plus, X } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 import { useAppStore } from '../../../hooks/use-app-store';
 import { SUGGESTION_OPTIONS_ID, Searchbar } from '../../../components/features/ai-search/searchbar/searchbar';
 import { useConversations } from '@/renderer/hooks/use-conversations';
@@ -21,6 +21,7 @@ export function AiSearch() {
     const [error, setError] = useState('');
     const [isAIWorking, setIsAIWorking] = useState(false);
     const { isDialogOpen } = useAppStore();
+    const inputRef = useRef<HTMLInputElement>(null);
 
     const {
         createNewConversation,
@@ -62,11 +63,11 @@ export function AiSearch() {
         );
     }, [isVisible]);
 
-    useEffect(() => {
-        window.electron.ipcRenderer.sendMessage('set-ignore-mouse-events', true, {
-            forward: true,
-        });
-    }, []);
+    // useEffect(() => {
+    //     window.electron.ipcRenderer.sendMessage('set-ignore-mouse-events', true, {
+    //         forward: true,
+    //     });
+    // }, []);
 
     useEffect(function addOpenCloseListener() {
         const unsubscribeGlobalShortcut = window.electron.ipcRenderer.on(
@@ -186,22 +187,6 @@ export function AiSearch() {
         );
     };
 
-    const newConversationButton = (
-        <div className="flex justify-end h-6">
-
-            <Button
-                id="ai-clear-button"
-                className="interactive"
-                onClick={newConversation}
-                size="sm"
-                variant={'outline'}
-            >
-                <X className="h-4 w-4 mr-2" />
-                New conversation
-            </Button>
-
-        </div>
-    );
 
     const onClosed = () => {
         setTimeout(() => {
@@ -245,6 +230,7 @@ export function AiSearch() {
                             <div className="flex flex-col  items-center ">
                                 <div id="ai-searchbar" className="w-[420px]">
                                     <Searchbar
+                                        ref={inputRef}
                                         value={value}
                                         isStreamingFinished={isStreamingFinished}
                                         onChange={setValue}
@@ -254,8 +240,8 @@ export function AiSearch() {
                                     />
                                 </div>
                                 <div id="ai-response" className="interactive w-3/5">
-                                    {hasMsgInCurrentConv && newConversationButton}
-                                    {hasMsgInCurrentConv && <Conversation isStreamFinished={isStreamingFinished} currentStreamedResponse={streamedResponse} isLoading={isLoading} />}
+
+                                    {hasMsgInCurrentConv && <Conversation onClickNewConversation={newConversation} isStreamFinished={isStreamingFinished} currentStreamedResponse={streamedResponse} isLoading={isLoading} />}
 
                                     {error && <Error errorMessage={error} />}
                                 </div>
