@@ -67,10 +67,10 @@ export function Conversation(p: { onClickNewConversation: () => void, currentStr
 
             <Button
                 id="ai-clear-button"
-                className="interactive text-xs"
+                className="interactive text-xs text-gray-400"
                 onClick={p.onClickNewConversation}
                 size="sm"
-                variant={'outline'}
+                variant={'ghost'}
 
             >
                 <Plus className=" mr-2" size={12} />

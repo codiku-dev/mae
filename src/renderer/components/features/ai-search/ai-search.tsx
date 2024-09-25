@@ -103,6 +103,7 @@ export function AiSearch() {
         stopAndResetAll();
         createNewConversation("");
         setStreamedResponse("")
+        inputRef.current?.focus();
 
     };
     const handleSubmit = async (submittedText: string) => {
