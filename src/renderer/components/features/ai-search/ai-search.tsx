@@ -1,9 +1,6 @@
 import { ollamaService } from '@/main/services/ollama/ollama.service';
 import { Error } from '@/renderer/components/features/ai-search/error';
-import { RichResponse } from '@/renderer/components/features/ai-search/rich-response';
-import { Button } from '@/renderer/components/ui/button';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Plus, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useAppStore } from '../../../hooks/use-app-store';
 import { SUGGESTION_OPTIONS_ID, Searchbar } from '../../../components/features/ai-search/searchbar/searchbar';
