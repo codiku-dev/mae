@@ -60,10 +60,7 @@ export const AppLoader = () => {
     };
   }, [navigate]);
 
-  useEffect(() => {
-    const unsubscribe = makeInteractiveClassClickable();
-    return unsubscribe;
-  }, []);
+
 
   if (isAppLoading) {
     return isAppLaunchedOnStartup || isDebug ? null : <SplashScreen />;

@@ -10,6 +10,7 @@ import { SUGGESTION_OPTIONS_ID, Searchbar } from '../../../components/features/a
 import { useConversations } from '@/renderer/hooks/use-conversations';
 import { useSearch } from '@/renderer/hooks/use-search';
 import { Conversation } from './conversation/conversation';
+import { makeInteractiveClassClickable } from '@/renderer/libs/utils';
 
 export function AiSearch() {
     const [value, setValue] = useState<string>('');
@@ -32,6 +33,13 @@ export function AiSearch() {
     const currentConversation = getCurrentConversation()
     const hasMsgInCurrentConv = currentConversation?.messages && currentConversation?.messages.length > 0
     const { currentSearchSuggestions } = useSearch();
+    useEffect(() => {
+        const unsubscribe = makeInteractiveClassClickable();
+        return () => {
+            console.log('unsubscribe in ai search');
+            unsubscribe();
+        };
+    }, []);
 
     const stopAndResetAll = () => {
         console.log('stopAndResetAll');
@@ -57,10 +65,10 @@ export function AiSearch() {
     };
 
     useEffect(() => {
-        window.electron.ipcRenderer.sendMessage(
-            'on-searchbar-visibilty-change',
-            isVisible,
-        );
+        // window.electron.ipcRenderer.sendMessage(
+        //     'on-searchbar-visibilty-change',
+        //     isVisible,
+        // );
     }, [isVisible]);
 
     // useEffect(() => {
@@ -190,9 +198,11 @@ export function AiSearch() {
 
 
     const onClosed = () => {
-        setTimeout(() => {
-            window.electron.ipcRenderer.sendMessage('request-close-window');
-        }, 100);
+        // setTimeout(() => {
+        //     window.electron.ipcRenderer.sendMessage('request-close-window');
+
+        // }, 100);
+        window.electron.ipcRenderer.sendMessage('set-ignore-mouse-events', false);
     };
 
     const onOpen = () => {

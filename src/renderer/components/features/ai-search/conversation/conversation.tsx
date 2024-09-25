@@ -5,8 +5,6 @@ import { UserMessage } from "./user-message";
 import { AIMessage } from "./ai-message";
 
 import { cn } from "@/renderer/libs/utils";
-import { Button } from "@/renderer/components/ui/button";
-import { Plus } from "lucide-react";
 import { Toolbar } from "../toolbar/toolbar";
 
 export function Conversation(p: { onClickNewConversation: () => void, currentStreamedResponse: string, isStreamFinished: boolean, isLoading: boolean }) {
@@ -45,7 +43,6 @@ export function Conversation(p: { onClickNewConversation: () => void, currentStr
 
     useEffect(() => {
         if (!userHasScrolled && scrollRef.current) {
-            console.log("scroll to top ", scrollRef.current.scrollHeight)
             scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
         }
     }, [currentConversation?.messages.length, p.currentStreamedResponse]);
