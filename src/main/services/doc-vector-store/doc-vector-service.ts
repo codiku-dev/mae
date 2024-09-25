@@ -5,7 +5,7 @@ import { convert } from 'html-to-text';
 import llama3Tokenizer from 'llama3-tokenizer-js';
 import { HNSWLib } from '@langchain/community/vectorstores/hnswlib';
 import { logToRenderer } from '@/libs/utils';
-import { WebsiteScrapedContent } from '@/renderer/hooks/use-app-store';
+import { WebsiteScrapedContent } from '@/renderer/hooks/use-search';
 import { app, BrowserWindow } from 'electron';
 import path from 'path';
 import { MemoryVectorStore } from 'langchain/vectorstores/memory';
@@ -109,14 +109,8 @@ export class DocVectorStoreService {
 
   public async searchDocs(query: string, qty: number) {
     logToRenderer(DocVectorStoreService.mainWindow, 'Searching docs');
-    console.log('Searching docs');
-    console.log(
-      'is the vector store ok ?',
-      this.vectorStore?.docstore._docs.size,
-      this.vectorStore?.docstore._docs.entries(),
-    );
+
     const response = await this.vectorStore?.similaritySearch(query, qty);
-    console.log('retriever is set');
     // const response = await retriever?.invoke(query);
     logToRenderer(DocVectorStoreService.mainWindow, 'Search completed');
     return response;

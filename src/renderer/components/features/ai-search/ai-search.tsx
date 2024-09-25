@@ -125,39 +125,37 @@ export function AiSearch() {
         } else if (currentConversation.title === "") {
             setCurrentConversationTitle(submittedText.slice(0, 30) + '...');
         }
-
+        let context = ""
+        let documentationContext = ""
         if (currentSearchSuggestions.length > 0) {
-
-            let context = ""
             if (currentSearchSuggestions[0].id === SUGGESTION_OPTIONS_ID.SEARCH_WEB) {
-                context = await window.electron.ipcRenderer.invoke(
+                documentationContext = await window.electron.ipcRenderer.invoke(
                     'search-doc-in-memory',
                     submittedText,
                 );
             } else {
-                context = await window.electron.ipcRenderer.invoke(
+                documentationContext = await window.electron.ipcRenderer.invoke(
                     'langchain-find-relevant-document',
                     submittedText,
                 );
             }
-            addMessageToCurrentConversation({
-                role: 'user',
-                content: `Answer the question based on the documentation provided. 
-          if code is askedinclude the imports in answer. 
-          if code is asked provide full code.
-          if code is asked use the right programming language.
-          Provide code only if necessary.
-          Context: ${context}
-          Question: ${submittedText}`,
-            });
-        } else {
-            addMessageToCurrentConversation({
-                role: 'user',
-                content: submittedText,
-            });
+
+            context = `Answer the question based on the documentation provided. 
+            if code is askedinclude the imports in answer. 
+            if code is asked provide full code.
+            if code is asked use the right programming language.
+            Provide code only if necessary.
+            Context: ${documentationContext}
+            `
+
         }
+        addMessageToCurrentConversation({
+            role: 'user',
+            content: submittedText,
+        });
         ollamaService.requestLlamaStream(
             getCurrentConversationMessages() || [],
+            context,
             (chunk) => {
                 responseContent += chunk.message.content;
                 if (chunk.done === false) {

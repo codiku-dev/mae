@@ -58,10 +58,22 @@ export class OllamaService {
 
   async requestLlamaStream(
     conversation: LLMMessage[],
+    context: string,
     onData: (chunk: ChatResponseChunk) => void,
     onError: (error: Error) => void,
   ) {
     const controller = new AbortController();
+
+    const copyOfConversation = structuredClone(conversation);
+    if (context !== '') {
+      //   logToMain('context is here' + context);
+      const question = conversation[conversation.length - 1].content;
+      logToMain('the question ' + question);
+      copyOfConversation[conversation.length - 1].content =
+        `${conversation[conversation.length - 1].content}
+        ${context}
+        Question:${question}`;
+    }
 
     const signal = controller.signal;
     const id = uuidv4(); // Generate a random ID for the controller
@@ -76,7 +88,7 @@ export class OllamaService {
         },
         body: JSON.stringify({
           model: OllamaConfig.model,
-          messages: conversation,
+          messages: copyOfConversation,
           stream: true,
         }),
         signal: signal, // Add the signal to the fetch request
