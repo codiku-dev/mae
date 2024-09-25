@@ -30,6 +30,13 @@ export const AppLoader = () => {
     setIsDebug(!isPackaged);
   }
   useEffect(() => {
+    const unsubscribe = makeInteractiveClassClickable();
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
+  useEffect(() => {
     loadIsDebug();
     window.electron.ipcRenderer.sendMessage('request-before-start');
     const unsubscribeBeforeStartReply = window.electron.ipcRenderer.on(

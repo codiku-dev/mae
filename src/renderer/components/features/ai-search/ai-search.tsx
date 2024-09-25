@@ -10,7 +10,6 @@ import { SUGGESTION_OPTIONS_ID, Searchbar } from '../../../components/features/a
 import { useConversations } from '@/renderer/hooks/use-conversations';
 import { useSearch } from '@/renderer/hooks/use-search';
 import { Conversation } from './conversation/conversation';
-import { makeInteractiveClassClickable } from '@/renderer/libs/utils';
 
 export function AiSearch() {
     const [value, setValue] = useState<string>('');
@@ -18,7 +17,6 @@ export function AiSearch() {
     const [isVisible, setIsVisible] = useState(false);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [isStreamingFinished, setIsStreamingFinished] = useState(true);
-    const [submitedPrompt, setSubmitedPrompt] = useState('');
     const [error, setError] = useState('');
     const [isAIWorking, setIsAIWorking] = useState(false);
     const { isDialogOpen } = useAppStore();
@@ -34,13 +32,7 @@ export function AiSearch() {
     const currentConversation = getCurrentConversation()
     const hasMsgInCurrentConv = currentConversation?.messages && currentConversation?.messages.length > 0
     const { currentSearchSuggestions } = useSearch();
-    useEffect(() => {
-        const unsubscribe = makeInteractiveClassClickable();
-        return () => {
-            console.log('unsubscribe in ai search');
-            unsubscribe();
-        };
-    }, []);
+
 
     const stopAndResetAll = () => {
         console.log('stopAndResetAll');
@@ -66,17 +58,17 @@ export function AiSearch() {
     };
 
     useEffect(() => {
-        // window.electron.ipcRenderer.sendMessage(
-        //     'on-searchbar-visibilty-change',
-        //     isVisible,
-        // );
+        window.electron.ipcRenderer.sendMessage(
+            'on-searchbar-visibilty-change',
+            isVisible,
+        );
     }, [isVisible]);
 
-    // useEffect(() => {
-    //     window.electron.ipcRenderer.sendMessage('set-ignore-mouse-events', true, {
-    //         forward: true,
-    //     });
-    // }, []);
+    useEffect(() => {
+        window.electron.ipcRenderer.sendMessage('set-ignore-mouse-events', true, {
+            forward: true,
+        });
+    }, []);
 
     useEffect(function addOpenCloseListener() {
         const unsubscribeGlobalShortcut = window.electron.ipcRenderer.on(
@@ -125,7 +117,6 @@ export function AiSearch() {
         submittedText = submittedText.replace(/@web/g, '');
         let responseContent = '';
         setIsAIWorking(true);
-        setSubmitedPrompt(submittedText);
         setStreamedResponse('');
         setIsLoading(true);
         setIsStreamingFinished(false);
@@ -204,11 +195,10 @@ export function AiSearch() {
 
 
     const onClosed = () => {
-        // setTimeout(() => {
-        //     window.electron.ipcRenderer.sendMessage('request-close-window');
-
-        // }, 100);
-        window.electron.ipcRenderer.sendMessage('set-ignore-mouse-events', false);
+        setTimeout(() => {
+            window.electron.ipcRenderer.sendMessage('request-close-window');
+        }, 100);
+        // window.electron.ipcRenderer.sendMessage('set-ignore-mouse-events', false);
     };
 
     const onOpen = () => {
