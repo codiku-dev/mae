@@ -7,6 +7,7 @@ import { SUGGESTION_OPTIONS_ID, Searchbar } from '../../../components/features/a
 import { useConversations } from '@/renderer/hooks/use-conversations';
 import { useSearch } from '@/renderer/hooks/use-search';
 import { Conversation } from './conversation/conversation';
+import { error } from 'console';
 
 export function AiSearch() {
     const [value, setValue] = useState<string>('');
@@ -62,6 +63,7 @@ export function AiSearch() {
     }, [isVisible]);
 
     useEffect(() => {
+
         window.electron.ipcRenderer.sendMessage('set-ignore-mouse-events', true, {
             forward: true,
         });
@@ -193,7 +195,7 @@ export function AiSearch() {
         setTimeout(() => {
             window.electron.ipcRenderer.sendMessage('request-close-window');
         }, 100);
-        // window.electron.ipcRenderer.sendMessage('set-ignore-mouse-events', false);
+        window.electron.ipcRenderer.sendMessage('set-ignore-mouse-events', false);
     };
 
     const onOpen = () => {
@@ -204,7 +206,8 @@ export function AiSearch() {
 
 
     return (
-        <div id="container">
+        <div id="container" className='w-full bg-transparent '>
+
             <AnimatePresence>
                 {isVisible && (
                     <motion.div
@@ -229,25 +232,23 @@ export function AiSearch() {
                             }
                         }}
                     >
-                        <div className="w-screen">
-                            <div className="flex flex-col  items-center ">
-                                <div id="ai-searchbar" className="w-[420px]">
-                                    <Searchbar
-                                        ref={inputRef}
-                                        value={value}
-                                        isStreamingFinished={isStreamingFinished}
-                                        onChange={setValue}
-                                        onSubmit={handleSubmit}
-                                        isLoading={isAIWorking}
-                                        onClickStop={handleStopStream}
-                                    />
-                                </div>
-                                <div id="ai-response" className="interactive w-3/5">
+                        <div className="flex flex-col  h-[800px] overflow-y-hidden ">
+                            <div id="ai-searchbar" className=" px-4 py-4">
+                                <Searchbar
+                                    ref={inputRef}
+                                    value={value}
+                                    isStreamingFinished={isStreamingFinished}
+                                    onChange={setValue}
+                                    onSubmit={handleSubmit}
+                                    isLoading={isAIWorking}
+                                    onClickStop={handleStopStream}
+                                />
+                            </div>
+                            <div id="ai-response" className="interactive py-4 px-4">
 
-                                    {hasMsgInCurrentConv && <Conversation onClickConversationItem={stopAndResetAll} onClickNewConversation={newConversation} isStreamFinished={isStreamingFinished} currentStreamedResponse={streamedResponse} isLoading={isLoading} />}
+                                {hasMsgInCurrentConv && <Conversation onClickConversationItem={stopAndResetAll} onClickNewConversation={newConversation} isStreamFinished={isStreamingFinished} currentStreamedResponse={streamedResponse} isLoading={isLoading} />}
 
-                                    {error && <Error errorMessage={error} />}
-                                </div>
+                                {error && <Error errorMessage={error} />}
                             </div>
                         </div>
                     </motion.div>

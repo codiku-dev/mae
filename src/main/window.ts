@@ -3,28 +3,37 @@ import path from 'path';
 import { start } from './start';
 
 export function initWindow() {
-  // const { width, height } = screen.getPrimaryDisplay().workAreaSize;
+  const { width, height } = screen.getPrimaryDisplay().workAreaSize;
   // global.DEBUG = !app.isPackaged;
-  global.DEBUG = false;
+  global.canInspectCode = true;
+  global.DEBUG = true;
   let mainWindow: BrowserWindow | null = new BrowserWindow({
-    height: screen.getPrimaryDisplay().workAreaSize.height,
-    width: screen.getPrimaryDisplay().workAreaSize.width,
-    x: 0,
-    y: 0,
-    frame: global.DEBUG,
-    transparent: !global.DEBUG,
+    height: 800,
+    width: 1000,
+    transparent: true,
+    frame: false,
+    x: screen.getPrimaryDisplay().workAreaSize.width / 2 - 500, // Assuming a default width of 800
+    y: 100, // Assuming a default height of 600
+    // frame: global.DEBUG,
+    // transparent: true,
     movable: global.DEBUG,
     hasShadow: false,
-    show: true,
-    visualEffectState: 'inactive',
+    show: false,
+    // visualEffectState: 'inactive',
     resizable: global.DEBUG,
-    focusable: false,
+    // focusable: true,
     alwaysOnTop: true,
-
+    useContentSize: true,
+    modal: true,
+    // modal: true,
+    // backgroundColor: 'transparent',
+    // vibrancy: 'under-window',
+    vibrancy: 'fullscreen-ui', // on MacOS
+    visualEffectState: 'active',
     webPreferences: {
       // devTools: false,
 
-      devTools: global.DEBUG,
+      devTools: false,
       nodeIntegration: true,
       contextIsolation: true,
       preload: app.isPackaged
@@ -37,11 +46,12 @@ export function initWindow() {
 
   app.commandLine.appendSwitch('disable-crash-reporter');
 
-  if (!global.DEBUG) {
-    mainWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
-  }
-  // mainWindow.setIgnoreMouseEvents(true);
-  global.ignoreMouseEvent = global.DEBUG ? false : true;
+  // if (!global.DEBUG) {
+  //   mainWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
+  // }
+  // mainWindow.setIgnoreMouseEvents(false);
+
+  // global.ignoreMouseEvent = global.canInspectCode ? false : true;
   // mainWindow.setAlwaysOnTop(true, 'screen-saver', 1);
   start(app, mainWindow);
   mainWindow.on('ready-to-show', () => {

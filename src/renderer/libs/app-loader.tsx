@@ -29,12 +29,12 @@ export const AppLoader = () => {
     const isPackaged = await window.electron.ipcRenderer.invoke('is-app-packaged');
     setIsDebug(!isPackaged);
   }
-  useEffect(() => {
-    const unsubscribe = makeInteractiveClassClickable();
-    return () => {
-      unsubscribe();
-    };
-  }, []);
+  // useEffect(() => {
+  //   const unsubscribe = makeInteractiveClassClickable();
+  //   return () => {
+  //     unsubscribe();
+  //   };
+  // }, []);
 
   useEffect(() => {
     loadIsDebug();

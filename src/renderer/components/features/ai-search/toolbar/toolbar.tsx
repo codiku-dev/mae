@@ -7,7 +7,7 @@ export function Toolbar(p: { onClickNewConversation: () => void, onClickConversa
 
 
     return (
-        <div className="flex justify-end h-6">
+        <div className="sticky flex justify-end h-6 bg-transparent">
             <ConversationHistoryListDropdown onClickConversationItem={p.onClickConversationItem} />
             <ButtonTooltipIcon
                 id="ai-new-conversation-button"

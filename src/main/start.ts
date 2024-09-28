@@ -3,7 +3,7 @@ import { EventListenersService } from './services/event-listeners/event-listener
 import { DocVectorStoreService } from './services/doc-vector-store/doc-vector-service';
 
 export async function start(app: App, mainWindow: BrowserWindow) {
-  mainWindow.setFocusable(true);
+  // mainWindow.setFocusable(true);
   if (global.DEBUG) {
     mainWindow.webContents.openDevTools();
   }

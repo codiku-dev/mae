@@ -18,7 +18,9 @@ export function addWindowListeners(mainWindow: BrowserWindow | null) {
   });
 
   ipcMain.on('set-ignore-mouse-events', (event, ignore, options) => {
-    const win = BrowserWindow.fromWebContents(event.sender);
-    win?.setIgnoreMouseEvents(ignore, options);
+    // if (global.canInspectCode) {
+    //   const win = BrowserWindow.fromWebContents(event.sender);
+    //   win?.setIgnoreMouseEvents(ignore, options);
+    // }
   });
 }
