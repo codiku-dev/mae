@@ -232,8 +232,8 @@ export function AiSearch() {
                             }
                         }}
                     >
-                        <div className="flex flex-col  h-[800px] overflow-y-hidden ">
-                            <div id="ai-searchbar" className=" px-4 py-4">
+                        <div className="flex flex-col  ">
+                            <div id="ai-searchbar" className=" px-4 pt-4 ">
                                 <Searchbar
                                     ref={inputRef}
                                     value={value}
@@ -244,7 +244,7 @@ export function AiSearch() {
                                     onClickStop={handleStopStream}
                                 />
                             </div>
-                            <div id="ai-response" className="interactive py-4 px-4">
+                            <div id="ai-response" className="py-4 px-4 h-[710px]  overflow-y-auto">
 
                                 {hasMsgInCurrentConv && <Conversation onClickConversationItem={stopAndResetAll} onClickNewConversation={newConversation} isStreamFinished={isStreamingFinished} currentStreamedResponse={streamedResponse} isLoading={isLoading} />}
 

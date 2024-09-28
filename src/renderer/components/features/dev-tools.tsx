@@ -36,7 +36,7 @@ export const DevTool: React.FC = () => {
     <>
       <div
         id="ai-dev-tools-button"
-        className="interactive fixed bottom-4 right-4 z-50 cursor-pointer rounded-full bg-blue-500 p-3 text-white shadow-lg"
+        className="fixed bottom-4 right-4 z-50 cursor-pointer rounded-full bg-blue-500 p-3 text-white shadow-lg"
         onClick={() => setIsOpen(!isOpen)}
       >
         🛠️
@@ -44,7 +44,7 @@ export const DevTool: React.FC = () => {
       {isOpen && (
         <div
           id="ai-dev-tools-store-content"
-          className="interactive fixed bottom-16 right-4 z-50 max-h-[80vh] w-[800px] overflow-auto rounded-lg bg-background p-4 shadow-xl"
+          className="fixed bottom-16 right-4 z-50 max-h-[80vh] w-[800px] overflow-auto rounded-lg bg-background p-4 shadow-xl"
         >
           <div className="flex justify-between items-center mb-2">
             <button

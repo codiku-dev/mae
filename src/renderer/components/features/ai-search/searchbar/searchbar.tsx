@@ -184,7 +184,6 @@ export const Searchbar = forwardRef<HTMLInputElement, Props>((p: Props, inputRef
       <MentionsInput
         placeholder="How can I help you?"
         id="ai-search-input"
-        className="interactive "
         inputRef={inputRef}
         onFocus={() => {
           setIsFocused(true);
@@ -232,7 +231,7 @@ export const Searchbar = forwardRef<HTMLInputElement, Props>((p: Props, inputRef
         variant="outline"
         size="icon"
         id="ai-search-button"
-        className="interactive cursor-pointer shadow-md w-[3.35rem] h-[2.40rem] absolute right-[0.05rem] top-[0.68rem] transform  rounded-full bg-black text-white"
+        className="cursor-pointer shadow-md w-[3.35rem] h-[2.40rem] absolute right-[0.05rem] top-[0.68rem] transform  rounded-full bg-black text-white"
         type="submit"
       >
         {!p.isStreamingFinished ? <Square className="size-4" /> : <ArrowRight className="size-4" />}

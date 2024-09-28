@@ -62,12 +62,11 @@ export function Conversation(p: { onClickNewConversation: () => void, currentStr
                 e.preventDefault();
                 e.stopPropagation();
             }}
-        // className="interactive mt-4  p-4 rounded-md bg-black/90  bg-[radial-gradient(100%_50%_at_50%_100%,rgba(0,163,255,0.3)_100%,rgba(0,163,255,0.3)_100%,rgba(0,163,255,0.4)_100%)]  flex flex-col gap-4 relative w-full shadow-2xl text-sm"
         >
             <Toolbar onClickNewConversation={p.onClickNewConversation} onClickConversationItem={p.onClickConversationItem} />
             <div
                 ref={scrollRef}
-                className="flex flex-col max-h-[640px] overflow-y-auto "
+                className="flex flex-col "
             >
                 {currentConversation?.messages.map((message, index) => {
                     return <div key={index} className="" >

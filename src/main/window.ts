@@ -9,10 +9,10 @@ export function initWindow() {
   global.DEBUG = true;
   let mainWindow: BrowserWindow | null = new BrowserWindow({
     height: 800,
-    width: 1000,
+    width: 800,
     transparent: true,
     frame: false,
-    x: screen.getPrimaryDisplay().workAreaSize.width / 2 - 500, // Assuming a default width of 800
+    x: screen.getPrimaryDisplay().workAreaSize.width / 2 - 400, // Assuming a default width of 800
     y: 100, // Assuming a default height of 600
     // frame: global.DEBUG,
     // transparent: true,
@@ -20,11 +20,12 @@ export function initWindow() {
     hasShadow: false,
     show: false,
     // visualEffectState: 'inactive',
-    resizable: global.DEBUG,
+    resizable: false,
     // focusable: true,
     alwaysOnTop: true,
-    useContentSize: true,
+    useContentSize: false,
     modal: true,
+
     // modal: true,
     // backgroundColor: 'transparent',
     // vibrancy: 'under-window',

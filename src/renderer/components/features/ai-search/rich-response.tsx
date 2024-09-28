@@ -142,7 +142,7 @@ export const RichResponse = (p: {
         e.preventDefault();
         e.stopPropagation();
       }}
-      className="interactive mt-4 p-4 rounded-md  animate-in flex flex-col gap-4 relative w-full shadow-xl"
+      className="mt-4 p-4 rounded-md  animate-in flex flex-col gap-4 relative w-full shadow-xl"
     >
       <>
         <div

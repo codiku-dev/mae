@@ -221,7 +221,7 @@ export const PlaceholdersAndVanishInput = forwardRef<
             inputRef?.current?.focus();
           }}
           id="ai-stop-button"
-          className="interactive cursor-pointer absolute right-2 top-1/2 z-50 -translate-y-1/2 h-8 w-8 rounded-full  bg-black    flex items-center justify-center"
+          className="cursor-pointer absolute right-2 top-1/2 z-50 -translate-y-1/2 h-8 w-8 rounded-full  bg-black    flex items-center justify-center"
         >
           <Square className="size-3  text-white" />
         </button>
@@ -229,7 +229,7 @@ export const PlaceholdersAndVanishInput = forwardRef<
         <button
           id="ai-submit-button"
           type="submit"
-          className="interactive cursor-pointer absolute right-2 top-1/2 z-50 -translate-y-1/2 h-8 w-8 rounded-full  bg-black dark:bg-zinc-900  transition duration-200 flex items-center justify-center"
+          className="cursor-pointer absolute right-2 top-1/2 z-50 -translate-y-1/2 h-8 w-8 rounded-full  bg-black dark:bg-zinc-900  transition duration-200 flex items-center justify-center"
           onClick={(e) => {
             e.stopPropagation();
             inputRef?.current?.focus();

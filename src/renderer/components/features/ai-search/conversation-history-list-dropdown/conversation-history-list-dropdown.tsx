@@ -27,12 +27,11 @@ export const ConversationHistoryListDropdown = (p: { onClickConversationItem: ()
         <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
             <DropdownMenuTrigger>
                 <ButtonTooltipIcon
-                    id="ai-previous-conversation-button"
                     onClick={() => {
                         setIsOpen(true)
                     }}
                     icon={ListRestart}
-                    tooltipContent="Previous chat"
+                    tooltipContent="Browser conversations"
                 />
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-96">
@@ -54,7 +53,7 @@ export const ConversationHistoryListDropdown = (p: { onClickConversationItem: ()
                             />
                         </div>
                     </div>
-                    <div id="ai-conversation-history-list-dropdown-content" className="interactive mt-2 max-h-[500px] overflow-y-auto">
+                    <div id="ai-conversation-history-list-dropdown-content" className=" mt-2 max-h-[500px] overflow-y-auto">
                         {filteredConversations.map((conversation) => (
                             <div key={conversation.id} className="flex flex-col px-2 py-1">
                                 <span className="text-xs text-gray-500 mb-1">
