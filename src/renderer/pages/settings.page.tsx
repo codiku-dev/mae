@@ -87,6 +87,7 @@ export function SettingsPage() {
       className=""
       onClick={() => {
         window.electron.ipcRenderer.sendMessage('navigate', ROUTES.home);
+        window.electron.ipcRenderer.sendMessage('request-close-window');
       }}
     >
       <X className="h-6 w-6" />
@@ -96,10 +97,10 @@ export function SettingsPage() {
   return (
     <FormProvider {...form}>
       <form
-        className="bg-transparent p-4 space-y-6 bg-background relative"
+        className=" p-4 space-y-6 relative"
         onSubmit={handleSubmit(submit)}
       >
-        <div className="sticky top-0 flex w-full justify-between items-center mb-16">
+        <div className="sticky top-0 flex w-full justify-between items-center mb-4">
           <h1 className="text-2xl font-bold">MIA Settings</h1>
           {closeButton}
         </div>
