@@ -7,7 +7,7 @@ export function Toolbar(p: { onClickNewConversation: () => void, onClickConversa
 
 
     return (
-        <div className="fixed right-5 z-10   rounded-lg">
+        <div className="fixed right-5 z-10   rounded-lg bg-white shadow-md">
             <ConversationHistoryListDropdown onClickConversationItem={p.onClickConversationItem} />
             <ButtonTooltipIcon
                 onClick={p.onClickNewConversation}

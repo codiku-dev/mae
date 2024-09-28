@@ -1,4 +1,4 @@
-import logo from '../../../../assets/icon.png';
+import logo from '../../../../assets/icon-no-border.svg';
 import { MarkdownRenderer } from "@/renderer/components/ui/markdown-renderer";
 import {
     codeBlockLookBack,
@@ -32,10 +32,10 @@ export function AIMessage(p: { message: string, isLoading?: boolean }) {
         isStreamFinished: true,
     });
     const avatarAssistant = (
-        <div className="flex items-center gap-2 mb-1 justify-end">
-            <img src={logo} className="size-8 rounded-full" alt="AI Avatar" />
+        <div className="flex items-center gap-2 mb-1 justify-end ">
+            <img src={logo} className="size-8 rounded-full shadow-md" alt="AI Avatar" />
             <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-500">Mia</span>
+                <span className="text-sm text-white/70">Mia</span>
             </div>
         </div>
     );
@@ -43,7 +43,7 @@ export function AIMessage(p: { message: string, isLoading?: boolean }) {
     return (
         <div className="flex flex-col gap-2">
             {avatarAssistant}
-            <div className="relative bg-gradient-to-r from-primary via-secondary to-primary text-background p-3 rounded-lg rounded-tr-none min-h-12">
+            <div className="relative bg-gradient-to-r from-primary via-secondary to-primary text-background p-3 rounded-lg rounded-tr-none min-h-12 shadow-md">
                 {p.isLoading ? <div className="w-full flex flex-col gap-1">
                     <Skeleton className="w-full h-6" />
                 </div> :

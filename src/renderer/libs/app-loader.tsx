@@ -74,7 +74,7 @@ export const AppLoader = () => {
   }
   return (
     <>
-      {isDebug && <DevTool />}
+      {/* {isDebug && <DevTool />} */}
       <Toaster />
       <Outlet />
     </>

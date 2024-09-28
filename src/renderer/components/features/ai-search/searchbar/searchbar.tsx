@@ -230,8 +230,7 @@ export const Searchbar = forwardRef<HTMLInputElement, Props>((p: Props, inputRef
         disabled={p.value === '' && p.isStreamingFinished}
         variant="outline"
         size="icon"
-        id="ai-search-button"
-        className="cursor-pointer shadow-md w-[3.35rem] h-[2.40rem] absolute right-[0.05rem] top-[0.68rem] transform  rounded-full bg-black text-white"
+        className="cursor-pointer shadow-md w-[3.35rem] h-[2.40rem] absolute right-[0.05rem] top-[0.68rem] transform  rounded-full bg-primary text-white"
         type="submit"
       >
         {!p.isStreamingFinished ? <Square className="size-4" /> : <ArrowRight className="size-4" />}

@@ -31,7 +31,7 @@ export const ConversationHistoryListDropdown = (p: { onClickConversationItem: ()
                         setIsOpen(true)
                     }}
                     icon={ListRestart}
-                    tooltipContent="Browser conversations"
+                    tooltipContent="Conversations"
                 />
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-96">

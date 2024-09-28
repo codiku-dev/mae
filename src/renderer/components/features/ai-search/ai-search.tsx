@@ -244,7 +244,7 @@ export function AiSearch() {
                                     onClickStop={handleStopStream}
                                 />
                             </div>
-                            <div id="ai-response" className="py-4 px-4 h-[710px]  overflow-y-auto">
+                            <div id="ai-response" className="py-4 px-4">
 
                                 {hasMsgInCurrentConv && <Conversation onClickConversationItem={stopAndResetAll} onClickNewConversation={newConversation} isStreamFinished={isStreamingFinished} currentStreamedResponse={streamedResponse} isLoading={isLoading} />}
 

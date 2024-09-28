@@ -24,13 +24,20 @@ export const getMentionInListStyle = ({
         border: 'unset',
       },
       input: {
+        boxShadow:
+          '0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24)',
+        transition: 'box-shadow 0.3s cubic-bezier(.25,.8,.25,1)',
+        '&:focus': {
+          boxShadow:
+            '0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23)',
+        },
         fontSize: 14,
         backgroundColor: 'white',
         paddingLeft: 20,
         paddingRight: 60, // Add right padding to accommodate the button
         outline: 'none', // Add this line to remove the focus ring
         border: isFocused
-          ? '1px solid rgba(100,100,100,0.4)'
+          ? '0.5px solid #4A7F8F'
           : '1px solid rgba(0,0,0,0.08)',
         borderRadius: '2rem',
         height: 40,

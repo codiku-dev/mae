@@ -16,7 +16,7 @@ export function ButtonTooltipIcon({ onClick, icon: Icon, tooltipContent }: Butto
                 <TooltipTrigger asChild>
                     <Button
 
-                        className=" text-xs text-gray-300"
+                        className=" text-xs text-secondary"
                         onClick={onClick}
                         size="sm"
                         variant={'ghost'}
