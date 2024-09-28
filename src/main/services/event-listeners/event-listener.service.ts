@@ -5,6 +5,7 @@ import { addSearchbarListeners } from './searchbar-listeners';
 import { addWindowListeners } from './window-listeners';
 import { addShortcutListeners } from './shortcut-listeners';
 import { addAppListeners } from './app-listeners';
+import { addOllamaListeners } from './ollama-listeners';
 
 export class EventListenersService {
   private mainWindow: BrowserWindow | null = null;
@@ -37,5 +38,6 @@ export class EventListenersService {
     addSearchbarListeners(this.mainWindow);
     addWindowListeners(this.mainWindow);
     addShortcutListeners(this.mainWindow);
+    addOllamaListeners(this.mainWindow);
   }
 }

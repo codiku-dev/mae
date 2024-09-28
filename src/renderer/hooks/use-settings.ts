@@ -8,6 +8,7 @@ type SettingsStore = {
   isAppLaunchedOnStartup: boolean;
   assistantLanguage: keyof typeof LANGUAGES;
   availableModels: Model[];
+
   lastFetchAvailableModelsISODate: string;
   setIsAppLaunchedOnStartup: (isAppLaunchedOnStartup: boolean) => void;
   setAssistantLanguage: (language: LanguageCode) => void;
@@ -16,21 +17,45 @@ type SettingsStore = {
   clear: () => void;
 };
 
+const INITIAL_STATE = {
+  lastFetchAvailableModelsISODate: '' as string,
+  isAppLaunchedOnStartup: false as boolean,
+  assistantLanguage: 'en' as LanguageCode,
+  availableModels: [
+    {
+      id: 'llama3.1',
+      name: 'llama3.1',
+      label: 'llama3.1 (8B)',
+      isActive: true,
+      isInstalled: true,
+      size: '4.7GB',
+    },
+    {
+      id: 'llama3.2:1b',
+      name: 'llama3.2:1b',
+      label: 'llama3.2 (1B)',
+      isActive: false,
+      isInstalled: false,
+      size: '1.3GB',
+    },
+    {
+      id: 'llama3.2',
+      name: 'llama3.2',
+      label: 'llama3.2 (3B)',
+      isActive: false,
+      isInstalled: false,
+      size: '2.0GB',
+    },
+  ] as Model[],
+};
 const useSettings = create(
   devtools(
     persist(
       subscribeWithSelector<SettingsStore>((set) => ({
-        isAppLaunchedOnStartup: false,
-        assistantLanguage: 'en',
-        availableModels: [],
-        lastFetchAvailableModelsISODate: '',
+        ...INITIAL_STATE,
+
         clear: () => {
-          set({
-            isAppLaunchedOnStartup: false,
-            assistantLanguage: 'en',
-            availableModels: [],
-            lastFetchAvailableModelsISODate: '',
-          });
+          set(INITIAL_STATE);
         },
         setIsAppLaunchedOnStartup: (isAppLaunchedOnStartup: boolean) => {
           set({ isAppLaunchedOnStartup });

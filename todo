@@ -10,6 +10,13 @@ V2
 - [x] Rechercher sur internet
 - [x] bug clearing all data should clear all badge
 - [x] bug modal open paste web 
+- clear a specific conv
+- do not install defaut model
+- add the 3 base models
+- check ui @ 
+- scrapping should get the "b" params in model in settings and also size
+- remove store  package
+- set du model
 ==============================================
 
 V3

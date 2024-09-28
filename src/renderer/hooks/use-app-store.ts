@@ -13,14 +13,17 @@ export type Store = {
   setUserName: (userName: string) => void;
 };
 
+const INITIAL_STATE = {
+  isAppLoading: true,
+  userName: '',
+  isDialogOpen: false,
+};
 const useAppStore = create(
   devtools(
     persist(
       subscribeWithSelector<Store>((set) => ({
         //STATE
-        isAppLoading: true,
-        userName: '',
-        isDialogOpen: false,
+        ...INITIAL_STATE,
         setUserName: (userName: string) => {
           set({ userName });
         },
@@ -28,11 +31,7 @@ const useAppStore = create(
           set({ isDialogOpen });
         },
         clear: () => {
-          set({
-            isAppLoading: true,
-            userName: '',
-            isDialogOpen: false,
-          });
+          set(INITIAL_STATE);
         },
         setIsAppLoading: (isAppLoading: boolean) => {
           set({ isAppLoading });

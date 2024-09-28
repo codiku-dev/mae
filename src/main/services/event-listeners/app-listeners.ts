@@ -1,10 +1,10 @@
-import { app, App, BrowserWindow, clipboard, ipcMain, shell } from 'electron';
+import { app, BrowserWindow, ipcMain, shell } from 'electron';
 import { username } from 'username';
 import { initMenu } from '@/main/menu/menu';
 import { beforeStart } from '@/scripts/before-start';
 import { ROUTES } from '@/renderer/libs/routes';
-import { useAppStore } from '@/renderer/hooks/use-app-store';
 import { useSettings } from '@/renderer/hooks/use-settings';
+
 var AutoLaunch = require('auto-launch');
 
 export function addAppListeners(mainWindow: BrowserWindow | null) {

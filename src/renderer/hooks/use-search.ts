@@ -34,18 +34,19 @@ export type SearchStore = {
   clear: () => void;
 };
 
+const INITIAL_STATE = {
+  indexedWebsitesContent: [],
+  currentSearchSuggestions: [],
+};
 const useSearch = create(
   devtools(
     persist(
       subscribeWithSelector<SearchStore>((set, get) => ({
+        ...INITIAL_STATE,
         //STATE
-        indexedWebsitesContent: [],
-        currentSearchSuggestions: [],
+
         clear: () => {
-          set({
-            indexedWebsitesContent: [],
-            currentSearchSuggestions: [],
-          });
+          set(INITIAL_STATE);
         },
         isWebsiteIndexed: (url: string) => {
           const { indexedWebsitesContent } = get();

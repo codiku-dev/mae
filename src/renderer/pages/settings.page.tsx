@@ -100,13 +100,14 @@ export function SettingsPage() {
         className=" p-4 space-y-6 relative"
         onSubmit={handleSubmit(submit)}
       >
-        <div className="sticky top-0 flex w-full justify-between items-center mb-4">
+        <div className="sticky top-0 flex w-full justify-between items-center">
           <h1 className="text-2xl font-bold">MIA Settings</h1>
           {closeButton}
         </div>
 
         <div className="h-[665px] overflow-y-auto flex flex-col gap-4">
           <ModelSelection />
+
           <LanguageSelection name="assistantLanguage" />
 
           <StartupSection name="isAppLaunchedOnStartup" />

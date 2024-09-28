@@ -13,14 +13,14 @@ export function initWindow() {
     transparent: true,
     frame: false,
     x: screen.getPrimaryDisplay().workAreaSize.width / 2 - 400, // Assuming a default width of 800
-    y: 100, // Assuming a default height of 600
+    y: 20, // Assuming a default height of 600
     // frame: global.DEBUG,
     // transparent: true,
     movable: global.DEBUG,
     hasShadow: false,
     show: false,
     // visualEffectState: 'inactive',
-    resizable: false,
+    resizable: global.DEBUG,
     // focusable: true,
     alwaysOnTop: true,
     useContentSize: false,
@@ -34,7 +34,7 @@ export function initWindow() {
     webPreferences: {
       // devTools: false,
 
-      devTools: false,
+      devTools: global.DEBUG,
       nodeIntegration: true,
       contextIsolation: true,
       preload: app.isPackaged
