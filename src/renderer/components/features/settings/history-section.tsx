@@ -38,9 +38,9 @@ export const HistorySection = () => {
       </CardHeader>
       <CardContent>
         <Button
-          variant="destructive"
+          variant="ghost"
           onClick={handleDeleteConversationHistory}
-          className="flex items-center space-x-2"
+          className="flex items-center space-x-2 text-red-400 hover:bg-red-300/30 hover:text-red-500"
         >
           <Trash className="h-4 w-4" />
           <span>Delete conversation history</span>

@@ -8,7 +8,7 @@ import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
 
 import { ModelFile } from '@/main/services/ollama/Modelfile';
 import { ollamaService } from '@/main/services/ollama/ollama.service';
-import { Loader2, X } from 'lucide-react';
+import { Loader2, Save, X } from 'lucide-react';
 import { LanguageSelection } from '../components/features/settings/language-selection';
 import { ROUTES } from '../libs/routes';
 import { HistorySection } from '../components/features/settings/history-section';
@@ -17,6 +17,7 @@ import { IndexedWebsiteSection } from '../components/features/settings/indexed-w
 import { useSettings } from '../hooks/use-settings';
 import { useConversations } from '../hooks/use-conversations';
 import { useSearch } from '../hooks/use-search';
+import { ModelSelection } from '../components/features/settings/model-selection';
 
 type FormValues = {
   isAppLaunchedOnStartup: boolean;
@@ -95,34 +96,40 @@ export function SettingsPage() {
   return (
     <FormProvider {...form}>
       <form
-        className="h-screen w-screen p-4 space-y-6 bg-background relative"
+        className="bg-transparent p-4 space-y-6 bg-background relative"
         onSubmit={handleSubmit(submit)}
       >
-        <div className="flex justify-between items-center">
+        <div className="sticky top-0 flex w-full justify-between items-center mb-16">
           <h1 className="text-2xl font-bold">MIA Settings</h1>
           {closeButton}
         </div>
 
-        <LanguageSelection name="assistantLanguage" />
+        <div className="h-[665px] overflow-y-auto flex flex-col gap-4">
+          <ModelSelection />
+          <LanguageSelection name="assistantLanguage" />
 
-        <StartupSection name="isAppLaunchedOnStartup" />
+          <StartupSection name="isAppLaunchedOnStartup" />
 
-        {conversationHistory.length > 0 && <HistorySection />}
+          {conversationHistory.length > 0 && <HistorySection />}
 
-        {indexedWebsitesContent.length > 0 && (
-          <IndexedWebsiteSection />
-        )}
-
-        <Button type="submit" disabled={isLoading}>
-          {!isLoading ? (
-            'Apply'
-          ) : (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Applying...
-            </>
+          {indexedWebsitesContent.length > 0 && (
+            <IndexedWebsiteSection />
           )}
-        </Button>
+
+          <Button type="submit" className='shadow-md fixed bottom-8 right-8 ' disabled={isLoading}>
+            {!isLoading ? (
+              <div className='flex items-center gap-2'>
+                <span>Apply</span>
+                <Save size={16} />
+              </div>
+            ) : (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Applying...
+              </>
+            )}
+          </Button>
+        </div>
       </form>
     </FormProvider>
   );

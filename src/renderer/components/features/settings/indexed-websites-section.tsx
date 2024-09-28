@@ -152,9 +152,9 @@ export function IndexedWebsiteSection() {
         ))}
 
         <Button
-          variant="destructive"
+          variant="ghost"
           onClick={handleDeleteAllData}
-          className="mt-4 flex items-center space-x-2"
+          className="flex items-center space-x-2 text-red-400 hover:bg-red-300/30 hover:text-red-500"
         >
           <Trash className="h-4 w-4" />
           <span>Delete all indexed website data</span>
