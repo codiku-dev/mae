@@ -33,7 +33,6 @@ export function AiChat() {
 
 
     const stopAndResetAll = async () => {
-        console.log('stopAndResetAll');
         await ollamaService.abortAllRequests();
         setStreamedResponse('');
         setValue('');
@@ -45,7 +44,6 @@ export function AiChat() {
 
 
     const handleStopStream = async () => {
-        console.log("handleStopStream")
         await ollamaService.abortAllRequests();
         setValue('');
         setError('');
@@ -109,7 +107,6 @@ export function AiChat() {
     };
     const handleSubmit = async (submittedText: string) => {
         await stopAndResetAll();
-        console.log("sending request ", submittedText)
         // remove all @docs and @web from submittedText
         submittedText = submittedText.replace(/@docs/g, '');
         submittedText = submittedText.replace(/@web/g, '');

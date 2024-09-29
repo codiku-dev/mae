@@ -42,7 +42,6 @@ export class OllamaService {
   }
 
   async abortAllRequests() {
-    console.log('abortAllRequests');
     OllamaService.abortControllers.forEach((entry) => {
       entry.controller.abort();
     });
