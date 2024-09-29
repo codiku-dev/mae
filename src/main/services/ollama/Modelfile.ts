@@ -5,7 +5,7 @@ export class ModelFile {
   private rules: string[];
 
   constructor() {
-    this.from = 'llama3.1';
+    this.from = 'llama3.1:8b';
     this.prefix =
       'You are a concise and direct answering assistant. Follow these guidelines:';
     this.suffix =

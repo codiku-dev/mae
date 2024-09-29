@@ -51,7 +51,7 @@ startOllama() {
 
 createOllamaModelFromModelFile() {
   echo "Mia: Creating model..."
-  "/usr/local/bin/ollama" create llama3.1:mia -f ./build/pkg-scripts/Modelfile
+  "/usr/local/bin/ollama" create llama3.1:8b-mia -f ./build/pkg-scripts/Modelfile
   echo "Mia: Model created successfully."
 }
 # Function to stop OLLama

@@ -1,4 +1,4 @@
-FROM llama3.1
+FROM llama3.1:8b
 
 SYSTEM """
 You are a concise and direct answering assistant. Follow these guidelines:

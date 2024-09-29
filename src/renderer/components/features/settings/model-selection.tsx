@@ -16,24 +16,33 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { useSettings } from '@/renderer/hooks/use-settings';
 import { Button } from '@/renderer/components/ui/button';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Model } from '@/types/model-type';
 import { Loader2 } from 'lucide-react';
+import { ollamaService } from '@/main/services/ollama/ollama.service';
+import { ModelFile } from '@/main/services/ollama/Modelfile';
+import { Controller, useFormContext } from 'react-hook-form';
 
-export const ModelSelection = () => {
+type Props = {
+  name: string;
+}
+export const ModelSelection = (p: Props) => {
   const {
     availableModels,
     setAvailableModels,
     lastFetchAvailableModelsISODate,
     setLastFetchAvailableModelsISODate,
+    getCurrentModel,
   } = useSettings();
   const [isInstallModelDialogOpen, setIsInstallModelDialogOpen] = useState(false);
-  const [isInstalling, setIsInstalling] = useState(false);
   const [installationStatus, setInstallationStatus] = useState<'idle' | 'confirm' | 'loading' | 'success' | 'error'>('idle');
   const [currentModelIdToInstall, setCurrentModelIdToInstall] = useState<string>("");
-  const activeModel = availableModels.find(model => model.isActive)
+  const activeModel = getCurrentModel()
+  const { control } = useFormContext();
   const installedModels = availableModels.filter(model => model.isInstalled)
   const currentModelToInstall = availableModels.find(model => model.id === currentModelIdToInstall)
+
+
   // useEffect(function fetchAndScrapAvailableModel() {
   //   const shouldFetch =
   //     lastFetchAvailableModelsISODate === '' ||
@@ -55,14 +64,6 @@ export const ModelSelection = () => {
   //   }
   // }, []);
 
-  const handleSetCurrentModel = (id: string) => {
-    setAvailableModels(
-      availableModels.map((model) =>
-        model.id === id ? { ...model, isActive: true } : model,
-      ),
-    );
-  };
-
   // const handleDeleteModel = (id: string) => {
   //   setAvailableModels(availableModels.filter((model) => model.id !== id));
   // };
@@ -78,6 +79,10 @@ export const ModelSelection = () => {
     console.log("calling the selected model", currentModelToInstall)
     try {
       await window.electron.ipcRenderer.invoke('pull-ollama-model', currentModelToInstall?.id);
+      const modelFile = new ModelFile()
+      modelFile.setFrom(currentModelToInstall?.id!)
+      const responseCreateModel = await ollamaService.createOllamaModelFromModelFile(currentModelToInstall!.id + "-mia", modelFile)
+      console.log("responseCreateModel", responseCreateModel)
       setAvailableModels(
         availableModels.map(model =>
           model.id === currentModelIdToInstall ? { ...model, isInstalled: true } : model
@@ -116,12 +121,11 @@ export const ModelSelection = () => {
             )}
             {installationStatus === 'loading' && (
               <div className="flex items-center space-x-2">
-                <Loader2 className="h-4 w-4 animate-spin" />
                 <span>Installing model. Please don't stop the app or the download will fail.</span>
               </div>
             )}
             {installationStatus === 'success' && <div><p>The model has been successfully installed.</p>
-              <p>You can know select id to make it your current model</p></div>}
+              <p>You can now select id to make it your current model</p></div>}
             {installationStatus === 'error' && <div>An error occurred while installing the model. Please try again.</div>}
           </DialogDescription>
         </DialogHeader>
@@ -145,21 +149,29 @@ export const ModelSelection = () => {
   );
 
   const selectBoxSetCurrentModel = <div><Label>Current model</Label>
-    <Select onValueChange={handleSetCurrentModel} defaultValue={activeModel?.id}>
-      <SelectTrigger>
-        <SelectValue placeholder="Select an AI model" />
-      </SelectTrigger>
-      <SelectContent>
-        {installedModels.map((model) => (
-          <SelectItem key={model.id} value={model.name}>
-            {model.label}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
+
+    <Controller
+      name={p.name}
+      control={control}
+      render={({ field }) => (
+        <Select onValueChange={field.onChange} defaultValue={field.value}>
+          <SelectTrigger>
+            <SelectValue placeholder="Select language" />
+          </SelectTrigger>
+          <SelectContent>
+            {installedModels.map((model) => (
+              <SelectItem key={model.id} value={model.id}>
+                {model.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      )}
+    />
   </div>
 
-  console.log("currentModelToInstallFormValue", currentModelIdToInstall)
+
+
   const selectBoxToInstallModel = (
     <div>
       <Label>Install other models</Label>

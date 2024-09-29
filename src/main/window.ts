@@ -3,9 +3,8 @@ import path from 'path';
 import { start } from './start';
 
 export function initWindow() {
-  const { width, height } = screen.getPrimaryDisplay().workAreaSize;
+  // const { width, height } = screen.getPrimaryDisplay().workAreaSize;
   // global.DEBUG = !app.isPackaged;
-  global.canInspectCode = true;
   global.DEBUG = true;
   let mainWindow: BrowserWindow | null = new BrowserWindow({
     height: 800,
@@ -52,7 +51,6 @@ export function initWindow() {
   // }
   // mainWindow.setIgnoreMouseEvents(false);
 
-  // global.ignoreMouseEvent = global.canInspectCode ? false : true;
   // mainWindow.setAlwaysOnTop(true, 'screen-saver', 1);
   start(app, mainWindow);
   mainWindow.on('ready-to-show', () => {

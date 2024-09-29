@@ -6,6 +6,7 @@ import { logToMain } from '../../../renderer/libs/utils';
 import { ModelFile } from './Modelfile';
 import { OllamaConfig } from './ollama.config';
 import { LLMConversationHistory, LLMMessage } from './ollama-type';
+import { OllamaModel } from '@/types/model-type';
 interface ControllerEntry {
   id: string;
   controller: AbortController;
@@ -57,6 +58,7 @@ export class OllamaService {
   }
 
   async requestLlamaStream(
+    modelId: string,
     conversation: LLMMessage[],
     context: string,
     onData: (chunk: ChatResponseChunk) => void,
@@ -87,7 +89,7 @@ export class OllamaService {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: OllamaConfig.model,
+          model: modelId + '-mia',
           messages: copyOfConversation,
           stream: true,
         }),
@@ -128,7 +130,10 @@ export class OllamaService {
     // Remove the controller after the request is done
     this.removeAbortController(id);
   }
-  async createOllamaModelFromModelFile(modelFile: ModelFile) {
+  async createOllamaModelFromModelFile(
+    modelName: string,
+    modelFile: ModelFile,
+  ) {
     const modelFileContent = modelFile.toString();
     try {
       const response = await fetch('http://localhost:11434/api/create', {
@@ -137,7 +142,7 @@ export class OllamaService {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          name: OllamaConfig.model,
+          name: modelName,
           modelfile: modelFileContent,
         }),
       });
@@ -183,6 +188,12 @@ export class OllamaService {
       console.error('Error fetching available models:', error);
       throw error;
     }
+  }
+
+  async listOllamaInstalledModels() {
+    const response = await fetch('http://localhost:11434/api/tags');
+    const responseJson: { models: OllamaModel[] } = await response.json();
+    return responseJson.models;
   }
 }
 

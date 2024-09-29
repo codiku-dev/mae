@@ -15,6 +15,7 @@ type SettingsStore = {
   setAvailableModels: (models: Model[]) => void;
   setLastFetchAvailableModelsISODate: (date: string) => void;
   clear: () => void;
+  getCurrentModel: () => Model;
 };
 
 const INITIAL_STATE = {
@@ -23,8 +24,8 @@ const INITIAL_STATE = {
   assistantLanguage: 'en' as LanguageCode,
   availableModels: [
     {
-      id: 'llama3.1',
-      name: 'llama3.1',
+      id: 'llama3.1:8b',
+      name: 'llama3.1:8b',
       label: 'llama3.1 (8B)',
       isActive: true,
       isInstalled: true,
@@ -51,7 +52,7 @@ const INITIAL_STATE = {
 const useSettings = create(
   devtools(
     persist(
-      subscribeWithSelector<SettingsStore>((set) => ({
+      subscribeWithSelector<SettingsStore>((set, get) => ({
         ...INITIAL_STATE,
 
         clear: () => {
@@ -68,6 +69,9 @@ const useSettings = create(
         },
         setLastFetchAvailableModelsISODate: (date: string) => {
           set({ lastFetchAvailableModelsISODate: date });
+        },
+        getCurrentModel: (): Model => {
+          return get().availableModels.find((model) => model.isActive)!;
         },
       })),
       {

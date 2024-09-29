@@ -16,11 +16,4 @@ export function addWindowListeners(mainWindow: BrowserWindow | null) {
   mainWindow?.on('blur', () => {
     mainWindow?.webContents.send('on-main-window-blur');
   });
-
-  ipcMain.on('set-ignore-mouse-events', (event, ignore, options) => {
-    // if (global.canInspectCode) {
-    //   const win = BrowserWindow.fromWebContents(event.sender);
-    //   win?.setIgnoreMouseEvents(ignore, options);
-    // }
-  });
 }

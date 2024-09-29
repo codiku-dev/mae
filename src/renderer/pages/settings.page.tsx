@@ -22,11 +22,13 @@ import { ModelSelection } from '../components/features/settings/model-selection'
 type FormValues = {
   isAppLaunchedOnStartup: boolean;
   assistantLanguage: LanguageCode;
+  modelId: string;
 };
 export function SettingsPage() {
   const { indexedWebsitesContent } = useSearch();
   const { conversationHistory } = useConversations();
-  const { isAppLaunchedOnStartup, assistantLanguage, setIsAppLaunchedOnStartup, setAssistantLanguage, } = useSettings();
+  const { isAppLaunchedOnStartup, assistantLanguage, setIsAppLaunchedOnStartup, setAssistantLanguage, getCurrentModel, setAvailableModels, availableModels } = useSettings();
+  const currentModel = getCurrentModel()
 
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
@@ -35,6 +37,7 @@ export function SettingsPage() {
     defaultValues: {
       isAppLaunchedOnStartup,
       assistantLanguage,
+      modelId: currentModel.id
     },
   });
   const { handleSubmit } = form;
@@ -62,7 +65,7 @@ export function SettingsPage() {
       );
       try {
         setIsLoading(true);
-        await ollamaService.createOllamaModelFromModelFile(modelFile);
+        await ollamaService.createOllamaModelFromModelFile(currentModel.id + "-mia", modelFile);
       } catch (error) {
         toast({
           title: 'Error',
@@ -71,6 +74,13 @@ export function SettingsPage() {
         return;
       }
     }
+
+    if (data.modelId !== currentModel.id) {
+      setAvailableModels(availableModels.map(model => {
+        return { ...model, isActive: model.id === data.modelId }
+      }))
+    }
+
     setIsLoading(false);
 
     toast({
@@ -97,7 +107,7 @@ export function SettingsPage() {
   return (
     <FormProvider {...form}>
       <form
-        className=" p-4 space-y-6 relative"
+        className=" p-4 space-y-6 relative bg-white/80"
         onSubmit={handleSubmit(submit)}
       >
         <div className="sticky top-0 flex w-full justify-between items-center">
@@ -105,8 +115,8 @@ export function SettingsPage() {
           {closeButton}
         </div>
 
-        <div className="h-[665px] overflow-y-auto flex flex-col gap-4">
-          <ModelSelection />
+        <div className="h-[703px] overflow-y-auto flex flex-col gap-4">
+          <ModelSelection name="modelId" />
 
           <LanguageSelection name="assistantLanguage" />
 

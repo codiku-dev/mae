@@ -117,14 +117,14 @@ installOllama() {
   setRightsForModelFolder
   createSymlink
   startOllama
-  pullOllamaModel "llama3.1"
-  echo "Building custom model llama3.1:mia... located in $SCRIPT_DIR/Modelfile"
+  pullOllamaModel "llama3.1:8b"
+  echo "Building custom model llama3.1:8b-mia... located in $SCRIPT_DIR/Modelfile"
 
-  /usr/local/bin/ollama create llama3.1:mia -f "$SCRIPT_DIR/Modelfile"
+  /usr/local/bin/ollama create llama3.1:8b-mia -f "$SCRIPT_DIR/Modelfile"
   if [ $? -eq 0 ]; then
-    echo "Mia: Custom model llama3.1:mia built successfully."
+    echo "Mia: Custom model llama3.1:8b-mia built successfully."
   else
-    echo "Mia: Failed to build custom model llama3.1:mia."
+    echo "Mia: Failed to build custom model llama3.1:8b-mia."
   fi
   stopOllama
   echo "Installation complete, you can close this window now"

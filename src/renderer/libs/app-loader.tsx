@@ -7,6 +7,7 @@ import { ROUTES } from './routes';
 import { logToMain, makeInteractiveClassClickable } from './utils';
 import { DevTool } from '../components/features/dev-tools';
 import { useSettings } from '../hooks/use-settings';
+import { ollamaService } from '@/main/services/ollama/ollama.service';
 
 // TODO: Add a global listener to handle the navigate event
 
@@ -16,7 +17,7 @@ export const AppLoader = () => {
   const { setIsAppLoading, isAppLoading, setUserName } =
     useAppStore();
 
-  const { isAppLaunchedOnStartup } = useSettings();
+  const { isAppLaunchedOnStartup, setAvailableModels, availableModels } = useSettings();
 
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('user-info-request');
@@ -67,7 +68,19 @@ export const AppLoader = () => {
     };
   }, [navigate]);
 
-
+  useEffect(function () {
+    ollamaService.listOllamaInstalledModels().then((ollamaInstalledModels) => {
+      console.log("ollamaInstalledModels", ollamaInstalledModels)
+      const installedModelsIds = ollamaInstalledModels.map((model) => model.model)
+      const newAvailableModels = availableModels.map((model) => {
+        return {
+          ...model,
+          isInstalled: installedModelsIds.includes(model.id)
+        }
+      })
+      setAvailableModels(newAvailableModels)
+    })
+  }, []);
 
   if (isAppLoading) {
     return isAppLaunchedOnStartup || isDebug ? null : <SplashScreen />;

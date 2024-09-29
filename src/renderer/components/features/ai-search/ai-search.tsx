@@ -7,7 +7,7 @@ import { SUGGESTION_OPTIONS_ID, Searchbar } from '../../../components/features/a
 import { useConversations } from '@/renderer/hooks/use-conversations';
 import { useSearch } from '@/renderer/hooks/use-search';
 import { Conversation } from './conversation/conversation';
-import { error } from 'console';
+import { useSettings } from '@/renderer/hooks/use-settings';
 
 export function AiSearch() {
     const [value, setValue] = useState<string>('');
@@ -30,7 +30,7 @@ export function AiSearch() {
     const currentConversation = getCurrentConversation()
     const hasMsgInCurrentConv = currentConversation?.messages && currentConversation?.messages.length > 0
     const { currentSearchSuggestions } = useSearch();
-
+    const { getCurrentModel } = useSettings()
 
     const stopAndResetAll = () => {
         console.log('stopAndResetAll');
@@ -46,7 +46,6 @@ export function AiSearch() {
 
 
     const handleStopStream = () => {
-        console.log('handleStopStream');
         ollamaService.abortAllRequests();
         setValue('');
         setError('');
@@ -156,6 +155,7 @@ export function AiSearch() {
             content: submittedText,
         });
         ollamaService.requestLlamaStream(
+            getCurrentModel()?.id,
             getCurrentConversationMessages() || [],
             context,
             (chunk) => {
@@ -206,8 +206,7 @@ export function AiSearch() {
 
 
     return (
-        <div id="container" className='w-full bg-transparent '>
-
+        <div>
             <AnimatePresence>
                 {isVisible && (
                     <motion.div
@@ -232,8 +231,8 @@ export function AiSearch() {
                             }
                         }}
                     >
-                        <div className="flex flex-col  ">
-                            <div id="ai-searchbar" className=" px-4 pt-4 ">
+                        <div className="flex flex-col">
+                            <div className="px-4 pt-4 ">
                                 <Searchbar
                                     ref={inputRef}
                                     value={value}
@@ -244,10 +243,8 @@ export function AiSearch() {
                                     onClickStop={handleStopStream}
                                 />
                             </div>
-                            <div id="ai-response" className="py-4 px-4">
-
+                            <div className="p-4">
                                 {hasMsgInCurrentConv && <Conversation onClickConversationItem={stopAndResetAll} onClickNewConversation={newConversation} isStreamFinished={isStreamingFinished} currentStreamedResponse={streamedResponse} isLoading={isLoading} />}
-
                                 {error && <Error errorMessage={error} />}
                             </div>
                         </div>

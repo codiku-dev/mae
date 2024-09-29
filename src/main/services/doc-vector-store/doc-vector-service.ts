@@ -23,7 +23,7 @@ export class DocVectorStoreService {
 
   private constructor() {
     this.llmEmbeddings = new OllamaEmbeddings({
-      model: 'mxbai-embed-large',
+      model: 'mxbai-embed-large:latest',
       baseUrl: 'http://localhost:11434',
     });
   }

@@ -7,9 +7,7 @@ import {
   stopOllama,
   isOllamaRunning,
   restartOllama,
-  generateOllamaModelFile,
 } from '@/scripts/ollama/ollama.commands';
-import { ModelFile } from '@/main/services/ollama/Modelfile';
 import { BrowserWindow, ipcMain } from 'electron';
 
 export function addOllamaListeners(mainWindow: BrowserWindow | null) {
@@ -36,11 +34,4 @@ export function addOllamaListeners(mainWindow: BrowserWindow | null) {
   ipcMain.handle('restart-ollama', async () => {
     await restartOllama();
   });
-
-  ipcMain.handle(
-    'generate-ollama-model-file',
-    async (event, modelFile: ModelFile) => {
-      await generateOllamaModelFile(modelFile);
-    },
-  );
 }

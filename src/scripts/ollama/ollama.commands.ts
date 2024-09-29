@@ -8,6 +8,7 @@ const execAsync = promisify(exec);
 const BASE_LOCAL_BIN_PATH = '/usr/local/bin';
 const BASE_BIN_PATH = '/usr/bin';
 const BASE_SBIN_PATH = '/usr/sbin';
+
 export async function pullOllamaModel(modelName: string) {
   console.log(`Mia: Pulling ${modelName} model...`);
   try {
@@ -97,11 +98,4 @@ export async function isOllamaRunning() {
 export async function restartOllama() {
   await stopOllama();
   await startOllama();
-}
-
-export async function generateOllamaModelFile(modelFile: ModelFile) {
-  await fsPromises.writeFile(
-    './build/pkg-scripts/Modelfile',
-    modelFile.toString(),
-  );
 }
