@@ -61,8 +61,9 @@ export class OllamaService {
     modelId: string,
     conversation: LLMMessage[],
     context: string,
-    onData: (chunk: ChatResponseChunk) => void,
-    onError: (error: Error) => void,
+    onData?: (chunk: ChatResponseChunk) => void,
+    onError?: (error: Error) => void,
+    stream = true,
   ) {
     const controller = new AbortController();
 
@@ -91,7 +92,7 @@ export class OllamaService {
         body: JSON.stringify({
           model: modelId + '-mia',
           messages: copyOfConversation,
-          stream: true,
+          stream,
         }),
         signal: signal, // Add the signal to the fetch request
       });
@@ -111,20 +112,20 @@ export class OllamaService {
               decoder.decode(value, { stream: !done }),
             );
 
-            onData(chunk);
+            onData?.(chunk);
           } else {
             reader.cancel();
             break;
           }
         } catch (error) {
           await reader.cancel();
-          onError(error as Error);
+          onError?.(error as Error);
           break;
         }
       }
     } catch (error) {
       logToMain('Fetch was stopped with error : ' + (error as Error).message);
-      onError(error as Error);
+      onError?.(error as Error);
     }
 
     // Remove the controller after the request is done

@@ -101,24 +101,14 @@ export const MarkdownRenderer = (p: { markdownText: string }) => {
             {...props}
           />
         ),
-        code: ({ className, inline, ...props }) =>
-          inline ? (
-            <code
-              className={cn(
-                'relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold',
-                className,
-              )}
-              {...props}
-            />
-          ) : (
-            <code
-              className={cn(
-                'relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold',
-                className,
-              )}
-              {...props}
-            />
-          ),
+        code: ({ className, ...props }) =>
+          <code
+            className={cn(
+              'relative rounded bg-muted text-primary px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold',
+              className,
+            )}
+            {...props}
+          />,
         pre: ({ className, ...props }) => (
           <pre
             className={cn(

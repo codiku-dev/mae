@@ -5,12 +5,8 @@ import {
   LLMConversationHistory,
   LLMMessage,
 } from '@/main/services/ollama/ollama-type';
-const KEYS_TO_NOT_STORE = [
-  'currentConversationId',
-  'currentConversationIndex',
-  'conversationHistory',
-  'currentConversationIndex',
-];
+const KEYS_TO_NOT_STORE: string[] = [];
+
 type ConversationStore = {
   currentConversationId?: string;
   conversationHistory: LLMConversationHistory[];

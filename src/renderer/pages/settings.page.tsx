@@ -76,9 +76,17 @@ export function SettingsPage() {
     }
 
     if (data.modelId !== currentModel.id) {
-      setAvailableModels(availableModels.map(model => {
-        return { ...model, isActive: model.id === data.modelId }
-      }))
+      const modelFile = new ModelFile();
+      modelFile.setFrom(data.modelId);
+      const responseCreateModel = await ollamaService.createOllamaModelFromModelFile(currentModel!.id + "-mia", modelFile)
+      if (responseCreateModel.status === "success") {
+        setAvailableModels(availableModels.map(model => {
+          return { ...model, isActive: model.id === data.modelId }
+        }))
+        ollamaService.requestLlamaStream(data.modelId, [{ role: "user", content: "Hello" }], "", undefined, undefined, false)
+        // warmup the mdel
+
+      }
     }
 
     setIsLoading(false);

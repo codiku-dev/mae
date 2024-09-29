@@ -11,7 +11,7 @@ import { useLLMOutput } from '@llm-ui/react';
 import { CodeRenderer } from '../../../ui/code-renderer';
 
 import { Skeleton } from "@/renderer/components/ui/skeleton";
-export function AIMessage(p: { message: string, isLoading?: boolean }) {
+export function AIMessage(p: { message: string, isLoading?: boolean, isStreamFinished?: boolean }) {
 
 
     const { blockMatches } = useLLMOutput({
@@ -29,7 +29,7 @@ export function AIMessage(p: { message: string, isLoading?: boolean }) {
                 lookBack: codeBlockLookBack(),
             },
         ],
-        isStreamFinished: true,
+        isStreamFinished: p.isStreamFinished,
     });
     const avatarAssistant = (
         <div className="flex items-center gap-2 mb-1 justify-end ">

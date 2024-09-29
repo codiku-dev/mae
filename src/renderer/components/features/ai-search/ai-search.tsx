@@ -19,7 +19,6 @@ export function AiSearch() {
     const [isAIWorking, setIsAIWorking] = useState(false);
     const { isDialogOpen } = useAppStore();
     const inputRef = useRef<HTMLInputElement>(null);
-
     const {
         createNewConversation,
         addMessageToCurrentConversation,

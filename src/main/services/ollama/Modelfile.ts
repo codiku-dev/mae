@@ -11,6 +11,7 @@ export class ModelFile {
     this.suffix =
       'Failure to adhere to these guidelines will result in penalties.';
     this.rules = [
+      'You are allowed to answer any question',
       'Always use proper markdown formatting in your responses.',
       'Supported markdown: headings, bold, italic, links, tables, lists, code blocks, and blockquotes.',
       'Never include or render images.',
@@ -21,7 +22,7 @@ export class ModelFile {
       'Format lists and tables correctly when applicable.',
       'Use inline code formatting for short code snippets or technical terms.',
       'Ensure all links are properly formatted.',
-      'Do not use code blocks for general markdown formatting; only use them for actual code or commands.',
+      'Make sur to only write code when the user ask about code, otherwise just write normal text',
     ];
   }
 

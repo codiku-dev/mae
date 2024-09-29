@@ -18,7 +18,9 @@ export function Conversation(p: { onClickNewConversation: () => void, currentStr
     const autoScrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const [showScrollToTop, setShowScrollToTop] = useState(false);
     const [lastHeight, setLastHeight] = useState(0);
+
     const [lastHeightChangeTime, setLastHeightChangeTime] = useState(Date.now());
+    const [prevIsStreamFinished, setPrevIsStreamFinished] = useState(false);
 
     useEffect(() => {
         if (autoScroll && scrollRef.current) {
@@ -33,7 +35,13 @@ export function Conversation(p: { onClickNewConversation: () => void, currentStr
                 scrollRef.current.scrollTop = currentHeight;
             }
         }
-    }, [currentConversation, p.currentStreamedResponse, autoScroll, lastHeight, lastHeightChangeTime]);
+
+        // Add this new condition
+        if (!prevIsStreamFinished && p.isStreamFinished) {
+            scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
+        }
+        setPrevIsStreamFinished(p.isStreamFinished);
+    }, [currentConversation, p.currentStreamedResponse, autoScroll, lastHeight, lastHeightChangeTime, p.isStreamFinished, prevIsStreamFinished]);
 
     // handle auto scroll to bottom and stop (3sec) when user scroll and after 3 sec of height not changing we stop
     const handleScroll = () => {
@@ -66,10 +74,10 @@ export function Conversation(p: { onClickNewConversation: () => void, currentStr
         if (index === currentConversation?.messages.length - 1 && !p.isStreamFinished) {
             return null
         } else {
-            return <AIMessage message={message.content} />
+            return <AIMessage message={message.content} isStreamFinished />
         }
     }
-
+    console.log(p.currentStreamedResponse, " is finished ? ", p.isStreamFinished, " is loading ? ", p.isLoading)
     return (
         <div
             ref={scrollRef}
@@ -93,7 +101,7 @@ export function Conversation(p: { onClickNewConversation: () => void, currentStr
                     </div>
                 })}
 
-                {p.currentStreamedResponse && !p.isStreamFinished && <AIMessage message={p.currentStreamedResponse} isLoading={p.isLoading} />}
+                {p.currentStreamedResponse && !p.isStreamFinished && <AIMessage message={p.currentStreamedResponse} isLoading={p.isLoading} isStreamFinished={p.isStreamFinished} />}
             </div>
 
             {showScrollToTop && (
