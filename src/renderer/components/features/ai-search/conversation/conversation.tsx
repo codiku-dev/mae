@@ -5,10 +5,16 @@ import { UserMessage } from "./user-message";
 import { AIMessage } from "./ai-message";
 
 import { cn } from "@/renderer/libs/utils";
-import { Toolbar } from "../toolbar/toolbar";
 import { Button } from "@/renderer/components/ui/button"; // Add this import
 
-export function Conversation(p: { onClickNewConversation: () => void, currentStreamedResponse: string, isStreamFinished: boolean, isLoading: boolean, onClickConversationItem: () => void }) {
+type Props = {
+    onClickNewConversation: () => void,
+    currentStreamedResponse: string,
+    isStreamFinished: boolean,
+    isLoading: boolean,
+    onClickConversationItem: () => void
+}
+export function Conversation(p: Props) {
 
     const { getCurrentConversation } = useConversations();
     const currentConversation = getCurrentConversation() as LLMConversationHistory;
@@ -77,7 +83,6 @@ export function Conversation(p: { onClickNewConversation: () => void, currentStr
             return <AIMessage message={message.content} isStreamFinished />
         }
     }
-    console.log(p.currentStreamedResponse, " is finished ? ", p.isStreamFinished, " is loading ? ", p.isLoading)
     return (
         <div
             ref={scrollRef}
@@ -88,7 +93,6 @@ export function Conversation(p: { onClickNewConversation: () => void, currentStr
             }}
             onScroll={handleScroll}
         >
-            <Toolbar onClickNewConversation={p.onClickNewConversation} onClickConversationItem={p.onClickConversationItem} />
             <div
                 className="flex flex-col "
             >

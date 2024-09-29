@@ -8,6 +8,7 @@ import { useConversations } from '@/renderer/hooks/use-conversations';
 import { useSearch } from '@/renderer/hooks/use-search';
 import { Conversation } from './conversation/conversation';
 import { useSettings } from '@/renderer/hooks/use-settings';
+import { Toolbar } from './toolbar/toolbar';
 
 export function AiSearch() {
     const [value, setValue] = useState<string>('');
@@ -241,6 +242,7 @@ export function AiSearch() {
                                     isLoading={isAIWorking}
                                     onClickStop={handleStopStream}
                                 />
+                                <Toolbar onClickNewConversation={newConversation} onClickConversationItem={stopAndResetAll} />
                             </div>
                             <div className="p-4">
                                 {hasMsgInCurrentConv && <Conversation onClickConversationItem={stopAndResetAll} onClickNewConversation={newConversation} isStreamFinished={isStreamingFinished} currentStreamedResponse={streamedResponse} isLoading={isLoading} />}

@@ -9,20 +9,16 @@ import {
 import { Input } from "../../../ui/input";
 import { useConversations } from '@/renderer/hooks/use-conversations';
 import { formatTimeAgo } from '@/renderer/libs/utils';
-import { TooltipProvider, Tooltip, TooltipContent, TooltipTrigger } from '@/renderer/components/ui/tooltip';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/renderer/components/ui/tooltip';
 
 export const ConversationHistoryListDropdown = (p: { onClickConversationItem: () => void }) => {
     const { conversationHistory, currentConversationId, setCurrentConversationId } = useConversations();
     const [searchTerm, setSearchTerm] = useState('');
-    const [filteredConversations, setFilteredConversations] = useState(conversationHistory);
     const [isOpen, setIsOpen] = useState(false);
+    const filteredConversations = conversationHistory.filter((conversation) =>
+        conversation.title.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
-    useEffect(() => {
-        const filtered = conversationHistory.filter((conversation) =>
-            conversation.title.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-        setFilteredConversations(filtered);
-    }, [searchTerm, conversationHistory.length]);
 
     return (
 
@@ -49,11 +45,9 @@ export const ConversationHistoryListDropdown = (p: { onClickConversationItem: ()
                                 <Search className="absolute left-8 w-4 h-4 opacity-50" />
                                 <Input
                                     onClick={(e) => {
-                                        console.log("STOP PROPAGATION INPUT")
                                         e.stopPropagation()
                                     }}
                                     autoFocus
-
                                     placeholder="Search conversations"
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
@@ -61,7 +55,7 @@ export const ConversationHistoryListDropdown = (p: { onClickConversationItem: ()
                                 />
                             </div>
                         </div>
-                        <div id="ai-conversation-history-list-dropdown-content" className=" mt-2 max-h-[500px] overflow-y-auto">
+                        <div className=" mt-2 max-h-[500px] overflow-y-auto">
                             {filteredConversations.map((conversation) => (
                                 <div key={conversation.id} className="flex flex-col px-2 py-1">
                                     <span className="text-xs text-gray-500 mb-1">
