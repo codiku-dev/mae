@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Tooltip,
   TooltipContent,
@@ -6,10 +5,10 @@ import {
   TooltipTrigger,
 } from '@/renderer/components/ui/tooltip';
 import { X } from 'lucide-react';
-import { Badge } from '../../ui/badge';
-import { Skeleton } from '../../ui/skeleton';
-import { LoadingSpinner } from '../../ui/loading-spinner';
-import { SUGGESTION_OPTIONS_ID } from './searchbar/searchbar';
+import { Badge } from '../../../ui/badge';
+import { Skeleton } from '../../../ui/skeleton';
+import { LoadingSpinner } from '../../../ui/loading-spinner';
+import { SUGGESTION_OPTIONS_ID } from './searchbar';
 import { SearchSuggestion, useSearch } from '@/renderer/hooks/use-search';
 
 interface Link {

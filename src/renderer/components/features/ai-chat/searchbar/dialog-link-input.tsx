@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -6,10 +6,10 @@ import {
   DialogTitle,
 } from '@/renderer/components/ui/dialog';
 import { Input } from '@/renderer/components/ui/input';
-import { isValidUrl, logToMain } from '@/renderer/libs/utils';
+import { isValidUrl } from '@/renderer/libs/utils';
 import { useToast } from '@/renderer/hooks/use-toast';
 import { Globe, Plus } from 'lucide-react';
-import { optionList, SUGGESTION_OPTIONS_ID } from './searchbar/searchbar';
+import { optionList, SUGGESTION_OPTIONS_ID } from './searchbar';
 
 interface DialogLinkInputProps {
   isOpen: boolean;
@@ -59,7 +59,6 @@ export function DialogLinkInput({
   const handleKeyDown = (e: KeyboardEvent) => {
     if (isOpen) {
       if (e.key === 'Enter') {
-        console.log('submit link');
         submitLink(linkInput, commandName);
       }
     }
@@ -113,7 +112,7 @@ export function DialogLinkInput({
           <div className="relative mt-4 space-y-4">
             <Input
               value={linkInput}
-              onChange={(e) => { setLinkInput(e.target.value); console.log("linkInput is set in onchange to ", linkInput) }}
+              onChange={(e) => { setLinkInput(e.target.value); }}
               placeholder="super-website.com"
               aria-label={`Enter ${currentOption?.display} link`}
             />

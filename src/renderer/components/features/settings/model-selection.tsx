@@ -19,8 +19,8 @@ import { Button } from '@/renderer/components/ui/button';
 import { useEffect, useState } from 'react';
 import { Model } from '@/types/model-type';
 import { Loader2 } from 'lucide-react';
-import { ollamaService } from '@/main/services/ollama/ollama.service';
-import { ModelFile } from '@/main/services/ollama/Modelfile';
+import { ollamaService } from '@/renderer/services/ollama.service';
+import { ModelFile } from '@/renderer/services/Modelfile';
 import { Controller, useFormContext } from 'react-hook-form';
 
 type Props = {
@@ -76,13 +76,11 @@ export const ModelSelection = (p: Props) => {
 
   const confirmInstall = async () => {
     setInstallationStatus('loading');
-    console.log("calling the selected model", currentModelToInstall)
     try {
       await window.electron.ipcRenderer.invoke('pull-ollama-model', currentModelToInstall?.id);
       const modelFile = new ModelFile()
       modelFile.setFrom(currentModelToInstall?.id!)
       const responseCreateModel = await ollamaService.createOllamaModelFromModelFile(currentModelToInstall!.id + "-mia", modelFile)
-      console.log("responseCreateModel", responseCreateModel)
       setAvailableModels(
         availableModels.map(model =>
           model.id === currentModelIdToInstall ? { ...model, isInstalled: true } : model

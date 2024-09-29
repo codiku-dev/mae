@@ -1,8 +1,8 @@
 import { MentionsInput, Mention } from 'react-mentions';
 import { Button } from '../../../ui/button';
 import { ArrowRight, Square, PlusCircle, Book, Globe } from 'lucide-react';
-import { BadgeSuggestionList } from '../badge-suggestion-list';
-import { DialogLinkInput } from '../dialog-link-input';
+import { BadgeSuggestionList } from './badge-suggestion-list';
+import { DialogLinkInput } from './dialog-link-input';
 import { useState, forwardRef } from 'react';
 import {
   useAppStore,
@@ -18,7 +18,6 @@ type Props = {
   isStreamingFinished: boolean;
   onChange: (value: string) => void;
   onSubmit: (value: string) => void;
-  isLoading: boolean;
   onClickStop: () => void;
 };
 export const SUGGESTION_OPTIONS_ID = {
@@ -51,14 +50,14 @@ export const Searchbar = forwardRef<HTMLInputElement, Props>((p: Props, inputRef
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    if (!p.isStreamingFinished) {
-      p.onClickStop();
-      focusInput()
-    } else {
-      if (p.value === '') return;
-      p.onSubmit(p.value);
-    }
+    // check key is not enter
+    // if (!p.isStreamingFinished) {
+    //   p.onClickStop();
+    //   focusInput()
+    // } else {
+    if (p.value === '') return;
+    p.onSubmit(p.value);
+    // }
   };
 
   const focusInput = () => {
@@ -180,69 +179,83 @@ export const Searchbar = forwardRef<HTMLInputElement, Props>((p: Props, inputRef
     setCurrentSearchSuggestions([])
   }
   return (
-    <form onSubmit={handleSubmit} className="relative">
-      <MentionsInput
-        placeholder="How can I help you?"
-        id="ai-search-input"
-        inputRef={inputRef}
-        onFocus={() => {
-          setIsFocused(true);
-        }}
-        onBlur={() => {
-          setIsFocused(false);
-        }}
-        autoFocus
-        singleLine
-        value={p.value}
-        onChange={(e) => {
-          p.onChange(e.target.value);
-        }}
-        style={getMentionInListStyle({ isFocused })}
-        customSuggestionsContainer={(children) => (
-          <div className="absolute top-[0.9rem]">{children}</div>
-        )}
-      >
-        <Mention
-          trigger="@"
-          data={[...optionList, ...getCommands().map((command) => ({
-            id: command.command,
-            display: command.command,
-            type: 'doc'
-          })).sort((a, b) => a.display.localeCompare(b.display))
-          ]}
-          style={mentionInInputStyle}
-          onAdd={(entryId, entry) => {
-            onSelectSuggestion(entryId as string, entry as string);
+    <div className='relative'>
+      <form onSubmit={handleSubmit} className="relative">
+        <MentionsInput
+          placeholder="How can I help you?"
+          id="ai-search-input"
+          inputRef={inputRef}
+          onFocus={() => {
+            setIsFocused(true);
           }}
-          renderSuggestion={(entry) => {
-            const Icon = getDropdownItemIcon(entry.id as string);
-            return (
-              <div className="flex items-center gap-2">
-                <Icon className="w-4 h-4" />
-                <span>{entry.display}</span>
-              </div>
-            );
+          onBlur={() => {
+            setIsFocused(false);
+          }}
+          autoFocus
+          singleLine
+          value={p.value}
+          onChange={(e) => {
+            p.onChange(e.target.value);
+          }}
+          style={getMentionInListStyle({ isFocused })}
+          customSuggestionsContainer={(children) => (
+            <div className="absolute top-[0.9rem]">{children}</div>
+          )}
+        >
+          <Mention
+            trigger="@"
+            data={[...optionList, ...getCommands().map((command) => ({
+              id: command.command,
+              display: command.command,
+              type: 'doc'
+            })).sort((a, b) => a.display.localeCompare(b.display))
+            ]}
+            style={mentionInInputStyle}
+            onAdd={(entryId, entry) => {
+              onSelectSuggestion(entryId as string, entry as string);
+            }}
+            renderSuggestion={(entry) => {
+              const Icon = getDropdownItemIcon(entry.id as string);
+              return (
+                <div className="flex items-center gap-2">
+                  <Icon className="w-4 h-4" />
+                  <span>{entry.display}</span>
+                </div>
+              );
 
-          }}
-        />
-      </MentionsInput>
-      <Button
-        disabled={p.value === '' && p.isStreamingFinished}
+            }}
+          />
+        </MentionsInput>
+        {/* Submit button button */}
+        <Button
+          disabled={p.value === '' && p.isStreamingFinished}
+          variant="outline"
+          size="icon"
+          type="button"
+          className="cursor-pointer shadow-md w-[3.35rem] h-[2.40rem] absolute right-[0.05rem] top-[0.68rem] transform  rounded-full bg-primary text-white"
+        >
+          <ArrowRight className="size-4" />
+        </Button>
+        {selectedSuggestion && <BadgeSuggestionList currentSuggestion={selectedSuggestion} isLoading={isLoading} onRemoveLink={onDeleteBadge} />}
+        {dialogMode && <DialogLinkInput
+          isOpen={isDialogOpen}
+          onClose={handleDialogClose}
+          onSubmit={handleDialogSubmit}
+          dialogMode={dialogMode}
+        />}
+      </form>
+      {/* Click stop button */}
+      {!p.isStreamingFinished && <Button
         variant="outline"
         size="icon"
+        type="button"
+        onClick={p.onClickStop}
         className="cursor-pointer shadow-md w-[3.35rem] h-[2.40rem] absolute right-[0.05rem] top-[0.68rem] transform  rounded-full bg-primary text-white"
-        type="submit"
       >
-        {!p.isStreamingFinished ? <Square className="size-4" /> : <ArrowRight className="size-4" />}
-      </Button>
-      {selectedSuggestion && <BadgeSuggestionList currentSuggestion={selectedSuggestion} isLoading={isLoading} onRemoveLink={onDeleteBadge} />}
-      {dialogMode && <DialogLinkInput
-        isOpen={isDialogOpen}
-        onClose={handleDialogClose}
-        onSubmit={handleDialogSubmit}
-        dialogMode={dialogMode}
-      />}
-    </form>
+        <Square className="size-4" />
+      </Button>}
+    </div >
+
   );
 });
 

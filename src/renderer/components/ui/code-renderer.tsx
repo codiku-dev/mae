@@ -64,6 +64,7 @@ export const CodeRenderer: LLMOutputComponent = (p: { blockMatch: any }) => {
   };
 
   if (!html) {
+
     // fallback to <pre> if Shiki is not loaded yet
     return (
       <pre className="shiki">

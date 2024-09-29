@@ -51,10 +51,8 @@ export function IndexedWebsiteSection() {
     );
 
     if (isConfirmed) {
-      console.log("start delete")
       deleteIndexedWebsite(url);
       const docsToDelete = await window.electron.ipcRenderer.invoke('delete-langchain-doc', { url: url, partial: true });
-      console.log("main : docs to delete", docsToDelete)
       toast({
         title: 'Indexed website deleted',
         description: `All data for ${url} has been removed.`,

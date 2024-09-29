@@ -18,7 +18,7 @@ export function AIMessage(p: { message: string, isLoading?: boolean, isStreamFin
         throttle: undefined,
         llmOutput: p.message,
         fallbackBlock: {
-            component: (p: any) => <MarkdownRenderer markdownText={p.blockMatch.output} />,
+            component: (p: any) => <MarkdownRenderer output={p.blockMatch.output} />,
             lookBack: markdownLookBack(),
         },
         blocks: [
@@ -45,7 +45,7 @@ export function AIMessage(p: { message: string, isLoading?: boolean, isStreamFin
             {avatarAssistant}
             <div className="relative bg-gradient-to-r from-primary via-secondary to-primary text-background p-3 rounded-lg rounded-tr-none min-h-12 shadow-md">
                 {p.isLoading ? <div className="w-full flex flex-col gap-1">
-                    <Skeleton className="w-full h-6" />
+                    <Skeleton className="w-full h-14" />
                 </div> :
                     blockMatches.map((blockMatch: any, index: number) => {
                         const Component = blockMatch.block.component;

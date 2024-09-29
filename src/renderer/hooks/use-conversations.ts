@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import {
   LLMConversationHistory,
   LLMMessage,
-} from '@/main/services/ollama/ollama-type';
+} from '@/renderer/services/ollama-type';
 const KEYS_TO_NOT_STORE: string[] = [];
 
 type ConversationStore = {

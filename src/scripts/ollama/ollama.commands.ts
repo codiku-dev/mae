@@ -2,7 +2,7 @@ import { exec } from 'child_process';
 import { promises as fsPromises } from 'fs';
 import { promisify } from 'util';
 import { sleep } from '../../libs/utils';
-import { ModelFile } from '../../main/services/ollama/Modelfile';
+import { ModelFile } from '../../renderer/services/Modelfile';
 const execAsync = promisify(exec);
 
 const BASE_LOCAL_BIN_PATH = '/usr/local/bin';

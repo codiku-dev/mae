@@ -7,7 +7,7 @@ import { ROUTES } from './routes';
 import { logToMain, makeInteractiveClassClickable } from './utils';
 import { DevTool } from '../components/features/dev-tools';
 import { useSettings } from '../hooks/use-settings';
-import { ollamaService } from '@/main/services/ollama/ollama.service';
+import { ollamaService } from '@/renderer/services/ollama.service';
 import { TooltipProvider } from '../components/ui/tooltip';
 
 // TODO: Add a global listener to handle the navigate event
@@ -34,7 +34,6 @@ export const AppLoader = () => {
 
   function loadInstalledModels() {
     ollamaService.listOllamaInstalledModels().then((ollamaInstalledModels) => {
-      console.log("ollamaInstalledModels", ollamaInstalledModels)
       const installedModelsIds = ollamaInstalledModels.map((model) => model.model)
       const newAvailableModels = availableModels.map((model) => {
         return {

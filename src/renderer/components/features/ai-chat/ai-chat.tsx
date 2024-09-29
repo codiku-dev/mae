@@ -1,23 +1,22 @@
-import { ollamaService } from '@/main/services/ollama/ollama.service';
-import { Error } from '@/renderer/components/features/ai-search/error';
+import { ollamaService } from '@/renderer/services/ollama.service';
+import { Error } from '@/renderer/components/features/ai-chat/conversation/error';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 import { useAppStore } from '../../../hooks/use-app-store';
-import { SUGGESTION_OPTIONS_ID, Searchbar } from '../../../components/features/ai-search/searchbar/searchbar';
+import { SUGGESTION_OPTIONS_ID, Searchbar } from './searchbar/searchbar';
 import { useConversations } from '@/renderer/hooks/use-conversations';
 import { useSearch } from '@/renderer/hooks/use-search';
 import { Conversation } from './conversation/conversation';
 import { useSettings } from '@/renderer/hooks/use-settings';
 import { Toolbar } from './toolbar/toolbar';
 
-export function AiSearch() {
+export function AiChat() {
     const [value, setValue] = useState<string>('');
     const [streamedResponse, setStreamedResponse] = useState<string>('');
     const [isVisible, setIsVisible] = useState(false);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [isStreamingFinished, setIsStreamingFinished] = useState(true);
     const [error, setError] = useState('');
-    const [isAIWorking, setIsAIWorking] = useState(false);
     const { isDialogOpen } = useAppStore();
     const inputRef = useRef<HTMLInputElement>(null);
     const {
@@ -32,26 +31,26 @@ export function AiSearch() {
     const { currentSearchSuggestions } = useSearch();
     const { getCurrentModel } = useSettings()
 
-    const stopAndResetAll = () => {
+
+    const stopAndResetAll = async () => {
         console.log('stopAndResetAll');
-        ollamaService.abortAllRequests();
+        await ollamaService.abortAllRequests();
         setStreamedResponse('');
         setValue('');
         setError('');
         setIsLoading(false);
         setIsStreamingFinished(true);
-        setIsAIWorking(false);
+
     };
 
 
-
-    const handleStopStream = () => {
-        ollamaService.abortAllRequests();
+    const handleStopStream = async () => {
+        console.log("handleStopStream")
+        await ollamaService.abortAllRequests();
         setValue('');
         setError('');
         setIsLoading(false);
         setIsStreamingFinished(true);
-        setIsAIWorking(false);
     };
 
     useEffect(() => {
@@ -109,12 +108,12 @@ export function AiSearch() {
 
     };
     const handleSubmit = async (submittedText: string) => {
-        stopAndResetAll();
+        await stopAndResetAll();
+        console.log("sending request ", submittedText)
         // remove all @docs and @web from submittedText
         submittedText = submittedText.replace(/@docs/g, '');
         submittedText = submittedText.replace(/@web/g, '');
         let responseContent = '';
-        setIsAIWorking(true);
         setStreamedResponse('');
         setIsLoading(true);
         setIsStreamingFinished(false);
@@ -165,7 +164,6 @@ export function AiSearch() {
                     setIsLoading(false);
                 } else {
                     setIsStreamingFinished(true);
-                    setIsAIWorking(false);
                     setIsLoading(false);
                     addMessageToCurrentConversation({
                         role: 'assistant',
@@ -185,7 +183,6 @@ export function AiSearch() {
                 }
                 setIsLoading(false);
                 setIsStreamingFinished(true);
-                setIsAIWorking(false);
             },
         );
     };
@@ -239,13 +236,12 @@ export function AiSearch() {
                                     isStreamingFinished={isStreamingFinished}
                                     onChange={setValue}
                                     onSubmit={handleSubmit}
-                                    isLoading={isAIWorking}
                                     onClickStop={handleStopStream}
                                 />
                                 <Toolbar onClickNewConversation={newConversation} onClickConversationItem={stopAndResetAll} />
                             </div>
                             <div className="p-4">
-                                {hasMsgInCurrentConv && <Conversation onClickConversationItem={stopAndResetAll} onClickNewConversation={newConversation} isStreamFinished={isStreamingFinished} currentStreamedResponse={streamedResponse} isLoading={isLoading} />}
+                                {hasMsgInCurrentConv && <Conversation onClickNewConversation={newConversation} isStreamFinished={isStreamingFinished} currentStreamedResponse={streamedResponse} isLoading={isLoading} />}
                                 {error && <Error errorMessage={error} />}
                             </div>
                         </div>

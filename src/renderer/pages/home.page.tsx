@@ -1,8 +1,8 @@
 
-import { AiSearch } from '../components/features/ai-search/ai-search';
+import { AiChat } from '../components/features/ai-chat/ai-chat';
 
 export function HomePage() {
   return (
-    <AiSearch />
+    <AiChat />
   )
 }

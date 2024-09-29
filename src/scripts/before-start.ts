@@ -1,4 +1,4 @@
-import { OllamaConfig } from '@/main/services/ollama/ollama.config';
+import { OllamaConfig } from '@/renderer/services/ollama.config';
 import { restartOllama } from './ollama/ollama.commands';
 
 export async function beforeStart() {

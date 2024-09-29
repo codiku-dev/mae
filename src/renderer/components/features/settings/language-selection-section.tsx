@@ -23,7 +23,7 @@ interface LanguageSelectionProps {
   name: string;
 }
 
-export const LanguageSelection = ({ name }: LanguageSelectionProps) => {
+export const LanguageSelectionSection = ({ name }: LanguageSelectionProps) => {
   const { control } = useFormContext();
   return (
     <Card>

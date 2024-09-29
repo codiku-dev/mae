@@ -2,11 +2,12 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { Ollama } from '@langchain/ollama';
 import * as cheerio from 'cheerio';
-import { logToMain } from '../../../renderer/libs/utils';
+import { logToMain } from '../libs/utils';
 import { ModelFile } from './Modelfile';
 import { OllamaConfig } from './ollama.config';
 import { LLMConversationHistory, LLMMessage } from './ollama-type';
 import { OllamaModel } from '@/types/model-type';
+import { sign } from 'crypto';
 interface ControllerEntry {
   id: string;
   controller: AbortController;
@@ -41,6 +42,7 @@ export class OllamaService {
   }
 
   async abortAllRequests() {
+    console.log('abortAllRequests');
     OllamaService.abortControllers.forEach((entry) => {
       entry.controller.abort();
     });
@@ -77,12 +79,13 @@ export class OllamaService {
         ${context}
         Question:${question}`;
     }
-
     const signal = controller.signal;
+
     const id = uuidv4(); // Generate a random ID for the controller
     // const promptString = PROMPT_TEMPLATES[mode];
     await this.abortAllRequests();
     OllamaService.abortControllers.push({ id, controller });
+
     try {
       const response = await fetch('http://localhost:11434/api/chat', {
         method: 'POST',
@@ -92,9 +95,9 @@ export class OllamaService {
         body: JSON.stringify({
           model: modelId + '-mia',
           messages: copyOfConversation,
-          stream,
+          stream: stream,
         }),
-        signal: signal, // Add the signal to the fetch request
+        signal, // Add the signal to the fetch request
       });
       if (response.body === null) {
         throw new Error('Failed to fetch response');
@@ -108,22 +111,32 @@ export class OllamaService {
 
           done = doneReading;
           if (!done) {
-            const chunk: ChatResponseChunk = JSON.parse(
-              decoder.decode(value, { stream: !done }),
-            );
+            const chunkText = decoder.decode(value, { stream: !done });
+            const chunkLines = chunkText
+              .split('\n')
+              .filter((line) => line.trim() !== '');
 
-            onData?.(chunk);
+            for (const line of chunkLines) {
+              try {
+                const chunk: ChatResponseChunk = JSON.parse(line);
+                onData?.(chunk);
+              } catch (parseError) {
+                console.warn('Failed to parse chunk:', line, parseError);
+              }
+            }
           } else {
             reader.cancel();
             break;
           }
         } catch (error) {
+          console.log('WE GOT AN ERROR ', error);
           await reader.cancel();
           onError?.(error as Error);
           break;
         }
       }
     } catch (error) {
+      console.log(' CATCHING ERROR', error);
       logToMain('Fetch was stopped with error : ' + (error as Error).message);
       onError?.(error as Error);
     }

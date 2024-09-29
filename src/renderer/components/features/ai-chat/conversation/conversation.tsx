@@ -1,6 +1,6 @@
 import { useRef, useEffect, useState } from "react";
 import { useConversations } from "../../../../hooks/use-conversations";
-import { LLMConversationHistory, LLMMessage } from "@/main/services/ollama/ollama-type";
+import { LLMConversationHistory, LLMMessage } from "@/renderer/services/ollama-type";
 import { UserMessage } from "./user-message";
 import { AIMessage } from "./ai-message";
 
@@ -11,11 +11,9 @@ type Props = {
     onClickNewConversation: () => void,
     currentStreamedResponse: string,
     isStreamFinished: boolean,
-    isLoading: boolean,
-    onClickConversationItem: () => void
 }
 export function Conversation(p: Props) {
-
+    const isLoading = !p.isStreamFinished && p.currentStreamedResponse.length === 0
     const { getCurrentConversation } = useConversations();
     const currentConversation = getCurrentConversation() as LLMConversationHistory;
 
@@ -76,6 +74,7 @@ export function Conversation(p: Props) {
     };
 
     const displayAiMessage = (message: LLMMessage, index: number) => {
+
         // if last message
         if (index === currentConversation?.messages.length - 1 && !p.isStreamFinished) {
             return null
@@ -83,6 +82,7 @@ export function Conversation(p: Props) {
             return <AIMessage message={message.content} isStreamFinished />
         }
     }
+
     return (
         <div
             ref={scrollRef}
@@ -105,7 +105,7 @@ export function Conversation(p: Props) {
                     </div>
                 })}
 
-                {p.currentStreamedResponse && !p.isStreamFinished && <AIMessage message={p.currentStreamedResponse} isLoading={p.isLoading} isStreamFinished={p.isStreamFinished} />}
+                {p.currentStreamedResponse && !p.isStreamFinished && <AIMessage message={p.currentStreamedResponse} isLoading={isLoading} isStreamFinished={p.isStreamFinished} />}
             </div>
 
             {showScrollToTop && (

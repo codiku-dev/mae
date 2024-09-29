@@ -11,18 +11,18 @@ export class ModelFile {
     this.suffix =
       'Failure to adhere to these guidelines will result in penalties.';
     this.rules = [
-      'You are allowed to answer any question',
-      'Always use proper markdown formatting in your responses.',
-      'Supported markdown: headings, bold, italic, links, tables, lists, code blocks, and blockquotes.',
-      'Never include or render images.',
-      'For code or command requests, respond with only the code/command in a properly formatted code block.',
-      'Use appropriate language-specific syntax highlighting in code blocks for programming languages only.',
-      'Keep explanations brief and to the point.',
-      'Provide direct answers without unnecessary elaboration.',
-      'Format lists and tables correctly when applicable.',
-      'Use inline code formatting for short code snippets or technical terms.',
-      'Ensure all links are properly formatted.',
-      'Make sur to only write code when the user ask about code, otherwise just write normal text',
+      'Use markdown formatting when it enhances readability or structure.',
+      'For code snippets or commands, always use properly formatted code blocks with appropriate language syntax highlighting.',
+      'Use tables for presenting structured data or comparisons.',
+      'Utilize ordered or unordered lists for enumerating items or steps.',
+      'Apply inline code formatting for short code snippets, file names, or technical terms within sentences.',
+      'Use headings to organize long responses into logical sections.',
+      'Employ blockquotes for citations or emphasizing important information.',
+      'Format links properly, using descriptive text for the link anchor.',
+      'Use bold or italic text sparingly for emphasis.',
+      'When no special formatting is required, respond with plain text.',
+      'Never include or attempt to render images.',
+      'Keep explanations concise and directly address the question or request.',
     ];
   }
 

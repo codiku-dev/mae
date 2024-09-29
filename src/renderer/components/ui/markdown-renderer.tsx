@@ -13,13 +13,22 @@ import {
   TableRow,
 } from './table';
 
-export const MarkdownRenderer = (p: { markdownText: string }) => {
+export const MarkdownRenderer = (p: { output: string }) => {
 
   return (
     <ReactMarkdown
       className="text-sm leading-7 "
       remarkPlugins={[remarkGfm]}
       components={{
+        strong: ({ className, ...props }) => (
+          <strong
+            className={cn(
+              'font-bold text-white',
+              className,
+            )}
+            {...props}
+          />
+        ),
         h1: ({ className, ...props }) => (
           <h1
             className={cn(
@@ -64,9 +73,9 @@ export const MarkdownRenderer = (p: { markdownText: string }) => {
         ),
         a: ({ className, href, children, ...props }) => (
           <a
-            id="ai-link"
+
             className={cn(
-              'interactive font-medium text-primary underline underline-offset-4',
+              'font-medium text-white underline underline-offset-4',
               className,
             )}
             onClick={(e) => {
@@ -146,7 +155,7 @@ export const MarkdownRenderer = (p: { markdownText: string }) => {
         ),
       }}
     >
-      {p.markdownText}
+      {p.output}
     </ReactMarkdown>
   );
 };
