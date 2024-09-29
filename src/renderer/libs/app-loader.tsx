@@ -8,6 +8,7 @@ import { logToMain, makeInteractiveClassClickable } from './utils';
 import { DevTool } from '../components/features/dev-tools';
 import { useSettings } from '../hooks/use-settings';
 import { ollamaService } from '@/main/services/ollama/ollama.service';
+import { TooltipProvider } from '../components/ui/tooltip';
 
 // TODO: Add a global listener to handle the navigate event
 
@@ -30,12 +31,20 @@ export const AppLoader = () => {
     const isPackaged = await window.electron.ipcRenderer.invoke('is-app-packaged');
     setIsDebug(!isPackaged);
   }
-  // useEffect(() => {
-  //   const unsubscribe = makeInteractiveClassClickable();
-  //   return () => {
-  //     unsubscribe();
-  //   };
-  // }, []);
+
+  function loadInstalledModels() {
+    ollamaService.listOllamaInstalledModels().then((ollamaInstalledModels) => {
+      console.log("ollamaInstalledModels", ollamaInstalledModels)
+      const installedModelsIds = ollamaInstalledModels.map((model) => model.model)
+      const newAvailableModels = availableModels.map((model) => {
+        return {
+          ...model,
+          isInstalled: installedModelsIds.includes(model.id)
+        }
+      })
+      setAvailableModels(newAvailableModels)
+    })
+  }
 
   useEffect(() => {
     loadIsDebug();
@@ -43,11 +52,10 @@ export const AppLoader = () => {
     const unsubscribeBeforeStartReply = window.electron.ipcRenderer.on(
       'before-start-reply',
       () => {
+        loadInstalledModels()
         setIsAppLoading(false);
         window.electron.ipcRenderer.sendMessage('navigate', ROUTES.home);
         loadIsDebug()
-        // clearAllHistory();
-        // resetStore()
       },
     );
     return () => {
@@ -68,19 +76,7 @@ export const AppLoader = () => {
     };
   }, [navigate]);
 
-  useEffect(function () {
-    ollamaService.listOllamaInstalledModels().then((ollamaInstalledModels) => {
-      console.log("ollamaInstalledModels", ollamaInstalledModels)
-      const installedModelsIds = ollamaInstalledModels.map((model) => model.model)
-      const newAvailableModels = availableModels.map((model) => {
-        return {
-          ...model,
-          isInstalled: installedModelsIds.includes(model.id)
-        }
-      })
-      setAvailableModels(newAvailableModels)
-    })
-  }, []);
+
 
   if (isAppLoading) {
     return isAppLaunchedOnStartup || isDebug ? null : <SplashScreen />;
@@ -89,7 +85,9 @@ export const AppLoader = () => {
     <>
       {isDebug && <DevTool />}
       <Toaster />
-      <Outlet />
+      <TooltipProvider delayDuration={100}>
+        <Outlet />
+      </TooltipProvider>
     </>
   );
 };

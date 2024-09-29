@@ -1,6 +1,7 @@
 import { Plus } from "lucide-react";
-import { ButtonTooltipIcon } from "./button-tooltip-icon";
 import { ConversationHistoryListDropdown } from "../conversation-history-list-dropdown/conversation-history-list-dropdown";
+import { Button } from "@/renderer/components/ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/renderer/components/ui/tooltip";
 
 
 export function Toolbar(p: { onClickNewConversation: () => void, onClickConversationItem: () => void }) {
@@ -9,11 +10,19 @@ export function Toolbar(p: { onClickNewConversation: () => void, onClickConversa
     return (
         <div className="fixed right-5 z-10   rounded-lg bg-white shadow-md">
             <ConversationHistoryListDropdown onClickConversationItem={p.onClickConversationItem} />
-            <ButtonTooltipIcon
-                onClick={p.onClickNewConversation}
-                icon={Plus}
-                tooltipContent="Start new conversation"
-            />
+            <Tooltip>
+                <TooltipTrigger asChild>
+                    <Button
+                        className=" text-xs text-secondary"
+                        size="sm"
+                        variant={'ghost'}
+                        onClick={p.onClickNewConversation}
+                    >
+                        <Plus size={18} />
+                    </Button>
+                </TooltipTrigger>
+                <TooltipContent>Start new conversation</TooltipContent>
+            </Tooltip>
         </div>
     );
 }
