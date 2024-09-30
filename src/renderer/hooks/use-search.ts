@@ -22,6 +22,10 @@ export type SearchSuggestion = {
   suggestion: string;
 };
 export type SearchStore = {
+  inputValue: string;
+  isStreamingFinished: boolean;
+  error: string;
+  isLoading: boolean;
   indexedWebsitesContent: IndexedWebsite[];
   currentSearchSuggestions: SearchSuggestion[];
   isWebsiteIndexed: (url: string) => boolean;
@@ -32,11 +36,19 @@ export type SearchStore = {
   getCommands: () => Command[];
   setCurrentSearchSuggestions: (suggestions: SearchSuggestion[]) => void;
   clear: () => void;
+  setInputValue: (inputValue: string) => void;
+  setIsStreamingFinished: (isStreamingFinished: boolean) => void;
+  setError: (string: string) => void;
+  setIsLoading: (isLoading: boolean) => void;
 };
 
 const INITIAL_STATE = {
   currentSearchSuggestions: [],
   indexedWebsitesContent: [],
+  inputValue: '',
+  isStreamingFinished: true,
+  error: '',
+  isLoading: false,
 };
 const useSearch = create(
   devtools(
@@ -47,6 +59,18 @@ const useSearch = create(
 
         clear: () => {
           set(INITIAL_STATE);
+        },
+        setInputValue: (inputValue: string) => {
+          set({ inputValue });
+        },
+        setIsStreamingFinished: (isStreamingFinished: boolean) => {
+          set({ isStreamingFinished });
+        },
+        setError: (error: string) => {
+          set({ error });
+        },
+        setIsLoading: (isLoading: boolean) => {
+          set({ isLoading });
         },
         isWebsiteIndexed: (url: string) => {
           const { indexedWebsitesContent } = get();

@@ -11,12 +11,8 @@ import { useSettings } from '@/renderer/hooks/use-settings';
 import { Toolbar } from './toolbar/toolbar';
 
 export function AiChat() {
-    const [value, setValue] = useState<string>('');
     const [streamedResponse, setStreamedResponse] = useState<string>('');
     const [isVisible, setIsVisible] = useState(false);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [isStreamingFinished, setIsStreamingFinished] = useState(true);
-    const [error, setError] = useState('');
     const { isDialogOpen } = useAppStore();
     const inputRef = useRef<HTMLInputElement>(null);
     const {
@@ -28,27 +24,26 @@ export function AiChat() {
     } = useConversations();
     const currentConversation = getCurrentConversation()
     const hasMsgInCurrentConv = currentConversation?.messages && currentConversation?.messages.length > 0
-    const { currentSearchSuggestions } = useSearch();
+    const { currentSearchSuggestions, isLoading, inputValue, error, isStreamingFinished, setInputValue, setIsStreamingFinished, setIsLoading, setError } = useSearch();
     const { getCurrentModel } = useSettings()
 
 
-    const stopAndResetAll = async () => {
+    const clearSearch = async () => {
         await ollamaService.abortAllRequests();
-        setStreamedResponse('');
-        setValue('');
+        setInputValue('');
         setError('');
         setIsLoading(false);
         setIsStreamingFinished(true);
+    }
+
+    const stopAndResetAll = async () => {
+        setStreamedResponse('');
+        await clearSearch()
 
     };
 
-
     const handleStopStream = async () => {
-        await ollamaService.abortAllRequests();
-        setValue('');
-        setError('');
-        setIsLoading(false);
-        setIsStreamingFinished(true);
+        await clearSearch()
     };
 
     useEffect(() => {
@@ -115,7 +110,7 @@ export function AiChat() {
         setStreamedResponse('');
         setIsLoading(true);
         setIsStreamingFinished(false);
-        setValue('');
+        setInputValue('');
         setError('');
 
         if (!currentConversation) {
@@ -233,9 +228,9 @@ export function AiChat() {
                             <div className="px-4 pt-4 ">
                                 <Searchbar
                                     ref={inputRef}
-                                    value={value}
+                                    value={inputValue}
                                     isStreamingFinished={isStreamingFinished}
-                                    onChange={setValue}
+                                    onChange={setInputValue}
                                     onSubmit={handleSubmit}
                                     onClickStop={handleStopStream}
                                 />
@@ -243,7 +238,7 @@ export function AiChat() {
                             </div>
                             <div className="p-4">
                                 {hasMsgInCurrentConv && <Conversation onClickNewConversation={newConversation} isStreamFinished={isStreamingFinished} currentStreamedResponse={streamedResponse} isLoading={isLoading} />}
-                                {error && <Error errorMessage={error} />}
+                                {error && error !== "" && <Error errorMessage={error} />}
                             </div>
                         </div>
                     </motion.div>
