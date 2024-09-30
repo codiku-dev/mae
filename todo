@@ -24,6 +24,7 @@ V2
 - playwright to get generateed js content
 - remove the www in dialog inpiut in learn doc (command name)
 - subvector file for each docs
+-scroll prevent serach bar
 ==============================================
 
 V3

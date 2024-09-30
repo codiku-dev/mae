@@ -21,12 +21,7 @@ export class DocVectorStoreService {
     'hnswlib.index',
   );
 
-  private constructor() {
-    this.llmEmbeddings = new OllamaEmbeddings({
-      model: 'mxbai-embed-large:latest',
-      baseUrl: 'http://localhost:11434',
-    });
-  }
+  private constructor() {}
 
   public static getInstance(): DocVectorStoreService {
     if (!DocVectorStoreService.instance) {
@@ -36,14 +31,21 @@ export class DocVectorStoreService {
   }
 
   public async init() {
-    console.log('Mia: DocVectorStoreService init()');
+    this.llmEmbeddings = new OllamaEmbeddings({
+      model: 'mxbai-embed-large:latest',
+      baseUrl: 'http://localhost:11434',
+    });
+
+    console.log('Mia: DocVectorStoreService init() ');
     try {
-      if (fs.existsSync(this.vectorStorePath + '/docstore.json')) {
+      console.log('DOES ', this.vectorStorePath, ' exist ?');
+      console.log(fs.existsSync(this.vectorStorePath));
+      if (fs.existsSync(this.vectorStorePath)) {
         console.log(
           'Loading existing vector store from path : ' + this.vectorStorePath,
         );
         this.vectorStore = await HNSWLib.load(
-          this.vectorStorePath,
+          app.getPath('userData'),
           this.llmEmbeddings!,
         );
         console.log('Existing vector store loaded successfully');
@@ -52,20 +54,26 @@ export class DocVectorStoreService {
         this.vectorStore = new HNSWLib(this.llmEmbeddings!, {
           space: 'cosine',
         });
+
+        console.log('CREATED A new HNSWLib');
         // Optionally add an initial document
+
         await this.vectorStore.addDocuments([
           new Document({
             pageContent: 'Initial document',
             metadata: { source: 'initialization' },
           }),
         ]);
-        await this.vectorStore.save(this.vectorStorePath);
-        console.log('New vector store created and saved');
+        console.log('initial document added');
+
+        // await this.vectorStore.save(this.vectorStorePath);
+        console.log('New vector intialized and saved');
       }
     } catch (error) {
       console.error('Error initializing vector store:', error);
       throw new Error('Failed to initialize vector store');
     }
+    console.log('INITIAL ', this.vectorStore.docstore._docs.keys());
   }
 
   public async addDocInMemory(htmlFiles: WebsiteScrapedContent[]) {
@@ -101,18 +109,34 @@ export class DocVectorStoreService {
 
     logToRenderer(DocVectorStoreService.mainWindow, 'Saving vector store');
     console.log('Saving vector store');
-    await this.vectorStore?.save(this.vectorStorePath);
+    // await this.vectorStore?.save(this.vectorStorePath);
     logToRenderer(DocVectorStoreService.mainWindow, 'Vector store saved');
+    console.log(
+      'vector store ',
+      this.vectorStore?.save(app.getPath('userData')),
+    );
+    console.log(
+      'These are the news keys ',
+      this.vectorStore?.docstore._docs.keys(),
+    );
     console.log('Save Done');
   }
 
   public async searchDocs(query: string, qty: number) {
     logToRenderer(DocVectorStoreService.mainWindow, 'Searching docs');
-
-    const response = await this.vectorStore?.similaritySearch(query, qty);
-    // const response = await retriever?.invoke(query);
-    logToRenderer(DocVectorStoreService.mainWindow, 'Search completed');
-    return response;
+    console.log(
+      'these are the current keys',
+      this.vectorStore?.docstore._docs.keys(),
+    );
+    try {
+      const response = await this.vectorStore?.similaritySearch(query, qty);
+      // const response = await retriever?.invoke(query);
+      logToRenderer(DocVectorStoreService.mainWindow, 'Search completed');
+      return response;
+    } catch (error) {
+      console.error('Error searching docs:', error);
+      throw new Error('Failed to search docs');
+    }
   }
 
   public async getDoc(

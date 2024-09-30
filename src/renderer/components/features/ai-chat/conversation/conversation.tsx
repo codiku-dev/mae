@@ -86,7 +86,7 @@ export function Conversation(p: Props) {
     return (
         <div
             ref={scrollRef}
-            className="h-[700px] overflow-y-auto relative" // Added 'relative'
+            className="h-[670px] overflow-y-auto relative" // Added 'relative'
             onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();

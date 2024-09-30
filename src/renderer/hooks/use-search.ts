@@ -2,7 +2,13 @@ import { create } from 'zustand';
 import { devtools, persist, subscribeWithSelector } from 'zustand/middleware';
 import { areUrlsEqual } from '../libs/utils';
 
-const KEYS_TO_NOT_STORE: string[] = [];
+const KEYS_TO_NOT_STORE: string[] = [
+  'isLoading',
+  'inputValue',
+  'isStreamingFinished',
+  'error',
+  'currentSearchSuggestions',
+];
 type Command = { command: string; url: string };
 
 export type WebsiteScrapedContent = {
