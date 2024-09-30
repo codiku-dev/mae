@@ -78,7 +78,6 @@ export class DocVectorStoreService {
 
   public async searchDocsInMemory(query: string, qty: number) {
     const result = await this.inMemoryVectorStore?.similaritySearch(query, qty);
-    console.log('result', result);
     return result;
   }
 
@@ -218,7 +217,7 @@ export class DocVectorStoreService {
       const chunks = this.splitHtmlToChunks(file);
       documents.push(...chunks);
     }
-
+    console.log('Chunkify docs done');
     logToRenderer(DocVectorStoreService.mainWindow, 'Documents chunkified');
     return documents;
   };

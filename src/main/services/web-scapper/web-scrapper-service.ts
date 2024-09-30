@@ -1,10 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import * as cheerio from 'cheerio';
 import { decodeHTML } from 'entities';
-import {
-  IndexedWebsite,
-  WebsiteScrapedContent,
-} from '@/renderer/hooks/use-app-store';
+import { WebsiteScrapedContent } from '@/renderer/hooks/use-search';
 import { addProtocolToUrl } from '@/renderer/libs/utils';
 
 interface ControllerEntry {

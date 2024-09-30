@@ -1,5 +1,5 @@
 import { BrowserWindow, ipcMain } from 'electron';
-import { WebsiteScrapedContent } from '@/renderer/hooks/use-app-store';
+import { WebsiteScrapedContent } from '@/renderer/hooks/use-search';
 import { docVectorStoreService } from '../doc-vector-store/doc-vector-service';
 import { logToRenderer } from '@/libs/utils';
 
@@ -57,6 +57,7 @@ export function addDocVectorStoreListeners(mainWindow: BrowserWindow | null) {
   ipcMain.handle(
     'add-doc-in-memory',
     async (event, websites: WebsiteScrapedContent[]) => {
+      console.log('add-doc-in-memory');
       await docVectorStoreService.addDocInMemory(websites);
     },
   );

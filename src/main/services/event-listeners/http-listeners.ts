@@ -5,7 +5,9 @@ export function addHttpListeners(mainWindow: BrowserWindow | null) {
     console.log('Fetching:', url);
 
     const response = await net.fetch(url);
+
     const text = await response.text();
+    console.log('Response found for ', url);
     return text;
   });
 }

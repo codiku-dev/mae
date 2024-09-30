@@ -119,10 +119,10 @@ export function DialogLinkInput({
             {currentOption?.id == SUGGESTION_OPTIONS_ID.ADD_DOC && <Input
               ref={commandNameRef}
               value={commandName}
-              onChange={(e) => setCommandName(e.target.value.slice(0, 15))}
+              onChange={(e) => setCommandName(e.target.value.slice(0, 50))}
               placeholder="Command name "
               aria-label="Enter command name"
-              maxLength={15}
+              maxLength={50}
             />
             }
             <kbd className="pointer-events-none absolute right-[0.5rem] -top-[0.3rem] hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">

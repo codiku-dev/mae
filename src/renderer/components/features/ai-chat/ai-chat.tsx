@@ -106,6 +106,7 @@ export function AiChat() {
 
     };
     const handleSubmit = async (submittedText: string) => {
+        console.log("SUBMIT", submittedText)
         await stopAndResetAll();
         // remove all @docs and @web from submittedText
         submittedText = submittedText.replace(/@docs/g, '');
@@ -126,11 +127,13 @@ export function AiChat() {
         let documentationContext = ""
         if (currentSearchSuggestions.length > 0) {
             if (currentSearchSuggestions[0].id === SUGGESTION_OPTIONS_ID.SEARCH_WEB) {
+                console.log(" Search doc in memory")
                 documentationContext = await window.electron.ipcRenderer.invoke(
                     'search-doc-in-memory',
                     submittedText,
                 );
             } else {
+                console.log()
                 documentationContext = await window.electron.ipcRenderer.invoke(
                     'langchain-find-relevant-document',
                     submittedText,
@@ -146,6 +149,7 @@ export function AiChat() {
             `
 
         }
+        console.log("sending context", context)
         addMessageToCurrentConversation({
             role: 'user',
             content: submittedText,

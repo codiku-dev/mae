@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useAppStore } from '@/renderer/hooks/use-app-store';
 import { useConversations } from '@/renderer/hooks/use-conversations';
 import { useSettings } from '@/renderer/hooks/use-settings';
+import { useSearch } from '@/renderer/hooks/use-search';
 
 const stores = {
   appStore: useAppStore,
   conversationStore: useConversations,
+  searchStore: useSearch,
   settingsStore: useSettings,
 };
 
@@ -13,7 +15,6 @@ export const DevTool: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<keyof typeof stores>('appStore');
   const [storeContents, setStoreContents] = useState<Record<string, string>>({});
-  const { clearAllHistory } = useConversations();
 
   useEffect(() => {
     const updateStoreContents = () => {

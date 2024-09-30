@@ -50,6 +50,7 @@ export const Searchbar = forwardRef<HTMLInputElement, Props>((p: Props, inputRef
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    console.log("SUbmiting searchbar")
     // check key is not enter
     // if (!p.isStreamingFinished) {
     //   p.onClickStop();
@@ -72,17 +73,29 @@ export const Searchbar = forwardRef<HTMLInputElement, Props>((p: Props, inputRef
   };
 
   const fetchAndStoreDocumentation = async (link: string, command: string) => {
+    setCurrentSearchSuggestions([
+      {
+        id: SUGGESTION_OPTIONS_ID.ADD_DOC,
+        link,
+        suggestion: selectedSuggestion?.suggestion,
+      },
+    ]);
+
     if (!isWebsiteIndexed(link)) {
+      logToMain("Website is not indexed yet")
       setisLoading(true);
 
       const newIndexedWebsiteContent =
         await webScraperService.fetchWebsiteContent(link);
 
+      logToMain("Start learning")
       await window.electron.ipcRenderer.invoke(
         'langchain-learn',
         newIndexedWebsiteContent,
       );
 
+      logToMain("End learning")
+      logToMain("Add links to cache")
       addWebsiteToIndexedWebsites({
         url: link,
         commandName: command,
@@ -92,6 +105,7 @@ export const Searchbar = forwardRef<HTMLInputElement, Props>((p: Props, inputRef
           sizeKb: website.sizeKb,
         })),
       });
+      logToMain("Links added cache")
       setisLoading(false);
     }
   }
@@ -108,14 +122,9 @@ export const Searchbar = forwardRef<HTMLInputElement, Props>((p: Props, inputRef
     p.onChange(newValue);
     logToMain(`the dialog mode is  ${dialogMode}`)
     if (dialogMode == SUGGESTION_OPTIONS_ID.ADD_DOC) {
+
       fetchAndStoreDocumentation(link, command);
-      setCurrentSearchSuggestions([
-        {
-          id: SUGGESTION_OPTIONS_ID.ADD_DOC,
-          link,
-          suggestion: selectedSuggestion?.suggestion,
-        },
-      ]);
+
     } else if (dialogMode == SUGGESTION_OPTIONS_ID.SEARCH_WEB) {
       setisLoading(true);
       setCurrentSearchSuggestions([
@@ -231,7 +240,7 @@ export const Searchbar = forwardRef<HTMLInputElement, Props>((p: Props, inputRef
           disabled={p.value === '' && p.isStreamingFinished}
           variant="outline"
           size="icon"
-          type="button"
+          type="submit"
           className="cursor-pointer shadow-md w-[3.35rem] h-[2.40rem] absolute right-[0.05rem] top-[0.68rem] transform  rounded-full bg-primary text-white"
         >
           <ArrowRight className="size-4" />

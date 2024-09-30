@@ -35,8 +35,8 @@ export type SearchStore = {
 };
 
 const INITIAL_STATE = {
-  indexedWebsitesContent: [],
   currentSearchSuggestions: [],
+  indexedWebsitesContent: [],
 };
 const useSearch = create(
   devtools(
