@@ -30,7 +30,7 @@ export const ConversationHistoryListDropdown = (p: { onClickConversationItem: ()
                         <Button
                             className=" text-xs text-secondary"
                             size="sm"
-                            variant={'ghost'}
+                            variant={"outline"}
                         >
                             <ListRestart size={18} />
                         </Button>
@@ -38,7 +38,7 @@ export const ConversationHistoryListDropdown = (p: { onClickConversationItem: ()
                 </TooltipTrigger>
 
 
-                <DropdownMenuContent className="w-96">
+                <DropdownMenuContent className="w-96 mr-5">
                     <div onBlur={() => setIsOpen(false)}>
                         <div className="p-2 interactive">
                             <div className="  flex items-center space-x-2">

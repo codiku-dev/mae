@@ -11,9 +11,9 @@ type Props = {
     onClickNewConversation: () => void,
     currentStreamedResponse: string,
     isStreamFinished: boolean,
+    isLoading: boolean
 }
 export function Conversation(p: Props) {
-    const isLoading = !p.isStreamFinished && p.currentStreamedResponse.length === 0
     const { getCurrentConversation } = useConversations();
     const currentConversation = getCurrentConversation() as LLMConversationHistory;
 
@@ -105,7 +105,7 @@ export function Conversation(p: Props) {
                     </div>
                 })}
 
-                {p.currentStreamedResponse && !p.isStreamFinished && <AIMessage message={p.currentStreamedResponse} isLoading={isLoading} isStreamFinished={p.isStreamFinished} />}
+                {!p.isStreamFinished && <AIMessage message={p.currentStreamedResponse} isLoading={p.isLoading} isStreamFinished={p.isStreamFinished} />}
             </div>
 
             {showScrollToTop && (

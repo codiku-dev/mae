@@ -8,7 +8,7 @@ export function Toolbar(p: { onClickNewConversation: () => void, onClickConversa
 
 
     return (
-        <div className="fixed right-5 z-10   rounded-lg bg-white shadow-md">
+        <div className="fixed right-5 z-10 top-20  rounded-lg bg-white shadow-md">
             <ConversationHistoryListDropdown onClickConversationItem={p.onClickConversationItem} />
             <Tooltip>
                 <TooltipTrigger asChild>
