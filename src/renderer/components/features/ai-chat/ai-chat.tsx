@@ -124,7 +124,7 @@ export function AiChat() {
             } else {
                 console.log()
                 documentationContext = await window.electron.ipcRenderer.invoke(
-                    'langchain-find-relevant-document',
+                    'find-vector-doc',
                     submittedText,
                 );
             }

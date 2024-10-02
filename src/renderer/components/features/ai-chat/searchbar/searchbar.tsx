@@ -90,7 +90,7 @@ export const Searchbar = forwardRef<HTMLInputElement, Props>((p: Props, inputRef
 
       logToMain("Start learning")
       await window.electron.ipcRenderer.invoke(
-        'langchain-learn',
+        'add-vector-docs',
         newIndexedWebsiteContent,
       );
 

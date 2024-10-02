@@ -44,9 +44,6 @@ export function Settings() {
 
     useEffect(() => {
         window.electron.ipcRenderer.sendMessage('request-open-window');
-        window.electron.ipcRenderer.sendMessage('set-ignore-mouse-events', false, {
-            forward: true,
-        });
     }, []);
 
     const submit: SubmitHandler<FormValues> = async (data) => {

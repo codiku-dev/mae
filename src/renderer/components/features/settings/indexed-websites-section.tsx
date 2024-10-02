@@ -52,7 +52,7 @@ export function IndexedWebsiteSection() {
 
     if (isConfirmed) {
       deleteIndexedWebsite(url);
-      const docsToDelete = await window.electron.ipcRenderer.invoke('delete-langchain-doc', { url: url, partial: true });
+      const docsToDelete = await window.electron.ipcRenderer.invoke('delete-vector-doc', { url: url, partial: true });
       toast({
         title: 'Indexed website deleted',
         description: `All data for ${url} has been removed.`,
@@ -69,7 +69,7 @@ export function IndexedWebsiteSection() {
     );
 
     if (isConfirmed) {
-      const deletedDocs = await window.electron.ipcRenderer.invoke('delete-langchain-doc', { url: childUrl, partial: false });
+      const deletedDocs = await window.electron.ipcRenderer.invoke('delete-vector-doc', { url: childUrl, partial: false });
       if (deletedDocs.length > 0) {
         deleteWebsiteScrapedContent(parentUrl, childUrl);
         toast({

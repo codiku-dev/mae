@@ -9,14 +9,14 @@ export class DocVectorStoreController {
     ipcMain.handle('sandbox-request', () => {});
 
     ipcMain.handle(
-      'langchain-learn',
+      'add-vector-docs',
       async (event, websites: WebsiteScrapedContent[]) => {
         await docVectorStoreService.addDocs(websites);
       },
     );
 
     ipcMain.handle(
-      'delete-langchain-doc',
+      'delete-vector-doc',
       async (event, data: { url: string; partial: boolean }) => {
         const docsToDelete = await docVectorStoreService.getDocsByMetadata(
           'url',
@@ -42,21 +42,16 @@ export class DocVectorStoreController {
       await docVectorStoreService.deleteAllDocs();
     });
 
-    ipcMain.handle(
-      'langchain-find-relevant-document',
-      async (event, question: string) => {
-        console.log('Start doc search');
-        const relevantDocuments = await docVectorStoreService.searchDocs(
-          question,
-          3,
-        );
+    ipcMain.handle('find-vector-doc', async (event, question: string) => {
+      console.log('Start doc search');
+      const relevantDocuments = await docVectorStoreService.searchDocs(
+        question,
+        3,
+      );
 
-        const aggregation = relevantDocuments
-          ?.map((r) => r.pageContent)
-          .join('');
-        return aggregation;
-      },
-    );
+      const aggregation = relevantDocuments?.map((r) => r.pageContent).join('');
+      return aggregation;
+    });
 
     ipcMain.handle(
       'add-doc-in-memory',

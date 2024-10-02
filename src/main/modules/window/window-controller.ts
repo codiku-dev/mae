@@ -7,10 +7,6 @@ export class WindowController {
       windowService.focusWindow();
     });
 
-    ipcMain.on('request-blur-window', () => {
-      windowService.blurWindow();
-    });
-
     ipcMain.on('request-close-window', () => {
       windowService.hideWindow();
     });
