@@ -28,8 +28,7 @@ export type Channels =
   | 'delete-vector-doc'
   | 'delete-all-langchain-doc'
   | 'is-app-packaged'
-  | 'pull-ollama-model'
-  | 'is-ollama-installed';
+  | 'pull-ollama-model';
 
 const electronHandler = {
   ipcRenderer: {
