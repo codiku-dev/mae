@@ -2,12 +2,10 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { Ollama } from '@langchain/ollama';
 import * as cheerio from 'cheerio';
-import { logToMain } from '../libs/utils';
+import { logToMain } from '@/renderer/libs/utils';
 import { ModelFile } from './Modelfile';
-import { OllamaConfig } from './ollama.config';
 import { LLMConversationHistory, LLMMessage } from './ollama-type';
 import { OllamaModel } from '@/types/model-type';
-import { sign } from 'crypto';
 interface ControllerEntry {
   id: string;
   controller: AbortController;

@@ -6,7 +6,7 @@ import { useAppStore } from '../hooks/use-app-store';
 import { ROUTES } from './routes';
 import { DevTool } from '../components/features/dev-tools';
 import { useSettings } from '../hooks/use-settings';
-import { ollamaService } from '@/renderer/services/ollama.service';
+import { ollamaService } from '@/renderer/services/ollama/ollama.service';
 import { TooltipProvider } from '../components/ui/tooltip';
 
 // TODO: Add a global listener to handle the navigate event
@@ -81,7 +81,7 @@ export const AppLoader = () => {
   }
   return (
     <>
-      {isDebug && <DevTool />}
+      {/* {isDebug && <DevTool />} */}
       <Toaster />
       <TooltipProvider delayDuration={100}>
         <Outlet />

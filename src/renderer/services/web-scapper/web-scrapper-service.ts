@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from 'uuid';
 import * as cheerio from 'cheerio';
 import { decodeHTML } from 'entities';
 import { WebsiteScrapedContent } from '@/renderer/hooks/use-search';
@@ -9,7 +8,6 @@ interface ControllerEntry {
   controller: AbortController;
 }
 
-// @ExposableToRenderer()
 export class WebScraperService {
   private static instance: WebScraperService | null = null;
   public static abortControllers: ControllerEntry[] = [];

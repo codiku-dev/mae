@@ -1,8 +1,8 @@
-import { ollamaService } from '@/renderer/services/ollama.service';
+import { ollamaService } from '@/renderer/services/ollama/ollama.service';
 import { Error } from '@/renderer/components/features/ai-chat/conversation/error';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
-import { useAppStore } from '../../../hooks/use-app-store';
+import { useAppStore } from '@/renderer/hooks/use-app-store';
 import { SUGGESTION_OPTIONS_ID, Searchbar } from './searchbar/searchbar';
 import { useConversations } from '@/renderer/hooks/use-conversations';
 import { useSearch } from '@/renderer/hooks/use-search';
@@ -53,12 +53,6 @@ export function AiChat() {
         );
     }, [isVisible]);
 
-    useEffect(() => {
-
-        window.electron.ipcRenderer.sendMessage('set-ignore-mouse-events', true, {
-            forward: true,
-        });
-    }, []);
 
     useEffect(function addOpenCloseListener() {
         const unsubscribeGlobalShortcut = window.electron.ipcRenderer.on(
@@ -188,7 +182,6 @@ export function AiChat() {
         setTimeout(() => {
             window.electron.ipcRenderer.sendMessage('request-close-window');
         }, 100);
-        window.electron.ipcRenderer.sendMessage('set-ignore-mouse-events', false);
     };
 
     const onOpen = () => {

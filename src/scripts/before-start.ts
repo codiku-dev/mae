@@ -1,10 +1,10 @@
-import { OllamaConfig } from '@/renderer/services/ollama.config';
-import { restartOllama } from './ollama/ollama.commands';
-import { docVectorStoreService } from '@/main/services/doc-vector-store/doc-vector-service';
+import { OllamaConfig } from '@/renderer/services/ollama/ollama.config';
+import { ollamaService } from '@/main/modules/ollama/ollama.service';
+import { docVectorStoreService } from '@/main/modules/doc-vector-store/doc-vector-store-service';
 
 export async function beforeStart() {
   console.log('[Before start script starting...]');
-  await restartOllama();
+  await ollamaService.restart();
   console.log('Mia: Preloading model');
   try {
     await fetch('http://localhost:11434/api/chat', {

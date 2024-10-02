@@ -6,8 +6,8 @@ import { useToast } from '@/renderer/hooks/use-toast';
 import { useEffect, useState } from 'react';
 import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
 
-import { ModelFile } from '@/renderer/services/Modelfile';
-import { ollamaService } from '@/renderer/services/ollama.service';
+import { ModelFile } from '@/renderer/services/ollama/Modelfile';
+import { ollamaService } from '@/renderer/services/ollama/ollama.service';
 import { Loader2, Save, X } from 'lucide-react';
 import { LanguageSelectionSection } from './language-selection-section';
 import { ROUTES } from '../../../libs/routes';

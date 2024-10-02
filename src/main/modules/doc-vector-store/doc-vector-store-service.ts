@@ -9,6 +9,7 @@ import { WebsiteScrapedContent } from '@/renderer/hooks/use-search';
 import { app, BrowserWindow } from 'electron';
 import path from 'path';
 import { MemoryVectorStore } from 'langchain/vectorstores/memory';
+import { windowService } from '../window/window.service';
 
 export class DocVectorStoreService {
   private static instance: DocVectorStoreService;
@@ -73,7 +74,6 @@ export class DocVectorStoreService {
       console.error('Error initializing vector store:', error);
       throw new Error('Failed to initialize vector store');
     }
-    console.log('INITIAL ', this.vectorStore.docstore._docs.keys());
   }
 
   public async addDocInMemory(htmlFiles: WebsiteScrapedContent[]) {
@@ -94,23 +94,20 @@ export class DocVectorStoreService {
   }
 
   public async addDocs(htmlFiles: WebsiteScrapedContent[]) {
-    logToRenderer(
-      DocVectorStoreService.mainWindow,
-      'Adding docs to vector store',
-    );
+    logToRenderer(windowService.getMainWindow(), 'Adding docs to vector store');
     console.log('Adding docs to vector store');
     if (htmlFiles.length === 0) {
-      logToRenderer(DocVectorStoreService.mainWindow, 'No HTML files to add');
+      logToRenderer(windowService.getMainWindow(), 'No HTML files to add');
       return;
     }
     const documentsChunks = await this.chunkifyDocs(htmlFiles);
 
     await this.vectorStore?.addDocuments(documentsChunks);
 
-    logToRenderer(DocVectorStoreService.mainWindow, 'Saving vector store');
+    logToRenderer(windowService.getMainWindow(), 'Saving vector store');
     console.log('Saving vector store');
     // await this.vectorStore?.save(this.vectorStorePath);
-    logToRenderer(DocVectorStoreService.mainWindow, 'Vector store saved');
+    logToRenderer(windowService.getMainWindow(), 'Vector store saved');
     console.log(
       'vector store ',
       this.vectorStore?.save(app.getPath('userData')),
@@ -123,7 +120,7 @@ export class DocVectorStoreService {
   }
 
   public async searchDocs(query: string, qty: number) {
-    logToRenderer(DocVectorStoreService.mainWindow, 'Searching docs');
+    logToRenderer(windowService.getMainWindow(), 'Searching docs');
     console.log(
       'these are the current keys',
       this.vectorStore?.docstore._docs.keys(),
@@ -131,7 +128,7 @@ export class DocVectorStoreService {
     try {
       const response = await this.vectorStore?.similaritySearch(query, qty);
       // const response = await retriever?.invoke(query);
-      logToRenderer(DocVectorStoreService.mainWindow, 'Search completed');
+      logToRenderer(windowService.getMainWindow(), 'Search completed');
       return response;
     } catch (error) {
       console.error('Error searching docs:', error);
@@ -142,15 +139,15 @@ export class DocVectorStoreService {
   public async getDoc(
     recordId: string,
   ): Promise<{ recordId: string; document: Document } | null> {
-    logToRenderer(DocVectorStoreService.mainWindow, `getDoc (${recordId})`);
+    logToRenderer(windowService.getMainWindow(), `getDoc (${recordId})`);
     const entries = this.vectorStore!.docstore._docs.entries();
 
     const doc = Array.from(entries).find((doc) => doc[0] === recordId);
     if (!doc) {
-      logToRenderer(DocVectorStoreService.mainWindow, 'Document not found');
+      logToRenderer(windowService.getMainWindow(), 'Document not found');
       return null;
     }
-    logToRenderer(DocVectorStoreService.mainWindow, 'Document found');
+    logToRenderer(windowService.getMainWindow(), 'Document found');
     return { recordId: doc[0], document: doc[1] };
   }
 
@@ -160,11 +157,11 @@ export class DocVectorStoreService {
     partial = false,
   ): Promise<{ recordId: string; document: Document }[]> {
     logToRenderer(
-      DocVectorStoreService.mainWindow,
+      windowService.getMainWindow(),
       'Getting documents by metadata',
     );
     const entries = this.vectorStore?.docstore._docs.entries();
-    logToRenderer(DocVectorStoreService.mainWindow, `entries : ${entries}`);
+    logToRenderer(windowService.getMainWindow(), `entries : ${entries}`);
     const matchingDocs: { recordId: string; document: Document }[] = [];
     if (entries) {
       for (const [recordId, document] of entries) {
@@ -181,20 +178,20 @@ export class DocVectorStoreService {
 
       if (matchingDocs.length > 0) {
         logToRenderer(
-          DocVectorStoreService.mainWindow,
+          windowService.getMainWindow(),
           `Matching documents found ${matchingDocs.length}`,
         );
         return matchingDocs;
       } else {
         logToRenderer(
-          DocVectorStoreService.mainWindow,
+          windowService.getMainWindow(),
           'No matching documents found',
         );
         return [];
       }
     }
     logToRenderer(
-      DocVectorStoreService.mainWindow,
+      windowService.getMainWindow(),
       'No entries found in vector store',
     );
     return [];
@@ -202,14 +199,14 @@ export class DocVectorStoreService {
 
   public async deleteDoc(recordId: string) {
     logToRenderer(
-      DocVectorStoreService.mainWindow,
+      windowService.getMainWindow(),
       `In function deleteDoc (${recordId})`,
     );
     const doc = await this.getDoc(recordId);
 
     if (!doc) {
       logToRenderer(
-        DocVectorStoreService.mainWindow,
+        windowService.getMainWindow(),
         'Document not found for deletion',
       );
       return;
@@ -218,14 +215,14 @@ export class DocVectorStoreService {
     await this.vectorStore!.save(this.vectorStorePath);
 
     logToRenderer(
-      DocVectorStoreService.mainWindow,
+      windowService.getMainWindow(),
       'Document deleted and vector store saved',
     );
     return recordId;
   }
 
   public async deleteAllDocs() {
-    logToRenderer(DocVectorStoreService.mainWindow, 'Deleting all documents');
+    logToRenderer(windowService.getMainWindow(), 'Deleting all documents');
     await this.vectorStore!.delete({ directory: this.vectorStorePath });
     // await this.vectorStore?.save(this.vectorStorePath);
   }
@@ -233,7 +230,7 @@ export class DocVectorStoreService {
   chunkifyDocs = async (
     htmlFiles: WebsiteScrapedContent[],
   ): Promise<Document[]> => {
-    logToRenderer(DocVectorStoreService.mainWindow, 'Chunkifying documents');
+    logToRenderer(windowService.getMainWindow(), 'Chunkifying documents');
     console.log('Chunkify docs');
     // Create Documents for each HTML file and split them
     const documents: Document[] = [];
@@ -242,7 +239,7 @@ export class DocVectorStoreService {
       documents.push(...chunks);
     }
     console.log('Chunkify docs done');
-    logToRenderer(DocVectorStoreService.mainWindow, 'Documents chunkified');
+    logToRenderer(windowService.getMainWindow(), 'Documents chunkified');
     return documents;
   };
 
@@ -250,10 +247,7 @@ export class DocVectorStoreService {
     file: WebsiteScrapedContent,
     maxTokens: number = 300,
   ): Document[] => {
-    logToRenderer(
-      DocVectorStoreService.mainWindow,
-      'Splitting HTML into chunks',
-    );
+    logToRenderer(windowService.getMainWindow(), 'Splitting HTML into chunks');
     const chunks: Document[] = [];
     let currentChunk = '';
     let currentTokens = 0;
@@ -351,7 +345,7 @@ export class DocVectorStoreService {
         }),
       );
     }
-    logToRenderer(DocVectorStoreService.mainWindow, 'HTML split into chunks');
+    logToRenderer(windowService.getMainWindow(), 'HTML split into chunks');
     return chunks;
   };
 }

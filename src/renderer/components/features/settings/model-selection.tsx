@@ -19,8 +19,8 @@ import { Button } from '@/renderer/components/ui/button';
 import { useEffect, useState } from 'react';
 import { Model } from '@/types/model-type';
 import { Loader2 } from 'lucide-react';
-import { ollamaService } from '@/renderer/services/ollama.service';
-import { ModelFile } from '@/renderer/services/Modelfile';
+import { ollamaService } from '@/renderer/services/ollama/ollama.service';
+import { ModelFile } from '@/renderer/services/ollama/Modelfile';
 import { Controller, useFormContext } from 'react-hook-form';
 
 type Props = {

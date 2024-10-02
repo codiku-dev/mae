@@ -7,7 +7,7 @@ import { useState, forwardRef } from 'react';
 import {
   useAppStore,
 } from '@/renderer/hooks/use-app-store';
-import { webScraperService } from '@/main/services/web-scapper/web-scrapper-service';
+import { webScraperService } from '@/renderer/services/web-scapper/web-scrapper-service';
 import { v4 as uuidv4 } from 'uuid';
 import { getMentionInListStyle, mentionInInputStyle } from './searchbar-style';
 import { logToMain } from '@/renderer/libs/utils';

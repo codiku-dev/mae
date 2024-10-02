@@ -1,6 +1,6 @@
 import { useRef, useEffect, useState } from "react";
 import { useConversations } from "../../../../hooks/use-conversations";
-import { LLMConversationHistory, LLMMessage } from "@/renderer/services/ollama-type";
+import { LLMConversationHistory, LLMMessage } from "@/renderer/services/ollama/ollama-type";
 import { UserMessage } from "./user-message";
 import { AIMessage } from "./ai-message";
 
