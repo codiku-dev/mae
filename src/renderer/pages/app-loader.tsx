@@ -3,7 +3,7 @@ import { Outlet, useNavigate } from 'react-router-dom';
 import { SplashScreen } from '../components/features/splash-screen';
 import { Toaster } from '../components/ui/toaster';
 import { useAppStore } from '../hooks/use-app-store';
-import { ROUTES } from './routes';
+import { ROUTES } from '../../routes';
 import { DevTool } from '../components/features/dev-tools';
 import { useSettings } from '../hooks/use-settings';
 import { ollamaService } from '@/renderer/services/ollama/ollama.service';

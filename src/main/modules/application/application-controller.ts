@@ -1,6 +1,6 @@
-import { BrowserWindow, ipcMain } from 'electron';
+import { ipcMain } from 'electron';
 import { applicationService } from './application-service';
-import { ROUTES } from '@/renderer/libs/routes';
+import { ROUTES } from '@/routes';
 import { menuService } from '../menu/menu-service';
 import { windowService } from '../window/window.service';
 

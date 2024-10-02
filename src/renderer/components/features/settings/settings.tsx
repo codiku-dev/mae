@@ -10,7 +10,7 @@ import { ModelFile } from '@/renderer/services/ollama/Modelfile';
 import { ollamaService } from '@/renderer/services/ollama/ollama.service';
 import { Loader2, Save, X } from 'lucide-react';
 import { LanguageSelectionSection } from './language-selection-section';
-import { ROUTES } from '../../../libs/routes';
+import { ROUTES } from '../../../../routes';
 import { HistorySection } from './history-section';
 import { StartupSection } from './startup-section';
 import { IndexedWebsiteSection } from './indexed-websites-section';

@@ -1,7 +1,7 @@
-import { app, BrowserWindow, Menu, Tray, nativeImage, ipcMain } from 'electron';
+import { app, Menu, Tray, nativeImage, ipcMain } from 'electron';
 import { getResourcesPath } from '@/libs/utils';
 import { windowService } from '../window/window.service';
-import { ROUTES } from '@/renderer/libs/routes';
+import { ROUTES } from '@/routes';
 
 export class MenuService {
   private static instance: MenuService;

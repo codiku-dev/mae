@@ -2,11 +2,11 @@ import { Route, MemoryRouter as Router, Routes } from 'react-router-dom';
 import 'tailwindcss/tailwind.css';
 import './App.css';
 // import { AppLoader } from './libs/app-loader';
-import { ROUTES } from './libs/routes';
+import { ROUTES } from '../routes';
 // import { HomePage } from './pages/home.page';
 // import { SettingsPage } from './pages/settings.page';
 // import { Sandbox } from './components/features/sandbox';
-import { AppLoader } from './libs/app-loader';
+import { AppLoader } from './pages/app-loader';
 import { HomePage } from './pages/home.page';
 import { SettingsPage } from './pages/settings.page';
 
