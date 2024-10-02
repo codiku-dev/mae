@@ -19,18 +19,6 @@ export async function beforeStart() {
       }),
     });
 
-    const responseEmbed = await fetch('http://localhost:11434/api/embed', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'mxbai-embed-large',
-        input: 'Llamas are members of the camelid family',
-      }),
-    });
-    const json_ = await responseEmbed.json();
-    console.log('responseEmbed', json_);
     await docVectorStoreService.init();
   } catch (error) {
     console.error('Mia: Error preloading model:', error);
