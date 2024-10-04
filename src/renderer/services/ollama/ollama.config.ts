@@ -1,4 +1,4 @@
 export const OllamaConfig = {
-  baseModel: 'llama3.1:8b',
-  model: 'llama3.1:8b-mia',
+  defaultModel: 'llama3.2:1b',
+  customModelSuffix: '-mia',
 };

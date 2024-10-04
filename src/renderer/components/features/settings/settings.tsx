@@ -9,150 +9,167 @@ import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
 import { ModelFile } from '@/renderer/services/ollama/Modelfile';
 import { ollamaService } from '@/renderer/services/ollama/ollama.service';
 import { Loader2, Save, X } from 'lucide-react';
-import { LanguageSelectionSection } from './language-selection-section';
 import { ROUTES } from '../../../../routes';
-import { HistorySection } from './history-section';
-import { StartupSection } from './startup-section';
-import { IndexedWebsiteSection } from './indexed-websites-section';
-import { useSettings } from '../../../hooks/use-settings';
 import { useConversations } from '../../../hooks/use-conversations';
 import { useSearch } from '../../../hooks/use-search';
+import { useSettings } from '../../../hooks/use-settings';
+import { HistorySection } from './history-section';
+import { IndexedWebsiteSection } from './indexed-websites-section';
+import { LanguageSelectionSection } from './language-selection-section';
 import { ModelSelection } from './model-selection';
+import { StartupSection } from './startup-section';
 
 type FormValues = {
-    isAppLaunchedOnStartup: boolean;
-    assistantLanguage: LanguageCode;
-    modelId: string;
+  isAppLaunchedOnStartup: boolean;
+  assistantLanguage: LanguageCode;
+  modelId: string;
 };
 export function Settings() {
-    const { indexedWebsitesContent } = useSearch();
-    const { conversationHistory } = useConversations();
-    const { isAppLaunchedOnStartup, assistantLanguage, setIsAppLaunchedOnStartup, setAssistantLanguage, getCurrentModel, setAvailableModels, availableModels } = useSettings();
-    const currentModel = getCurrentModel()
+  const { indexedWebsitesContent } = useSearch();
+  const { conversationHistory } = useConversations();
+  const {
+    isAppLaunchedOnStartup,
+    assistantLanguage,
+    setIsAppLaunchedOnStartup,
+    setAssistantLanguage,
+    getCurrentModel,
+    setAvailableModels,
+    availableModels,
+  } = useSettings();
+  const currentModel = getCurrentModel();
 
-    const [isLoading, setIsLoading] = useState(false);
-    const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
 
-    const form = useForm<FormValues>({
-        defaultValues: {
-            isAppLaunchedOnStartup,
-            assistantLanguage,
-            modelId: currentModel.id
-        },
-    });
-    const { handleSubmit } = form;
+  const form = useForm<FormValues>({
+    defaultValues: {
+      isAppLaunchedOnStartup,
+      assistantLanguage,
+      modelId: currentModel.id,
+    },
+  });
+  const { handleSubmit } = form;
 
-    useEffect(() => {
-        window.electron.ipcRenderer.sendMessage('request-open-window');
-    }, []);
+  useEffect(() => {
+    window.electron.ipcRenderer.sendMessage('request-open-window');
+  }, []);
 
-    const submit: SubmitHandler<FormValues> = async (data) => {
-        setIsLoading(true);
-        let requireModelUpdate = false
-        const modelFile = new ModelFile()
-        if (data.isAppLaunchedOnStartup !== isAppLaunchedOnStartup) {
-            setIsAppLaunchedOnStartup(data.isAppLaunchedOnStartup);
-            window.electron.ipcRenderer.invoke(
-                'set-app-auto-launch',
-                data.isAppLaunchedOnStartup,
-            );
-        }
-        if (data.assistantLanguage !== assistantLanguage) {
-            setAssistantLanguage(data.assistantLanguage as LanguageCode);
-            modelFile.addRule(
-                `You will answer the user exclusively with the following language: ${LANGUAGES[data.assistantLanguage as LanguageCode].name}. Even if the user is speaking another language than the one you are answering in, you will answer in the language you are speaking in.`,
-            );
-            requireModelUpdate = true
-            try {
-
-
-            } catch (error) {
-                toast({
-                    title: 'Error',
-                    description: 'Failed to set new language',
-                });
-                return;
-            }
-        }
-
-        if (data.modelId !== currentModel.id) {
-            modelFile.setFrom(data.modelId);
-            setAvailableModels(availableModels.map(model => {
-                return { ...model, isActive: model.id === data.modelId }
-            }))
-            requireModelUpdate = true
-            // warmup the mdel
-
-        }
-        if (requireModelUpdate) {
-            console.log("creating model")
-            await ollamaService.createOllamaModelFromModelFile(data.modelId + "-mia", modelFile);
-            console.log("warming up model")
-            await ollamaService.requestLlamaStream(data.modelId, [{ role: "user", content: "Hello" }], "", undefined, undefined, false)
-        }
-
-        setIsLoading(false);
-
+  const submit: SubmitHandler<FormValues> = async (data) => {
+    setIsLoading(true);
+    let requireModelUpdate = false;
+    const modelFile = new ModelFile();
+    if (data.isAppLaunchedOnStartup !== isAppLaunchedOnStartup) {
+      setIsAppLaunchedOnStartup(data.isAppLaunchedOnStartup);
+      window.electron.ipcRenderer.invoke(
+        'set-app-auto-launch',
+        data.isAppLaunchedOnStartup,
+      );
+    }
+    if (data.assistantLanguage !== assistantLanguage) {
+      setAssistantLanguage(data.assistantLanguage as LanguageCode);
+      modelFile.addRule(
+        `You will answer the user exclusively with the following language: ${LANGUAGES[data.assistantLanguage as LanguageCode].name}. Even if the user is speaking another language than the one you are answering in, you will answer in the language you are speaking in.`,
+      );
+      requireModelUpdate = true;
+      try {
+      } catch (error) {
         toast({
-            title: 'Settings saved',
-            description: 'Your changes have been successfully applied.',
+          title: 'Error',
+          description: 'Failed to set new language',
         });
-    };
+        return;
+      }
+    }
 
-    const closeButton = (
-        <Button
-            variant="ghost"
-            type="button"
-            size="icon"
-            className=""
-            onClick={() => {
-                window.electron.ipcRenderer.sendMessage('navigate', ROUTES.home);
-                window.electron.ipcRenderer.sendMessage('request-close-window');
-            }}
-        >
-            <X className="h-6 w-6" />
-        </Button>
-    );
+    if (data.modelId !== currentModel.id) {
+      modelFile.setFrom(data.modelId);
+      setAvailableModels(
+        availableModels.map((model) => {
+          return { ...model, isActive: model.id === data.modelId };
+        }),
+      );
+      requireModelUpdate = true;
+      // warmup the mdel
+    }
+    if (requireModelUpdate) {
+      await ollamaService.createOllamaModelFromModelFile(
+        data.modelId + '-mia',
+        modelFile,
+      );
+      await ollamaService.requestLlamaStream(
+        data.modelId,
+        [{ role: 'user', content: 'Hello' }],
+        '',
+        undefined,
+        undefined,
+        false,
+      );
+    }
 
-    return (
-        <FormProvider {...form}>
-            <form
-                className=" p-4 space-y-6 relative bg-white/80"
-                onSubmit={handleSubmit(submit)}
-            >
-                <div className="sticky top-0 flex w-full justify-between items-center">
-                    <h1 className="text-2xl font-bold">MIA Settings</h1>
-                    {closeButton}
-                </div>
+    setIsLoading(false);
 
-                <div className="h-[703px] overflow-y-auto flex flex-col gap-4">
-                    <ModelSelection name="modelId" />
+    toast({
+      title: 'Settings saved',
+      description: 'Your changes have been successfully applied.',
+    });
+  };
 
-                    <LanguageSelectionSection name="assistantLanguage" />
+  const closeButton = (
+    <Button
+      variant="ghost"
+      type="button"
+      size="icon"
+      className=""
+      onClick={() => {
+        window.electron.ipcRenderer.sendMessage('navigate', ROUTES.home);
+        window.electron.ipcRenderer.sendMessage('request-close-window');
+      }}
+    >
+      <X className="h-6 w-6" />
+    </Button>
+  );
 
-                    <StartupSection name="isAppLaunchedOnStartup" />
+  return (
+    <FormProvider {...form}>
+      <form
+        className=" p-4 space-y-6 relative bg-white/80"
+        onSubmit={handleSubmit(submit)}
+      >
+        <div className="sticky top-0 flex w-full justify-between items-center">
+          <h1 className="text-2xl font-bold">MIA Settings</h1>
+          {closeButton}
+        </div>
 
-                    {conversationHistory.length > 0 && <HistorySection />}
+        <div className="h-[703px] overflow-y-auto flex flex-col gap-4">
+          <ModelSelection name="modelId" />
 
-                    {indexedWebsitesContent.length > 0 && (
-                        <IndexedWebsiteSection />
-                    )}
+          <LanguageSelectionSection name="assistantLanguage" />
 
-                    <Button type="submit" className='shadow-md fixed bottom-8 right-8 ' disabled={isLoading}>
-                        {!isLoading ? (
-                            <div className='flex items-center gap-2'>
-                                <span>Apply</span>
-                                <Save size={16} />
-                            </div>
-                        ) : (
-                            <>
-                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                Applying...
-                            </>
-                        )}
-                    </Button>
-                </div>
-            </form>
-        </FormProvider>
-    );
+          <StartupSection name="isAppLaunchedOnStartup" />
+
+          {conversationHistory.length > 0 && <HistorySection />}
+
+          {indexedWebsitesContent.length > 0 && <IndexedWebsiteSection />}
+
+          <Button
+            type="submit"
+            className="shadow-md fixed bottom-8 right-8 "
+            disabled={isLoading}
+          >
+            {!isLoading ? (
+              <div className="flex items-center gap-2">
+                <span>Apply</span>
+                <Save size={16} />
+              </div>
+            ) : (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Applying...
+              </>
+            )}
+          </Button>
+        </div>
+      </form>
+    </FormProvider>
+  );
 }

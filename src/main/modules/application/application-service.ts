@@ -1,7 +1,7 @@
+import { useSettings } from '@/renderer/hooks/use-settings';
+import { beforeStart } from '@/scripts/before-start';
 import { app, BrowserWindow, shell } from 'electron';
 import { username } from 'username';
-import { beforeStart } from '@/scripts/before-start';
-import { useSettings } from '@/renderer/hooks/use-settings';
 var AutoLaunch = require('auto-launch');
 
 export class ApplicationService {
@@ -19,7 +19,6 @@ export class ApplicationService {
 
   public async runBeforeStart(): Promise<void> {
     await beforeStart();
-    console.log('Mia: finished pre start actions');
   }
 
   public async getUserInfo(): Promise<string> {
@@ -36,10 +35,8 @@ export class ApplicationService {
       path: '/Applications/Mia.app',
     });
     if (useSettings.getState().isAppLaunchedOnStartup) {
-      console.log('Mia: enabling auto launch');
       miaAutoLauncher.enable();
     } else {
-      console.log('Mia: disabling auto launch');
       miaAutoLauncher.disable();
     }
   }

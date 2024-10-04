@@ -1,8 +1,8 @@
-import { ipcMain } from 'electron';
-import { applicationService } from './application-service';
 import { ROUTES } from '@/routes';
+import { ipcMain } from 'electron';
 import { menuService } from '../menu/menu-service';
 import { windowService } from '../window/window.service';
+import { applicationService } from './application-service';
 
 export class ApplicationController {
   constructor() {

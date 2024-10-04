@@ -1,7 +1,7 @@
-import { create } from 'zustand';
-import { devtools, persist, subscribeWithSelector } from 'zustand/middleware';
 import { LanguageCode, LANGUAGES } from '@/libs/languages';
 import { Model } from '@/types/model-type';
+import { create } from 'zustand';
+import { devtools, persist, subscribeWithSelector } from 'zustand/middleware';
 const KEYS_TO_NOT_STORE: string[] = [];
 
 type SettingsStore = {
@@ -27,16 +27,16 @@ const INITIAL_STATE = {
       id: 'llama3.1:8b',
       name: 'llama3.1:8b',
       label: 'llama3.1 (8B)',
-      isActive: true,
-      isInstalled: true,
+      isActive: false,
+      isInstalled: false,
       size: '4.7GB',
     },
     {
       id: 'llama3.2:1b',
       name: 'llama3.2:1b',
       label: 'llama3.2 (1B)',
-      isActive: false,
-      isInstalled: false,
+      isActive: true,
+      isInstalled: true,
       size: '1.3GB',
     },
     {

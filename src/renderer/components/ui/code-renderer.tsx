@@ -64,7 +64,6 @@ export const CodeRenderer: LLMOutputComponent = (p: { blockMatch: any }) => {
   };
 
   if (!html) {
-
     // fallback to <pre> if Shiki is not loaded yet
     return (
       <pre className="shiki">
@@ -74,45 +73,43 @@ export const CodeRenderer: LLMOutputComponent = (p: { blockMatch: any }) => {
   }
 
   return (
-    getLanguage() && (
-      <div className="relative my-2">
-        <style>{`
+    <div className="relative my-2">
+      <style>{`
               pre {
                 padding: 15px;
                 border-radius: 0px 0px 10px 10px;
                 overflow-x: auto;
               }
             `}</style>
-        <div className="text-sm bg-black/90 py-2 pl-4 text-gray-300 rounded-t-lg flex justify-between  ">
-          {getLanguage()}
-          <TooltipProvider delayDuration={0}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  type="button"
-                  className="h-6 bg-transparent hover:bg-transparent rounded-sm  text-white"
-                  onClick={handleCopyContent}
-                >
-                  {hasCopiedRecently ? (
-                    <span className="flex items-center gap-2">
-                      <ClipboardCheck size={16} /> Code copied
-                    </span>
-                  ) : (
-                    <span className="flex items-center gap-2">
-                      <Clipboard size={16} />
-                      Copy code
-                    </span>
-                  )}
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom" className="bg-black text-white">
-                <p>Copy code</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
-        {parseHtml(html)}
+      <div className="text-sm bg-black/90 py-2 pl-4 text-gray-300 rounded-t-lg flex justify-between  ">
+        {getLanguage()}
+        <TooltipProvider delayDuration={0}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                type="button"
+                className="h-6 bg-transparent hover:bg-transparent rounded-sm  text-white"
+                onClick={handleCopyContent}
+              >
+                {hasCopiedRecently ? (
+                  <span className="flex items-center gap-2">
+                    <ClipboardCheck size={16} /> Code copied
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-2">
+                    <Clipboard size={16} />
+                    Copy code
+                  </span>
+                )}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" className="bg-black text-white">
+              <p>Copy code</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
-    )
+      {parseHtml(html)}
+    </div>
   );
 };

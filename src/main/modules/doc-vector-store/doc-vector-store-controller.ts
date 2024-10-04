@@ -1,8 +1,8 @@
-import { BrowserWindow, ipcMain } from 'electron';
-import { WebsiteScrapedContent } from '@/renderer/hooks/use-search';
-import { docVectorStoreService } from './doc-vector-store-service';
 import { logToRenderer } from '@/libs/utils';
+import { WebsiteScrapedContent } from '@/renderer/hooks/use-search';
+import { ipcMain } from 'electron';
 import { windowService } from '../window/window.service';
+import { docVectorStoreService } from './doc-vector-store-service';
 
 export class DocVectorStoreController {
   constructor() {
@@ -43,7 +43,6 @@ export class DocVectorStoreController {
     });
 
     ipcMain.handle('find-vector-doc', async (event, question: string) => {
-      console.log('Start doc search');
       const relevantDocuments = await docVectorStoreService.searchDocs(
         question,
         3,
@@ -56,7 +55,6 @@ export class DocVectorStoreController {
     ipcMain.handle(
       'add-doc-in-memory',
       async (event, websites: WebsiteScrapedContent[]) => {
-        console.log('add-doc-in-memory');
         await docVectorStoreService.addDocInMemory(websites);
       },
     );
@@ -73,7 +71,6 @@ export class DocVectorStoreController {
     });
 
     ipcMain.handle('delete-all-doc-in-memory', async (event) => {
-      console.log('delete-all-doc-in-memory');
       await docVectorStoreService.deleteAllDocsInMemory();
       return 'ok';
     });

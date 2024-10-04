@@ -1,11 +1,9 @@
-import { OllamaConfig } from '@/renderer/services/ollama/ollama.config';
-import { ollamaService } from '@/main/modules/ollama/ollama.service';
 import { docVectorStoreService } from '@/main/modules/doc-vector-store/doc-vector-store-service';
+import { ollamaService } from '@/main/modules/ollama/ollama.service';
+import { OllamaConfig } from '@/renderer/services/ollama/ollama.config';
 
 export async function beforeStart() {
-  console.log('[Before start script starting...]');
   await ollamaService.restart();
-  console.log('Mia: Preloading model');
   try {
     await fetch('http://localhost:11434/api/chat', {
       method: 'POST',
@@ -13,7 +11,7 @@ export async function beforeStart() {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: OllamaConfig.model,
+        model: OllamaConfig.defaultModel + OllamaConfig.customModelSuffix,
         prompt: 'Hello',
         stream: false,
       }),
@@ -23,6 +21,4 @@ export async function beforeStart() {
   } catch (error) {
     console.error('Mia: Error preloading model:', error);
   }
-  console.log('Mia: Preloading model done.');
-  console.log('Mia: [Before start scripts executed successfully.]');
 }

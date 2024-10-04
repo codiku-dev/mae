@@ -1,11 +1,11 @@
-import { app, BrowserWindow, shell, screen } from 'electron';
+import { app, BrowserWindow, ipcMain, screen, shell } from 'electron';
 import log from 'electron-log';
 import { autoUpdater } from 'electron-updater';
+import path from 'path';
 import { resolveHtmlPath } from '../libs/utils';
 import { beforeStop } from '../scripts/before-stop';
-import path from 'path';
+import { mainController } from './modules/main-controller';
 import { windowService } from './modules/window/window.service';
-import { MainController } from './modules/main-controller';
 
 class AppUpdater {
   constructor() {
@@ -75,8 +75,8 @@ app.on('window-all-closed', () => {
 
 app.on('before-quit', async () => {
   // if (process.env.NODE_ENV === 'production') {
-
   await beforeStop();
+  ipcMain.removeAllListeners();
   // }
 });
 
@@ -85,7 +85,6 @@ app
   .then(() => {
     let mainWindow = initWindow();
     windowService.setMainWindow(mainWindow);
-    new MainController();
 
     mainWindow.loadURL(resolveHtmlPath('index.html'));
     // Open urls in the user's browser
@@ -103,6 +102,8 @@ app
         windowService.setMainWindow(mainWindow);
       }
     });
+    app.on('before-quit', () => {});
+
     // Remove this if your app does not use auto updates
     // eslint-disable-next-line
     new AppUpdater();
@@ -113,6 +114,7 @@ app
         if (global.DEBUG) {
           windowService.getMainWindow().webContents.openDevTools();
         }
+        mainController.init();
       }
     });
     windowService.getMainWindow().on('closed', () => {

@@ -1,14 +1,18 @@
+import { ApplicationController } from './application/application-controller';
 import { DocVectorStoreController } from './doc-vector-store/doc-vector-store-controller';
 import { HttpController } from './http/http-controller';
-import { OllamaController } from './ollama/ollama-controller';
-import { WindowController } from './window/window-controller';
-import { ShortcutController } from './shortcuts/shortcut-controller';
 import { MenuController } from './menu/menu-controller';
+import { OllamaController } from './ollama/ollama-controller';
 import { SearchbarController } from './searchbar/searchbar-controller';
-import { ApplicationController } from './application/application-controller';
+import { ShortcutController } from './shortcuts/shortcut-controller';
+import { WindowController } from './window/window-controller';
 
-export class MainController {
-  constructor() {
+class MainController {
+  private static instance: MainController | null = null;
+
+  private constructor() {}
+
+  public init() {
     new WindowController();
     new ApplicationController();
     new MenuController();
@@ -17,5 +21,15 @@ export class MainController {
     new SearchbarController();
     new ShortcutController();
     new OllamaController();
+    console.log('INIT CONTROLLERS DONE');
+  }
+
+  public static getInstance(): MainController {
+    if (!MainController.instance) {
+      MainController.instance = new MainController();
+    }
+    return MainController.instance;
   }
 }
+
+export const mainController = MainController.getInstance();
