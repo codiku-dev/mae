@@ -50,20 +50,10 @@ export const AppLoader = () => {
 
   useEffect(() => {
     loadIsDebug();
-    logToMain('Mia: request-before-start');
-    window.electron.ipcRenderer.sendMessage('request-before-start');
-    const unsubscribeBeforeStartReply = window.electron.ipcRenderer.on(
-      'before-start-reply',
-      () => {
-        loadInstalledModels();
-        setIsAppLoading(false);
-        window.electron.ipcRenderer.sendMessage('navigate', ROUTES.home);
-        loadIsDebug();
-      },
-    );
-    return () => {
-      unsubscribeBeforeStartReply();
-    };
+    loadInstalledModels();
+    setIsAppLoading(false);
+    window.electron.ipcRenderer.sendMessage('navigate', ROUTES.home);
+    loadIsDebug();
   }, []);
 
   useEffect(() => {

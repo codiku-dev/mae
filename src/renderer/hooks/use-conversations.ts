@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import {
   LLMConversationHistory,
   LLMMessage,
-} from '@/renderer/services/ollama-type';
+} from '@/renderer/services/ollama/ollama-type';
 const KEYS_TO_NOT_STORE: string[] = [];
 
 type ConversationStore = {
@@ -22,6 +22,7 @@ type ConversationStore = {
   clearAllHistory: () => void;
   setCurrentConversationTitle: (title: string) => void;
   setCurrentConversationIndex: (index: number) => void;
+  deleteConversation: (conversationId: string) => void;
   clear: () => void;
 };
 
@@ -111,6 +112,13 @@ const useConversations = create(
         },
         setCurrentConversationIndex: (index: number) => {
           set({ currentConversationIndex: index });
+        },
+        deleteConversation: (conversationId: string) => {
+          const { conversationHistory } = get();
+          const newConversationHistory = conversationHistory.filter(
+            (conversation) => conversation.id !== conversationId,
+          );
+          set({ conversationHistory: newConversationHistory });
         },
       })),
       {

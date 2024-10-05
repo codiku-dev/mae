@@ -1,17 +1,10 @@
 import { ROUTES } from '@/routes';
-import { ipcMain } from 'electron';
-import { menuService } from '../menu/menu-service';
+import { clipboard, ipcMain } from 'electron';
 import { windowService } from '../window/window.service';
 import { applicationService } from './application-service';
 
 export class ApplicationController {
   constructor() {
-    ipcMain.on('request-before-start', async () => {
-      await applicationService.runBeforeStart();
-      menuService.initMenu();
-      windowService.getMainWindow().webContents.send('before-start-reply');
-    });
-
     ipcMain.on('user-info-request', async () => {
       const user = await applicationService.getUserInfo();
       windowService.getMainWindow().webContents.send('user-info-reply', user);
@@ -43,6 +36,10 @@ export class ApplicationController {
 
     ipcMain.handle('is-app-packaged', () => {
       return applicationService.isAppPackaged();
+    });
+
+    ipcMain.on('copy-text-to-clipboard-request', (event, text) => {
+      clipboard.writeText(text);
     });
   }
 }

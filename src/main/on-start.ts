@@ -1,4 +1,4 @@
-import { ipcMain } from 'electron';
+import { app, ipcMain } from 'electron';
 import { ApplicationController } from './modules/application/application-controller';
 import { DocVectorStoreController } from './modules/doc-vector-store/doc-vector-store-controller';
 import { HttpController } from './modules/http/http-controller';
@@ -19,7 +19,7 @@ export class OnStart {
     this.init();
   }
 
-  public init() {
+  public async init() {
     new WindowController();
     new ApplicationController();
     new MenuController();
@@ -29,17 +29,15 @@ export class OnStart {
     new ShortcutController();
     new OllamaController();
 
-    ipcMain.on('request-before-start', async () => {
-      await ollamaService.restart();
-      try {
-        await ollamaService.preloadDefaultModel();
-        await docVectorStoreService.init();
-      } catch (error) {
-        console.log("'request-before-start error", error);
-      }
-      menuService.initMenu();
-      windowService.getMainWindow().webContents.send('before-start-reply');
-    });
+    await ollamaService.restart();
+    try {
+      await ollamaService.preloadDefaultModel();
+      await docVectorStoreService.init();
+    } catch (error) {
+      console.log("'request-before-start error", error);
+    }
+    menuService.initMenu();
+    windowService.getMainWindow().webContents.send('before-start-reply');
   }
 
   public static getInstance(): OnStart {

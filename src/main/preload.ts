@@ -13,7 +13,6 @@ export type Channels =
   | 'user-info-request'
   | 'user-info-reply'
   | 'request-open-external-link'
-  | 'request-before-start'
   | 'before-start-reply'
   | 'navigate'
   | 'on-searchbar-visibilty-change'
