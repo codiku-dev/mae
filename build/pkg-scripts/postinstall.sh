@@ -1,10 +1,14 @@
 #!/bin/sh
 
+########### MAC INSTALLATION ONLY FOR NOW ###########
+
+
+
 # Determine the directory of the script
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 # Create the log file in /tmp with correct permissions
-LOG_FILE="/tmp/ollama-install.log"
+LOG_FILE="/tmp/ollama-install-mac.log"
 touch "$LOG_FILE"
 chmod 666 "$LOG_FILE"
 
@@ -25,9 +29,9 @@ EOF
 # Run the AppleScript to display the log in the background
 osascript "$APPLESCRIPT_FILE" &
 
-echo "Starting ollama-install.sh at $(date)" >> "$LOG_FILE"
+echo "Starting ollama-install-mac.sh at $(date)" >> "$LOG_FILE"
 # Run the installation script and log its output
-"$SCRIPT_DIR/ollama-install.sh" >> "$LOG_FILE" 2>&1
+"$SCRIPT_DIR/ollama-install-mac.sh" >> "$LOG_FILE" 2>&1
 
 # Clean up
 rm "$APPLESCRIPT_FILE"
