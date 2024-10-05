@@ -1,5 +1,4 @@
 import { useSettings } from '@/renderer/hooks/use-settings';
-import { beforeStart } from '@/scripts/before-start';
 import { app, BrowserWindow, shell } from 'electron';
 import { username } from 'username';
 var AutoLaunch = require('auto-launch');
@@ -15,10 +14,6 @@ export class ApplicationService {
       ApplicationService.instance = new ApplicationService();
     }
     return ApplicationService.instance;
-  }
-
-  public async runBeforeStart(): Promise<void> {
-    await beforeStart();
   }
 
   public async getUserInfo(): Promise<string> {

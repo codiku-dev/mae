@@ -3,9 +3,9 @@ import log from 'electron-log';
 import { autoUpdater } from 'electron-updater';
 import path from 'path';
 import { resolveHtmlPath } from '../libs/utils';
-import { beforeStop } from '../scripts/before-stop';
-import { mainController } from './modules/main-controller';
 import { windowService } from './modules/window/window.service';
+import { onStop } from './on-stop';
+import { OnStart } from './on-start';
 
 class AppUpdater {
   constructor() {
@@ -75,8 +75,7 @@ app.on('window-all-closed', () => {
 
 app.on('before-quit', async () => {
   // if (process.env.NODE_ENV === 'production') {
-  await beforeStop();
-  ipcMain.removeAllListeners();
+  await onStop();
   // }
 });
 
@@ -102,7 +101,6 @@ app
         windowService.setMainWindow(mainWindow);
       }
     });
-    app.on('before-quit', () => {});
 
     // Remove this if your app does not use auto updates
     // eslint-disable-next-line
@@ -114,7 +112,7 @@ app
         if (global.DEBUG) {
           windowService.getMainWindow().webContents.openDevTools();
         }
-        mainController.init();
+        OnStart.getInstance();
       }
     });
     windowService.getMainWindow().on('closed', () => {

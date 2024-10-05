@@ -2,6 +2,7 @@ import { exec } from 'child_process';
 import { promises as fsPromises } from 'fs';
 import { promisify } from 'util';
 import { sleep } from '../../../libs/utils';
+import { OllamaConfig } from '@/renderer/services/ollama/ollama.config';
 
 const execAsync = promisify(exec);
 
@@ -100,6 +101,20 @@ export class OllamaService {
   public async restart() {
     await this.stop();
     await this.start();
+  }
+
+  public async preloadDefaultModel() {
+    await fetch('http://localhost:11434/api/chat', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: OllamaConfig.defaultModel + OllamaConfig.customModelSuffix,
+        prompt: 'Hello',
+        stream: false,
+      }),
+    });
   }
 }
 
