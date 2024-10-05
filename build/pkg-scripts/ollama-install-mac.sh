@@ -129,6 +129,36 @@ installOllama() {
     echo "Mia: Failed to build custom model llama3.2:1b-mia."
   fi
   stopOllama
+
+
+
+
+
+
+
+
+
+  echo ""
+  echo ""
+  echo ""
+  echo ""
+  echo ""
+  echo ""
+  echo ""
+  echo ""
+  echo ""
+  echo "" 
+  echo ""
+  echo ""
+  echo ""
+  echo ""
+  echo ""
+  echo ""
+  echo ""
+  echo ""
+  echo ""
+  
+
   echo "Installation complete, you can close this window now"
   exit 0
 }
