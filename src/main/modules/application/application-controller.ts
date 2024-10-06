@@ -5,9 +5,9 @@ import { applicationService } from './application-service';
 
 export class ApplicationController {
   constructor() {
-    ipcMain.on('user-info-request', async () => {
+    ipcMain.handle('user-info-request', async () => {
       const user = await applicationService.getUserInfo();
-      windowService.getMainWindow().webContents.send('user-info-reply', user);
+      return user;
     });
 
     ipcMain.on('log', (event, args) => {

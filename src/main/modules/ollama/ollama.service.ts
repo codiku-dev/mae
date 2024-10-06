@@ -3,6 +3,9 @@ import { promises as fsPromises } from 'fs';
 import { promisify } from 'util';
 import { sleep } from '../../../libs/utils';
 import { OllamaConfig } from '@/renderer/services/ollama/ollama.config';
+import path from 'path';
+import { logToMain } from '@/renderer/libs/utils';
+import { spawn } from 'child_process';
 
 const execAsync = promisify(exec);
 
@@ -20,6 +23,48 @@ export class OllamaService {
       OllamaService.instance = new OllamaService();
     }
     return OllamaService.instance;
+  }
+
+  public async install(): Promise<boolean> {
+    console.log('BEGINING OF INSTALL FUNCTION');
+    return new Promise((resolve, reject) => {
+      const scriptPath = path.join(
+        __dirname,
+        '..',
+        '..',
+        'build',
+        'pkg-scripts',
+        'postinstall.sh',
+      );
+
+      console.log('SPANWN');
+      const child = spawn('sh', [scriptPath], {
+        stdio: ['ignore', 'pipe', 'pipe'],
+      });
+
+      child.stdout.on('data', (data) => {
+        console.log('Ollama installation output:', data.toString());
+      });
+
+      child.stderr.on('data', (data) => {
+        console.error('Command error output:', data.toString());
+      });
+
+      child.on('close', (code) => {
+        if (code === 0) {
+          console.log('Ollama installation completed successfully.');
+          resolve(true);
+        } else {
+          console.error(`Ollama installation failed with code ${code}`);
+          reject(new Error(`Installation failed with code ${code}`));
+        }
+      });
+
+      child.on('exit', () => {
+        console.log('Ollama installation completed successfully. EXITING');
+        resolve(true);
+      });
+    });
   }
 
   public async pullModel(modelName: string) {
@@ -51,7 +96,7 @@ export class OllamaService {
     if (!isRunning) {
       const ollamaProcess = exec(`${BASE_LOCAL_BIN_PATH}/ollama serve`);
       while (!isRunning) {
-        await sleep(1000);
+        await sleep(500);
         isRunning = await this.isRunning();
       }
       if (isRunning) {

@@ -37,7 +37,7 @@ function initWindow(): BrowserWindow {
     // transparent: true,
     movable: global.DEBUG,
     hasShadow: false,
-    show: false,
+    show: true,
     // visualEffectState: 'inactive',
     resizable: global.DEBUG,
     // focusable: true,
@@ -84,7 +84,7 @@ app
   .then(() => {
     let mainWindow = initWindow();
     windowService.setMainWindow(mainWindow);
-
+    OnStart.getInstance();
     mainWindow.loadURL(resolveHtmlPath('index.html'));
     // Open urls in the user's browser
     mainWindow.webContents.setWindowOpenHandler((edata) => {
@@ -112,7 +112,6 @@ app
         if (global.DEBUG) {
           windowService.getMainWindow().webContents.openDevTools();
         }
-        OnStart.getInstance();
       }
     });
     windowService.getMainWindow().on('closed', () => {

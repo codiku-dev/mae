@@ -241,12 +241,20 @@
     "mac": {
       "sign": ".erb/scripts/notarize.js",
       "notarize": false,
-      "target": {
-        "target": "pkg",
-        "arch": [
-          "universal"
-        ]
-      },
+      "target": [
+        {
+          "target": "pkg",
+          "arch": [
+            "universal"
+          ]
+        },
+        {
+          "target": "dmg",
+          "arch": [
+            "universal"
+          ]
+        }
+      ],
       "type": "distribution",
       "hardenedRuntime": true,
       "entitlements": "assets/entitlements.mac.plist",

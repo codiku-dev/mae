@@ -1,11 +1,10 @@
-#!/bin/sh
 
-# Get the directory of the current script
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # Load utils and commands
-. "$SCRIPT_DIR/utils.sh"
-. "$SCRIPT_DIR/ollama-commands.sh"
+. "$CURRENT_DIR/utils.sh"
+. "$CURRENT_DIR/ollama-commands.sh"
 
 # Function to check if OLLama is installed
 checkForOLLama() {
@@ -110,14 +109,23 @@ EOF
 
 # Main installation function
 installOllama() {
+  echo "Checking for Ollama"
   checkForOLLama
   if [ $? -eq 1 ]; then
+    echo "Downloading and installing Ollama"
     downloadAndInstallOLLamaMacVersion
+  else
+    echo "Ollama is already installed"
   fi
+  
+  echo
   setRightsForModelFolder
   createSymlink
+  echo "Starting Ollama"
   startOllama
+  echo "Ollama started"
   
+  echo "Pulling model"
   if pullOllamaModel "llama3.2:1b"; then
     createOllamaModelFromModelFile "llama3.2:1b-mia" "$SCRIPT_DIR/initial-modelfile-llama3.2:1b"
     if pullOllamaModel "mxbai-embed-large:latest"; then
@@ -128,7 +136,9 @@ installOllama() {
     fi
     fi
   fi
-  stopOllama
+  echo "Models pulled and built"
+  
+  # stopOllama
   # Print 20 empty lines using a loop
   for i in $(seq 1 20); do
     echo ""

@@ -11,7 +11,6 @@ export type Channels =
   | 'copy-text-to-clipboard-request'
   | 'log-renderer'
   | 'user-info-request'
-  | 'user-info-reply'
   | 'request-open-external-link'
   | 'before-start-reply'
   | 'navigate'
@@ -27,7 +26,9 @@ export type Channels =
   | 'delete-vector-doc'
   | 'delete-all-langchain-doc'
   | 'is-app-packaged'
-  | 'pull-ollama-model';
+  | 'pull-ollama-model'
+  | 'install-ollama'
+  | 'check-ollama-installed';
 
 const electronHandler = {
   ipcRenderer: {

@@ -8,9 +8,8 @@ import { Toaster } from '../components/ui/toaster';
 import { TooltipProvider } from '../components/ui/tooltip';
 import { useAppStore } from '../hooks/use-app-store';
 import { useSettings } from '../hooks/use-settings';
-import { logToMain } from '../libs/utils';
-
-// TODO: Add a global listener to handle the navigate event
+import { InstallOllamaDialog } from '../components/features/installation/install-ollama-dialog';
+import { toast } from '../hooks/use-toast';
 
 export const AppLoader = () => {
   const navigate = useNavigate();
@@ -20,41 +19,70 @@ export const AppLoader = () => {
   const { isAppLaunchedOnStartup, setAvailableModels, availableModels } =
     useSettings();
 
+  const [isOllamaInstalled, setIsOllamaInstalled] = useState<boolean | null>(null);
+
   useEffect(() => {
-    window.electron.ipcRenderer.sendMessage('user-info-request');
-    window.electron.ipcRenderer.on('user-info-reply', (username) => {
-      setUserName(username);
-    });
+    beginInstallation()
   }, []);
 
-  const loadIsDebug = async () => {
-    const isPackaged =
-      await window.electron.ipcRenderer.invoke('is-app-packaged');
-    setIsDebug(!isPackaged);
-  };
+  const beginInstallation = async () => {
+    await loadUserInfo();
+    await loadIsDebug();
 
-  function loadInstalledModels() {
-    ollamaService.listOllamaInstalledModels().then((ollamaInstalledModels) => {
-      const installedModelsIds = ollamaInstalledModels.map(
-        (model) => model.model,
-      );
-      const newAvailableModels = availableModels.map((model) => {
-        return {
-          ...model,
-          isInstalled: installedModelsIds.includes(model.id),
-        };
-      });
-      setAvailableModels(newAvailableModels);
-    });
+    await checkOllamaInstallation()
   }
 
-  useEffect(() => {
-    loadIsDebug();
-    loadInstalledModels();
-    setIsAppLoading(false);
+  async function loadUserInfo() {
+    const userName = await window.electron.ipcRenderer.invoke('user-info-request');
+    setUserName(userName);
+  }
+
+  async function loadIsDebug() {
+    const isPackaged = await window.electron.ipcRenderer.invoke('is-app-packaged');
+    setIsDebug(!isPackaged);
+  }
+
+
+  const checkOllamaInstallation = async () => {
+    try {
+      const installed = await window.electron.ipcRenderer.invoke('check-ollama-installed');
+      setIsAppLoading(false)
+      if (!installed) {
+        setIsOllamaInstalled(false);
+      } else {
+        setIsOllamaInstalled(true);
+        await finishInstallation()
+      }
+    } catch (error) {
+      console.error('Error checking Ollama installation:', error);
+      toast({
+        title: "Ollama verification error",
+        description: "Unable to verify Ollama installation. Please try again.",
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const finishInstallation = async () => {
+    setIsOllamaInstalled(true);
+    await loadInstalledModels();
     window.electron.ipcRenderer.sendMessage('navigate', ROUTES.home);
-    loadIsDebug();
-  }, []);
+  };
+
+
+  async function loadInstalledModels() {
+    const ollamaInstalledModels = await ollamaService.listOllamaInstalledModels();
+    const installedModelsIds = ollamaInstalledModels.map(
+      (model) => model.model,
+    );
+    const newAvailableModels = availableModels.map((model) => {
+      return {
+        ...model,
+        isInstalled: installedModelsIds.includes(model.id),
+      };
+    });
+    setAvailableModels(newAvailableModels);
+  }
 
   useEffect(() => {
     const unsubscribe = window.electron.ipcRenderer.on(
@@ -69,9 +97,10 @@ export const AppLoader = () => {
     };
   }, [navigate]);
 
-  if (isAppLoading) {
+  if (isAppLoading || isOllamaInstalled === null) {
     return isAppLaunchedOnStartup || isDebug ? null : <SplashScreen />;
   }
+
   return (
     <>
       {isDebug && <DevTool />}
@@ -79,6 +108,7 @@ export const AppLoader = () => {
       <TooltipProvider delayDuration={100}>
         <Outlet />
       </TooltipProvider>
+      {!isOllamaInstalled && <InstallOllamaDialog onInstallationComplete={finishInstallation} />}
     </>
   );
 };
