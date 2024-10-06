@@ -14,29 +14,20 @@ npm install
 
 To start the application, run:
 
-````bash
-npm start
-```for the project.
-
-## Starting the Application
-
-To start the Maé application, use the following command:
+### First time only
 
 ```bash
-npm start
-````
-
-This will launch the Electron app on your local machine.
-
-## Development
-
-For development purposes, you can use:
-
-```bash
-npm run dev
+# To install ollama and the default models (that is the code run by the installer)
+npm run installation
 ```
 
-This will start the app in development mode with hot-reloading enabled.
+### Starting the application
+
+```bash
+npm start
+```
+
+This will launch the Electron app on your local machine.
 
 ## Packaging and Installer
 
