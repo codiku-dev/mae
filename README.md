@@ -1,4 +1,4 @@
-# Maé
+# Mia
 
 Maé is an Electron-based project.
 
@@ -29,7 +29,7 @@ npm start
 
 This will launch the Electron app on your local machine.
 
-## Packaging and Installer
+## Packaging and Installer (mac only for now)
 
 To package the application, run:
 
@@ -37,7 +37,7 @@ To package the application, run:
 npm run package
 ```
 
-Will build a pkg installer you will find in release/build/Mia-<version>.pkg
+Will build a pkg installer you will find in release/build/Mia-<version>-universal.pkg
 
 The installation script is build/pkg-scripts/postinstall.sh.
 

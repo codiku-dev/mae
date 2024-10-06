@@ -4,20 +4,23 @@ import path from 'path';
 
 // Read package.json to get the file name
 const packageJsonRoot = JSON.parse(
-  readFileSync(path.join(__dirname, '../../package.json'), 'utf8'),
+  readFileSync(path.join(__dirname, '../../../package.json'), 'utf8'),
 );
 
 const packageJsonRelease = JSON.parse(
-  readFileSync(path.join(__dirname, '../../release/app/package.json'), 'utf8'),
+  readFileSync(
+    path.join(__dirname, '../../../release/app/package.json'),
+    'utf8',
+  ),
 );
 
 const fileName = `${packageJsonRoot.build.productName}-${packageJsonRelease.version}-universal.pkg`;
 
-function publishToDesktop() {
+function copyPkgToDesktop() {
   //copy pkg to desktop
   execSync(
-    `mv ${path.join(__dirname, `../../release/build/${fileName}`)} ${path.join(__dirname, '../../../../../Desktop/')}`,
+    `cp ${path.join(__dirname, `../../../release/build/${fileName}`)} ${path.join(__dirname, '../../../../../../Desktop/')}`,
   );
 }
 
-publishToDesktop();
+copyPkgToDesktop();
