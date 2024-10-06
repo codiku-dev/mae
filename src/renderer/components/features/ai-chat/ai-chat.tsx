@@ -9,7 +9,6 @@ import { useEffect, useRef, useState } from 'react';
 import { Conversation } from './conversation/conversation';
 import { SUGGESTION_OPTIONS_ID, Searchbar } from './searchbar/searchbar';
 import { Toolbar } from './toolbar/toolbar';
-import { text } from 'stream/consumers';
 
 export function AiChat() {
   const [streamedResponse, setStreamedResponse] = useState<string>('');
