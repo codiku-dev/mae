@@ -1,27 +1,47 @@
 #!/bin/sh
 
 ########### MAC INSTALLATION ONLY FOR NOW ###########
+# Get the directory of the current script
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Load utils and commands
+. "$SCRIPT_DIR/../../src/scripts/installation/ollama-install-mac.sh"
 
 
-
-# Determine the directory of the script
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 # Create the log file in /tmp with correct permissions
 LOG_FILE="/tmp/ollama-install-mac.log"
+
 touch "$LOG_FILE"
 chmod 666 "$LOG_FILE"
 
-echo "Starting installation process at $(date)" >> "$LOG_FILE"
+echo "Starting installation process at $(date)" > "$LOG_FILE"
 
-# Create a temporary AppleScript file to open Terminal and display the log
+# Create a temporary shell script to run in Terminal
+TEMP_SHELL_SCRIPT="/tmp/ollama_install_log.sh"
+
+cat << EOF > "$TEMP_SHELL_SCRIPT"
+#!/bin/bash
+tail -f "$LOG_FILE" &
+TAIL_PID=\$!
+while ! grep -q 'Installation complete' "$LOG_FILE"; do
+    sleep 1
+done
+kill \$TAIL_PID
+echo "Installation complete. This window will close in 3 seconds..."
+sleep 3
+osascript -e 'tell application "Terminal" to close (every window whose name contains "ollama_install_log.sh")' &
+exit
+EOF
+
+chmod +x "$TEMP_SHELL_SCRIPT"
+
+# Create a temporary AppleScript file to open Terminal and run the shell script
 APPLESCRIPT_FILE="/tmp/ollama_display_log.scpt"
+
 cat << EOF > "$APPLESCRIPT_FILE"
 tell application "Terminal"
-    if not (exists window 1) then
-        do script ""
-    end if
-    do script "tail -f \"$LOG_FILE\"; echo ''; echo 'Installation complete. You can close this window now...'; exit" in window 1
+    do script "\"$TEMP_SHELL_SCRIPT\""
     activate
 end tell
 EOF
@@ -29,10 +49,11 @@ EOF
 # Run the AppleScript to display the log in the background
 osascript "$APPLESCRIPT_FILE" &
 
-echo "Starting ollama-install-mac.sh at $(date)" >> "$LOG_FILE"
-# Run the installation script and log its output
-"$SCRIPT_DIR/ollama-install-mac.sh" >> "$LOG_FILE" 2>&1
+# # Run the installOllama function and log its output
+installOllama >> "$LOG_FILE" 2>&1
 
 # Clean up
 rm "$APPLESCRIPT_FILE"
+rm "$TEMP_SHELL_SCRIPT"
+
 exit 0

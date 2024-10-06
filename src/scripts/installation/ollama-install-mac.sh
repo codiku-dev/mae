@@ -1,12 +1,20 @@
 #!/bin/sh
 
+# Get the directory of the current script
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Load utils and commands
+. "$SCRIPT_DIR/utils.sh"
+. "$SCRIPT_DIR/ollama-commands.sh"
+
 # Function to check if OLLama is installed
 checkForOLLama() {
   if ! isOllamaInstalled; then
     echo "Ollama is not installed"
-    downloadAndInstallOLLama
+    return 1
   else
     echo "Ollama is already installed, skipping Ollama installation."
+    return 0
   fi
 }
 
@@ -20,29 +28,17 @@ isOllamaInstalled() {
 }
 
 # Function to download and install OLLama
-downloadAndInstallOLLama() {
+downloadAndInstallOLLamaMacVersion() {
   local redirectZipUrl="https://ollama.com/download/Ollama-darwin.zip"
   local redirectZipPath="$(dirname "$0")/Ollama-darwin-redirect.zip"
   rm -f "$redirectZipPath"
   downloadFile "$redirectZipUrl" "$redirectZipPath"
-  extractZip "$redirectZipPath"
+  extractOllamaZip "$redirectZipPath"
 }
 
-# Function to download a file
-downloadFile() {
-  local downloadUrl="$1"
-  local dest="$2"
-  curl -L -o "$dest" "$downloadUrl"
-  if [ $? -ne 0 ]; then
-    echo "Mia: Failed to download file."
-    rm -f "$dest"
-    exit 1
-  fi
-  echo "Mia: File downloaded successfully."
-}
 
 # Function to extract a zip file
-extractZip() {
+extractOllamaZip() {
   local zipPath="$1"
   unzip -o "$zipPath" -d /Applications
   if [ $? -ne 0 ]; then
@@ -111,60 +107,35 @@ EOF
     exit 1
   fi
 }
+
 # Main installation function
 installOllama() {
   checkForOLLama
+  if [ $? -eq 1 ]; then
+    downloadAndInstallOLLamaMacVersion
+  fi
   setRightsForModelFolder
   createSymlink
   startOllama
-  pullOllamaModel "llama3.2:1b"
-  pullOllamaModel "mxbai-embed-large:latest"
   
-  echo "Building custom model llama3.2:1b-mia... located in $SCRIPT_DIR/Modelfile"
-
-  /usr/local/bin/ollama create llama3.2:1b-mia -f "$SCRIPT_DIR/Modelfile"
-  if [ $? -eq 0 ]; then
-    echo "Mia: Custom model llama3.2:1b-mia built successfully."
-  else
-    echo "Mia: Failed to build custom model llama3.2:1b-mia."
+  if pullOllamaModel "llama3.2:1b"; then
+    createOllamaModelFromModelFile "llama3.2:1b-mia" "$SCRIPT_DIR/initial-modelfile-llama3.2:1b"
+    if pullOllamaModel "mxbai-embed-large:latest"; then
+     if [ $? -eq 0 ]; then
+      echo "Mia: Custom model mxbai-embed-large-mia built successfully."
+     else
+      echo "Mia: Failed to build custom model mxbai-embed-large-mia."
+    fi
+    fi
   fi
   stopOllama
-
-
-
-
-
-
-
-
-
-  echo ""
-  echo ""
-  echo ""
-  echo ""
-  echo ""
-  echo ""
-  echo ""
-  echo ""
-  echo ""
-  echo "" 
-  echo ""
-  echo ""
-  echo ""
-  echo ""
-  echo ""
-  echo ""
-  echo ""
-  echo ""
-  echo ""
+  # Print 20 empty lines using a loop
+  for i in $(seq 1 20); do
+    echo ""
+  done
   
-
   echo "Installation complete, you can close this window now"
   exit 0
 }
 
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-. "$SCRIPT_DIR/ollama-commands.sh"  #
 
-# Run the installation
-installOllama
