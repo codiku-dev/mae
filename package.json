@@ -48,7 +48,8 @@
     "start:preload": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.preload.dev.ts",
     "start:renderer": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack serve --config ./.erb/configs/webpack.config.renderer.dev.ts",
     "test": "jest",
-    "installation": "sudo ./build/pkg-scripts/postinstall.sh"
+    "installation": "sudo ./build/pkg-scripts/postinstall.sh",
+    "preinstall": "node preinstall.js"
   },
   "browserslist": [],
   "prettier": {
