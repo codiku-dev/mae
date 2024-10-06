@@ -9,6 +9,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Conversation } from './conversation/conversation';
 import { SUGGESTION_OPTIONS_ID, Searchbar } from './searchbar/searchbar';
 import { Toolbar } from './toolbar/toolbar';
+import { text } from 'stream/consumers';
 
 export function AiChat() {
   const [streamedResponse, setStreamedResponse] = useState<string>('');
@@ -99,25 +100,32 @@ export function AiChat() {
       createNewConversation('');
     }, 200);
   };
+
+
+  async function generateTitleForConversation(userMessage: string) {
+    const title = await ollamaService.generateTitleForConversation(getCurrentModel().id, userMessage)
+    setCurrentConversationTitle(title.slice(0, 30) + '...')
+  }
   const handleSubmit = async (submittedText: string) => {
+    let responseContent = '';
+    let context = '';
+    let documentationContext = '';
     await stopAndResetAll();
     // remove all @docs and @web from submittedText
-    submittedText = submittedText.replace(/@docs/g, '');
-    submittedText = submittedText.replace(/@web/g, '');
-    let responseContent = '';
+    submittedText = submittedText.replace(/@(docs|web)/g, '');
     setStreamedResponse('');
     setIsLoading(true);
     setIsStreamingFinished(false);
     setInputValue('');
     setError('');
-
     if (!currentConversation) {
       await createNewConversation(submittedText.slice(0, 30) + '...');
-    } else if (currentConversation.title === '') {
-      setCurrentConversationTitle(submittedText.slice(0, 30) + '...');
+
     }
-    let context = '';
-    let documentationContext = '';
+    if (currentConversation?.title === '') {
+      generateTitleForConversation(submittedText);
+    }
+
     if (currentSearchSuggestions.length > 0) {
       if (currentSearchSuggestions[0].id === SUGGESTION_OPTIONS_ID.SEARCH_WEB) {
         documentationContext = await window.electron.ipcRenderer.invoke(

@@ -6,6 +6,8 @@ import { logToMain } from '@/renderer/libs/utils';
 import { ModelFile } from './Modelfile';
 import { LLMConversationHistory, LLMMessage } from './ollama-type';
 import { OllamaModel } from '@/types/model-type';
+import { OllamaChatResponseChunk } from '@/types/ollama-chat';
+import { OllamaConfig } from './ollama.config';
 interface ControllerEntry {
   id: string;
   controller: AbortController;
@@ -205,6 +207,34 @@ export class OllamaService {
     const response = await fetch('http://localhost:11434/api/tags');
     const responseJson: { models: OllamaModel[] } = await response.json();
     return responseJson.models;
+  }
+
+  public async generateTitleForConversation(
+    modelId: string,
+    userMessage: string,
+  ) {
+    const response: Response = await fetch('http://localhost:11434/api/chat', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: modelId,
+        messages: [
+          {
+            role: 'user',
+            content:
+              'CONTEXT: Provide a title for this conversation. Do not comment your anwser. Make the title short and concise based on the message ' +
+              'MESSAGE: ' +
+              userMessage,
+          },
+        ],
+        stream: false,
+      }),
+    });
+    const jsonResp: OllamaChatResponseChunk = await response.json();
+    console.log('jsonResp', jsonResp);
+    return jsonResp.message.content;
   }
 }
 

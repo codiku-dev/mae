@@ -21,7 +21,6 @@ type ConversationStore = {
   getCurrentConversationMessages: () => LLMMessage[];
   clearAllHistory: () => void;
   setCurrentConversationTitle: (title: string) => void;
-  setCurrentConversationIndex: (index: number) => void;
   deleteConversation: (conversationId: string) => void;
   clear: () => void;
 };
@@ -55,6 +54,7 @@ const useConversations = create(
           );
         },
         createNewConversation: async (title: string): Promise<string> => {
+          console.log('createNewConversation()');
           const { conversationHistory } = get();
           const id = uuidv4();
           const newConversation: LLMConversationHistory = {
@@ -63,10 +63,15 @@ const useConversations = create(
             messages: [],
             createdAt: new Date().toISOString(),
           };
+          console.log('newConversation index ', conversationHistory.length);
+          const newConversationHistory = [
+            ...conversationHistory,
+            newConversation,
+          ];
           set({
-            conversationHistory: [...conversationHistory, newConversation],
+            conversationHistory: newConversationHistory,
             currentConversationId: id,
-            currentConversationIndex: conversationHistory.length,
+            currentConversationIndex: newConversationHistory.length - 1,
           });
           return id;
         },
@@ -110,9 +115,7 @@ const useConversations = create(
             currentConversation.title = title;
           }
         },
-        setCurrentConversationIndex: (index: number) => {
-          set({ currentConversationIndex: index });
-        },
+
         deleteConversation: (conversationId: string) => {
           const { conversationHistory } = get();
           const newConversationHistory = conversationHistory.filter(
