@@ -25,7 +25,7 @@ app.disableHardwareAcceleration();
 
 function initWindow(): BrowserWindow {
   // const { width, height } = screen.getPrimaryDisplay().workAreaSize;
-  global.DEBUG = true;
+  global.DEBUG = false;
   let mainWindow = new BrowserWindow({
     height: 800,
     width: 800,
@@ -37,7 +37,7 @@ function initWindow(): BrowserWindow {
     // transparent: true,
     movable: global.DEBUG,
     hasShadow: false,
-    show: true,
+    show: false,
     // visualEffectState: 'inactive',
     resizable: global.DEBUG,
     // focusable: true,

@@ -18,5 +18,6 @@ export class OllamaController {
       console.log('check-ollama-installed ends');
       return isInstalled;
     });
+    console.log('OllamaController initialized');
   }
 }

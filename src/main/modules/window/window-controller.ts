@@ -3,12 +3,18 @@ import { windowService } from './window.service';
 
 export class WindowController {
   constructor() {
-    ipcMain.on('request-focus-window', () => {
+    ipcMain.handle('request-focus-window', () => {
       windowService.focusWindow();
     });
 
-    ipcMain.on('request-close-window', () => {
+    ipcMain.handle('request-open-window', (e) => {
+      console.log('request-open-window');
+      windowService.showWindow();
+    });
+
+    ipcMain.handle('request-close-window', () => {
       windowService.hideWindow();
     });
+    console.log('WindowController initialized');
   }
 }

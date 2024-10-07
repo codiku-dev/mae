@@ -38,6 +38,13 @@ export function AiChat() {
   } = useSearch();
   const { getCurrentModel } = useSettings();
 
+  useEffect(() => {
+    window.electron.ipcRenderer.sendMessage(
+      'on-searchbar-visibility-change',
+      isVisible,
+    );
+  }, [isVisible]);
+
   const clearSearch = async () => {
     await ollamaService.abortAllRequests();
     setInputValue('');
@@ -55,12 +62,6 @@ export function AiChat() {
     await clearSearch();
   };
 
-  useEffect(() => {
-    window.electron.ipcRenderer.sendMessage(
-      'on-searchbar-visibilty-change',
-      isVisible,
-    );
-  }, [isVisible]);
 
   useEffect(function addOpenCloseListener() {
     const unsubscribeGlobalShortcut = window.electron.ipcRenderer.on(
@@ -184,17 +185,9 @@ export function AiChat() {
     );
   };
 
-  const onClosed = () => {
-    setTimeout(() => {
-      window.electron.ipcRenderer.sendMessage('request-close-window');
-    }, 100);
-  };
 
-  const onOpen = () => {
-    setTimeout(() => {
-      window.electron.ipcRenderer.sendMessage('request-focus-window');
-    }, 100);
-  };
+
+
 
   return (
     <div className="h-full overflow-y-hidden">
@@ -215,11 +208,11 @@ export function AiChat() {
               opacity: number;
               y: number;
             }) => {
-              if (definition.opacity === 0) {
-                onClosed();
-              } else {
-                onOpen();
-              }
+              // if (definition.opacity === 0) {
+              //   onClosed();
+              // } else {
+              //   onOpen();
+              // }
             }}
           >
             <div className="flex flex-col">

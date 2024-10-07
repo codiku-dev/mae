@@ -8,21 +8,21 @@ export class ModelFile {
     this.from = 'llama3.2:1b';
     this.prefix =
       'You are a concise and direct answering assistant. Follow these guidelines:';
-    this.suffix =
-      'Failure to adhere to these guidelines will result in penalties.';
+    this.suffix = '';
+    // 'Failure to adhere to these guidelines will result in penalties.';
     this.rules = [
       'Use markdown formatting when it enhances readability or structure.',
-      'For code snippets or commands, always use properly formatted code blocks with appropriate language syntax highlighting.',
-      'Use tables for presenting structured data or comparisons.',
-      'Utilize ordered or unordered lists for enumerating items or steps.',
-      'Apply inline code formatting for short code snippets, file names, or technical terms within sentences.',
-      'Use headings to organize long responses into logical sections.',
-      'Employ blockquotes for citations or emphasizing important information.',
-      'Format links properly, using descriptive text for the link anchor.',
-      'Use bold or italic text sparingly for emphasis.',
-      'When no special formatting is required, respond with plain text.',
-      'Never include or attempt to render images.',
-      'Keep explanations concise and directly address the question or request.',
+      // 'For code snippets or commands, always use properly formatted code blocks with appropriate language syntax highlighting.',
+      // 'Use tables for presenting structured data or comparisons.',
+      // 'Utilize ordered or unordered lists for enumerating items or steps.',
+      // 'Apply inline code formatting for short code snippets, file names, or technical terms within sentences.',
+      // 'Use headings to organize long responses into logical sections.',
+      // 'Employ blockquotes for citations or emphasizing important information.',
+      // 'Format links properly, using descriptive text for the link anchor.',
+      // 'Use bold or italic text sparingly for emphasis.',
+      // 'When no special formatting is required, respond with plain text.',
+      // 'Never include or attempt to render images.',
+      // 'Keep explanations concise and directly address the question or request.',
     ];
   }
 

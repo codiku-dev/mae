@@ -50,10 +50,6 @@ export function Settings() {
   });
   const { handleSubmit } = form;
 
-  useEffect(() => {
-    window.electron.ipcRenderer.sendMessage('request-open-window');
-  }, []);
-
   const submit: SubmitHandler<FormValues> = async (data) => {
     setIsLoading(true);
     let requireModelUpdate = false;

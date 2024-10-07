@@ -17,8 +17,6 @@ export const InstallOllamaDialog = (p: Props) => {
     const installOllama = async () => {
         try {
             await window.electron.ipcRenderer.invoke('install-ollama')
-
-
             p.onInstallationComplete();
         } catch (error) {
             toast({
@@ -32,16 +30,15 @@ export const InstallOllamaDialog = (p: Props) => {
     };
 
     return (
-        <Dialog open={true}>
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>Installing Ollama</DialogTitle>
-                </DialogHeader>
-                <div className="flex items-center justify-center p-6">
+        <div className=' fixed top-[30%] p-8 shadow-lg m-20' >
+            <div className='text-2xl font-semibold'>Installing Ollama (~440mb)</div>
+            <div >
+                <div className="flex gap-4 items-center py-4">
                     <LoadingSpinner className="mr-2" />
                     <p>Mia needs the Ollama application to run. Please wait while Ollama is being installed...</p>
                 </div>
-            </DialogContent>
-        </Dialog>
+                <p className='text-sm'>Don't forget to uninstall the Ollama application if you decide to uninstall Mia.</p>
+            </div>
+        </div>
     );
 };

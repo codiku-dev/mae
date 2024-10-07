@@ -14,7 +14,7 @@ export type Channels =
   | 'request-open-external-link'
   | 'before-start-reply'
   | 'navigate'
-  | 'on-searchbar-visibilty-change'
+  | 'on-searchbar-visibility-change'
   | 'make-http-request'
   | 'set-app-auto-launch'
   | 'sandbox-request'

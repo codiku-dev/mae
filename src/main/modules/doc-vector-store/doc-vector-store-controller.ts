@@ -74,5 +74,6 @@ export class DocVectorStoreController {
       await docVectorStoreService.deleteAllDocsInMemory();
       return 'ok';
     });
+    console.log('DocVectorStoreController initialized');
   }
 }

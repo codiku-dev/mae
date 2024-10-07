@@ -26,8 +26,8 @@ export const AppLoader = () => {
   }, []);
 
   const beginInstallation = async () => {
-    await loadUserInfo();
-    await loadIsDebug();
+    loadUserInfo();
+    loadIsDebug();
 
     await checkOllamaInstallation()
   }
@@ -48,6 +48,7 @@ export const AppLoader = () => {
       const installed = await window.electron.ipcRenderer.invoke('check-ollama-installed');
       setIsAppLoading(false)
       if (!installed) {
+        window.electron.ipcRenderer.invoke("request-open-window");
         setIsOllamaInstalled(false);
       } else {
         setIsOllamaInstalled(true);
@@ -106,9 +107,11 @@ export const AppLoader = () => {
       {isDebug && <DevTool />}
       <Toaster />
       <TooltipProvider delayDuration={100}>
-        <Outlet />
+        {!isOllamaInstalled ? <InstallOllamaDialog onInstallationComplete={finishInstallation} /> :
+          <Outlet />
+        }
       </TooltipProvider>
-      {!isOllamaInstalled && <InstallOllamaDialog onInstallationComplete={finishInstallation} />}
+
     </>
   );
 };

@@ -6,5 +6,6 @@ export class HttpController {
     ipcMain.handle('make-http-request', (event, url) => {
       httpService.makeHttpRequest(event, url);
     });
+    console.log('HttpController initialized');
   }
 }

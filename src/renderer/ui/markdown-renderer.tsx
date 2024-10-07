@@ -128,7 +128,7 @@ export const MarkdownRenderer = (p: { output: string }) => {
           />
         ),
         table: ({ className, ...props }) => (
-          <ScrollArea className="my-6 w-full overflow-auto">
+          <ScrollArea className="my-6 w-full overflow-auto ">
             <Table className={cn('w-full', className)} {...props} />
           </ScrollArea>
         ),
@@ -138,7 +138,7 @@ export const MarkdownRenderer = (p: { output: string }) => {
         th: ({ className, ...props }) => (
           <TableHead
             className={cn(
-              'border px-4 py-2 text-left font-bold [&[align=center]]:text-center [&[align=right]]:text-right',
+              'border px-4 py-2 text-left font-bold [&[align=center]]:text-center [&[align=right]]:text-right text-white',
               className,
             )}
             {...props}

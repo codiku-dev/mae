@@ -6,5 +6,6 @@ export class ShortcutController {
     globalShortcut.register('CommandOrControl+Shift+P', () => {
       shortcutService.openCloseApp();
     });
+    console.log('ShortcutController initialized');
   }
 }

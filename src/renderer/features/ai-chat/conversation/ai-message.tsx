@@ -41,7 +41,7 @@ export function AIMessage(p: {
         alt="AI Avatar"
       />
       <div className="flex items-center gap-2">
-        <span className="text-sm text-white/70">Mia</span>
+        <span className="text-sm text-primary ">Mia</span>
       </div>
     </div>
   );
