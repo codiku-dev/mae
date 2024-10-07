@@ -4,7 +4,6 @@ import { promisify } from 'util';
 import { sleep } from '../../../libs/utils';
 import { OllamaConfig } from '@/renderer/services/ollama/ollama.config';
 import path from 'path';
-import { logToMain } from '@/renderer/libs/utils';
 import { spawn } from 'child_process';
 
 const execAsync = promisify(exec);

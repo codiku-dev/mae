@@ -26,6 +26,7 @@ app.disableHardwareAcceleration();
 function initWindow(): BrowserWindow {
   // const { width, height } = screen.getPrimaryDisplay().workAreaSize;
   global.DEBUG = false;
+  global.isSearchOpen = false;
   let mainWindow = new BrowserWindow({
     height: 800,
     width: 800,

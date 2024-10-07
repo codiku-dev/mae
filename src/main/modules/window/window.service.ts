@@ -44,6 +44,14 @@ class WindowService {
 
   public toggleOpenWithAnimation(shouldOpen: boolean) {
     if (this.mainWindow) {
+      // Check if the window is already in the desired state
+      if (
+        (shouldOpen && this.mainWindow.getOpacity() === 1) ||
+        (!shouldOpen && this.mainWindow.getOpacity() === 0)
+      ) {
+        return; // Do nothing if the window is already in the desired state
+      }
+
       const openAnimationDuration = 400;
       const closeAnimationDuration = 400;
       const steps = 20;

@@ -22,7 +22,6 @@ export const AppLoader = () => {
   const [isOllamaInstalled, setIsOllamaInstalled] = useState<boolean | null>(null);
 
   useEffect(() => {
-    // setIsFirstRun(true)
     beginInstallation()
   }, []);
 
@@ -68,15 +67,15 @@ export const AppLoader = () => {
   const finishInstallation = async () => {
     await loadInstalledModels();
     setIsOllamaInstalled(true);
-    // if (isFirstRun) {
-    //   window.electron.ipcRenderer.invoke("request-open-window")
-    //   setTimeout(() => {
-    //     window.electron.ipcRenderer.sendMessage('navigate', ROUTES.tutorial);
-    //   }, 200);
+    if (isFirstRun) {
+      window.electron.ipcRenderer.invoke("request-open-window")
+      setTimeout(() => {
+        window.electron.ipcRenderer.sendMessage('navigate', ROUTES.tutorial);
+      }, 200);
 
-    // } else {
-    window.electron.ipcRenderer.sendMessage('navigate', ROUTES.home);
-    // }
+    } else {
+      window.electron.ipcRenderer.sendMessage('navigate', ROUTES.home);
+    }
 
   };
 

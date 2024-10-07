@@ -7,7 +7,6 @@ import { ModelFile } from './Modelfile';
 import { LLMConversationHistory, LLMMessage } from './ollama-type';
 import { OllamaModel } from '@/types/model-type';
 import { OllamaChatResponseChunk } from '@/types/ollama-chat';
-import { OllamaConfig } from './ollama.config';
 interface ControllerEntry {
   id: string;
   controller: AbortController;
@@ -70,9 +69,7 @@ export class OllamaService {
 
     const copyOfConversation = structuredClone(conversation);
     if (context !== '') {
-      //   logToMain('context is here' + context);
       const question = conversation[conversation.length - 1].content;
-      logToMain('the question ' + question);
       copyOfConversation[conversation.length - 1].content =
         `${conversation[conversation.length - 1].content}
         ${context}

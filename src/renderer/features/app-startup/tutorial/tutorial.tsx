@@ -6,13 +6,16 @@ import { ROUTES } from '@/routes';
 
 export const Tutorial = () => {
 
+    const { setIsFirstRun } = useAppStore();
 
     useEffect(function addOpenCloseListener() {
         const unsubscribeGlobalShortcut = window.electron.ipcRenderer.on(
             'global-shortcut',
             (e) => {
                 if (e.data.shortcut === 'CommandOrControl+Shift+P') {
+                    setIsFirstRun(false);
                     window.electron.ipcRenderer.sendMessage('navigate', ROUTES.home);
+
                 }
             },
         );
@@ -25,6 +28,7 @@ export const Tutorial = () => {
     return (
         <Dialog open onOpenChange={(open) => {
             if (!open) {
+                setIsFirstRun(false);
                 window.electron.ipcRenderer.sendMessage('navigate', ROUTES.home);
             }
         }}>

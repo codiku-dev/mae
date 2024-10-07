@@ -15,16 +15,12 @@ export class ShortcutService {
     return ShortcutService.instance;
   }
 
-  public openCloseApp() {
-    windowService.toggleOpenWithAnimation(
-      !windowService.getMainWindow().isVisible(),
-    );
-
+  public emitShortCut(shortcut: string) {
     const currentTime = Date.now();
     if (currentTime - this.lastCallTime >= this.debounceTime) {
       this.lastCallTime = currentTime;
       windowService.getMainWindow()?.webContents.send('global-shortcut', {
-        data: { shortcut: 'CommandOrControl+Shift+P' },
+        data: { shortcut },
       });
     }
   }

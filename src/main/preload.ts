@@ -15,6 +15,8 @@ export type Channels =
   | 'before-start-reply'
   | 'navigate'
   | 'on-searchbar-visibility-change'
+  | 'request-show-searchbar'
+  | 'reply-show-searchbar'
   | 'make-http-request'
   | 'set-app-auto-launch'
   | 'sandbox-request'

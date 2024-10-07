@@ -62,7 +62,7 @@ export class MenuService {
   public refreshMenuLabels() {
     this.updateMenuLabel(
       1, // Replace with actual MENU.OPEN_CLOSE.id
-      global.isSearchOpen === true ? 'Close Mia (⌘+⇧+p)' : 'Open Mia (⌘+⇧+p)',
+      global.isSearchOpen ? 'Close Mia (⌘+⇧+p)' : 'Open Mia (⌘+⇧+p)',
     );
   }
 
@@ -91,16 +91,14 @@ export class MenuService {
   }
 
   private handleOpenClose() {
-    ipcMain.emit('navigate', ROUTES.home);
-    if (!windowService.getMainWindow().isVisible()) {
-      windowService.getMainWindow().show();
+    if (global.path === ROUTES.home) {
+      ipcMain.emit('request-show-searchbar', !global.isSearchOpen);
+    } else {
+      ipcMain.emit('navigate', ROUTES.home);
+      setTimeout(() => {
+        ipcMain.emit('request-show-searchbar', true);
+      }, 500);
     }
-    setTimeout(() => {
-      windowService.getMainWindow().webContents.send('global-shortcut', {
-        data: { shortcut: 'CommandOrControl+Shift+P' },
-      });
-      this.refreshMenuLabels();
-    }, 100);
   }
 
   private handleSettings() {

@@ -37,7 +37,6 @@ export class OnStart {
       console.log("'request-before-start error", error);
     }
     menuService.initMenu();
-    windowService.getMainWindow().webContents.send('before-start-reply');
   }
 
   public static getInstance(): OnStart {

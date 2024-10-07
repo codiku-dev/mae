@@ -4,7 +4,7 @@ import { shortcutService } from './shortcut-service';
 export class ShortcutController {
   constructor() {
     globalShortcut.register('CommandOrControl+Shift+P', () => {
-      shortcutService.openCloseApp();
+      shortcutService.emitShortCut('CommandOrControl+Shift+P');
     });
     console.log('ShortcutController initialized');
   }

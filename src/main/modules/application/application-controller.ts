@@ -16,10 +16,12 @@ export class ApplicationController {
 
     ipcMain.on('navigate', (pathEvent, pathValue) => {
       const path = pathValue || pathEvent;
+      console.log('Navigate from ', global.path + ' to ' + path);
       global.path = path;
       if (path !== ROUTES.home) {
         global.isSearchOpen = false;
       }
+      windowService.toggleOpenWithAnimation(true);
       windowService.getMainWindow().webContents.send('navigate', path);
     });
 

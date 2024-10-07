@@ -1,6 +1,5 @@
 import { useAppStore } from '@/renderer/hooks/use-app-store';
 import { useSearch } from '@/renderer/hooks/use-search';
-import { logToMain } from '@/renderer/libs/utils';
 import { webScraperService } from '@/renderer/services/web-scapper/web-scrapper-service';
 import { ArrowRight, Book, Globe, PlusCircle, Square } from 'lucide-react';
 import { forwardRef, useState } from 'react';
@@ -79,20 +78,16 @@ export const Searchbar = forwardRef<HTMLInputElement, Props>(
       ]);
 
       if (!isWebsiteIndexed(link)) {
-        logToMain('Website is not indexed yet');
         setisLoading(true);
 
         const newIndexedWebsiteContent =
           await webScraperService.fetchWebsiteContent(link);
 
-        logToMain('Start learning');
         await window.electron.ipcRenderer.invoke(
           'add-vector-docs',
           newIndexedWebsiteContent,
         );
 
-        logToMain('End learning');
-        logToMain('Add links to cache');
         addWebsiteToIndexedWebsites({
           url: link,
           commandName: command,
@@ -102,7 +97,6 @@ export const Searchbar = forwardRef<HTMLInputElement, Props>(
             sizeKb: website.sizeKb,
           })),
         });
-        logToMain('Links added cache');
         setisLoading(false);
       }
     };
@@ -115,7 +109,6 @@ export const Searchbar = forwardRef<HTMLInputElement, Props>(
       // remove also anything of this form @[anything](anything)
       let newValue = p.value.replace(/@\[.*?\]\S+\s?/, '');
       p.onChange(newValue);
-      logToMain(`the dialog mode is  ${dialogMode}`);
       if (dialogMode == SUGGESTION_OPTIONS_ID.ADD_DOC) {
         fetchAndStoreDocumentation(link, command);
       } else if (dialogMode == SUGGESTION_OPTIONS_ID.SEARCH_WEB) {
@@ -158,7 +151,6 @@ export const Searchbar = forwardRef<HTMLInputElement, Props>(
           break;
         default:
           const command = getCommands().find((c) => c.command === entry);
-          logToMain(`Selecting command ${command?.command} `);
           if (command && command.url) {
             const newSuggestionId = uuidv4();
             setCurrentSearchSuggestions([
