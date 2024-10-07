@@ -1,6 +1,5 @@
 import { ipcMain } from 'electron';
 import { navigatorService } from './navigator-service';
-import path from 'path';
 
 export class NavigatorController {
   constructor() {

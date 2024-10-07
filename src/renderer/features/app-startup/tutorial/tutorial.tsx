@@ -15,6 +15,9 @@ export const Tutorial = () => {
                 if (e.data.shortcut === 'CommandOrControl+Shift+P') {
                     setIsFirstRun(false);
                     window.electron.ipcRenderer.sendMessage('navigate', ROUTES.home);
+                    setTimeout(() => {
+                        window.electron.ipcRenderer.invoke("request-show-searchbar", true)
+                    }, 500);
 
                 }
             },
