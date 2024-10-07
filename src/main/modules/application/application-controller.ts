@@ -14,17 +14,6 @@ export class ApplicationController {
       console.log('Log renderer : ', args);
     });
 
-    ipcMain.on('navigate', (pathEvent, pathValue) => {
-      const path = pathValue || pathEvent;
-      console.log('Navigate from ', global.path + ' to ' + path);
-      global.path = path;
-      if (path !== ROUTES.home) {
-        global.isSearchOpen = false;
-      }
-      windowService.toggleOpenWithAnimation(true);
-      windowService.getMainWindow().webContents.send('navigate', path);
-    });
-
     ipcMain.on('request-open-external-link', (event, link) => {
       applicationService.openExternalLink(link);
       windowService.getMainWindow().webContents.send('global-shortcut', {

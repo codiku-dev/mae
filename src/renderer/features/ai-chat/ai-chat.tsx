@@ -41,7 +41,6 @@ export function AiChat() {
 
   useEffect(function addOpenCloseListener() {
 
-
     const unsubscribeGlobalShortcut = window.electron.ipcRenderer.on(
       'global-shortcut',
       (e) => {

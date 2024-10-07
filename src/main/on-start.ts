@@ -11,6 +11,7 @@ import { ollamaService } from './modules/ollama/ollama.service';
 import { docVectorStoreService } from './modules/doc-vector-store/doc-vector-store-service';
 import { menuService } from './modules/menu/menu-service';
 import { windowService } from './modules/window/window.service';
+import { NavigatorController } from './modules/navigator/navigator-controller';
 
 export class OnStart {
   private static instance: OnStart | null = null;
@@ -22,6 +23,7 @@ export class OnStart {
   public async init() {
     new WindowController();
     new ApplicationController();
+    new NavigatorController();
     new MenuController();
     new HttpController();
     new DocVectorStoreController();

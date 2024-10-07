@@ -6,6 +6,7 @@ import { resolveHtmlPath } from '../libs/utils';
 import { windowService } from './modules/window/window.service';
 import { onStop } from './on-stop';
 import { OnStart } from './on-start';
+import { ROUTES } from '@/routes';
 
 class AppUpdater {
   constructor() {
@@ -27,6 +28,7 @@ function initWindow(): BrowserWindow {
   // const { width, height } = screen.getPrimaryDisplay().workAreaSize;
   global.DEBUG = false;
   global.isSearchOpen = false;
+  global.path = ROUTES.root;
   let mainWindow = new BrowserWindow({
     height: 800,
     width: 800,
