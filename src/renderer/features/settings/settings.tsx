@@ -1,7 +1,7 @@
 'use client';
 
 import { LanguageCode, LANGUAGES } from '@/libs/languages';
-import { Button } from '@/renderer/components/ui/button';
+import { Button } from '@/renderer/ui/button';
 import { useToast } from '@/renderer/hooks/use-toast';
 import { useEffect, useState } from 'react';
 import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
@@ -9,15 +9,15 @@ import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
 import { ModelFile } from '@/renderer/services/ollama/Modelfile';
 import { ollamaService } from '@/renderer/services/ollama/ollama.service';
 import { Loader2, Save, X } from 'lucide-react';
-import { ROUTES } from '../../../../routes';
-import { useConversations } from '../../../hooks/use-conversations';
-import { useSearch } from '../../../hooks/use-search';
-import { useSettings } from '../../../hooks/use-settings';
+import { ROUTES } from '@/routes';
+import { useConversations } from '@/renderer/hooks/use-conversations';
+import { useSearch } from '@/renderer/hooks/use-search';
+import { useSettings } from '@/renderer/hooks/use-settings';
 import { HistorySection } from './history-section';
 import { IndexedWebsiteSection } from './indexed-websites-section';
-import { LanguageSelectionSection } from './language-selection-section';
-import { ModelSelection } from './model-selection';
-import { StartupSection } from './startup-section';
+import { LanguageSelectionSection } from '@/renderer/features/settings/language-selection-section';
+import { ModelSelection } from '@/renderer/features/settings/model-selection';
+import { StartupSection } from '@/renderer/features/settings/startup-section';
 
 type FormValues = {
   isAppLaunchedOnStartup: boolean;

@@ -1,5 +1,5 @@
 
-import { AiChat } from '../components/features/ai-chat/ai-chat';
+import { AiChat } from '../features/ai-chat/ai-chat';
 
 export function HomePage() {
   return (

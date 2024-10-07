@@ -3,12 +3,11 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@/renderer/components/ui/tooltip';
+} from '@/renderer/ui/tooltip';
 import { X } from 'lucide-react';
-import { Badge } from '../../../ui/badge';
-import { Skeleton } from '../../../ui/skeleton';
-import { LoadingSpinner } from '../../../ui/loading-spinner';
-import { SUGGESTION_OPTIONS_ID } from './searchbar';
+import { Badge } from '@/renderer/ui/badge';
+import { LoadingSpinner } from '@/renderer/ui/loading-spinner';
+import { SUGGESTION_OPTIONS_ID } from '@/renderer/features/ai-chat/searchbar/searchbar';
 import { SearchSuggestion, useSearch } from '@/renderer/hooks/use-search';
 
 interface Link {

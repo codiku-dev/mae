@@ -1,14 +1,14 @@
-import { Button } from '@/renderer/components/ui/button';
+import { Button } from '@/renderer/ui/button';
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-} from '@/renderer/components/ui/card';
+} from '@/renderer/ui/card';
 import { useToast } from '@/renderer/hooks/use-toast';
 import { Trash } from 'lucide-react';
-import { useAppStore } from '@/renderer/hooks/use-app-store';
 import { useConversations } from '@/renderer/hooks/use-conversations';
+
 export const HistorySection = () => {
   const { toast } = useToast();
   const { clearAllHistory } = useConversations();

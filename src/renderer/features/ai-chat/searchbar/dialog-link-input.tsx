@@ -4,12 +4,12 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from '@/renderer/components/ui/dialog';
-import { Input } from '@/renderer/components/ui/input';
+} from '@/renderer/ui/dialog';
+import { Input } from '@/renderer/ui/input';
 import { isValidUrl } from '@/renderer/libs/utils';
 import { useToast } from '@/renderer/hooks/use-toast';
 import { Globe, Plus } from 'lucide-react';
-import { optionList, SUGGESTION_OPTIONS_ID } from './searchbar';
+import { optionList, SUGGESTION_OPTIONS_ID } from '@/renderer/features/ai-chat/searchbar/searchbar';
 
 interface DialogLinkInputProps {
   isOpen: boolean;

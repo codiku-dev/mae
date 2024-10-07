@@ -1,6 +1,6 @@
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { cn } from '../../libs/utils';
+import { cn } from '@/renderer/libs/utils';
 
 // Import Shadcn components
 import { ScrollArea } from './scroll-area';

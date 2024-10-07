@@ -1,7 +1,7 @@
 import { Plus } from "lucide-react";
-import { ConversationHistoryListDropdown } from "../conversation-history-list-dropdown/conversation-history-list-dropdown";
-import { Button } from "@/renderer/components/ui/button";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/renderer/components/ui/tooltip";
+import { ConversationHistoryListDropdown } from "@/renderer/features/ai-chat/conversation-history-list-dropdown/conversation-history-list-dropdown";
+import { Button } from "@/renderer/ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/renderer/ui/tooltip";
 
 
 export function Toolbar(p: { onClickNewConversation: () => void, onClickConversationItem: () => void }) {

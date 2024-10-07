@@ -1,15 +1,15 @@
 import { ollamaService } from '@/renderer/services/ollama/ollama.service';
 import { useEffect, useState } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
-import { ROUTES } from '../../routes';
-import { DevTool } from '../components/features/dev-tools';
-import { SplashScreen } from '../components/features/splash-screen';
-import { Toaster } from '../components/ui/toaster';
-import { TooltipProvider } from '../components/ui/tooltip';
-import { useAppStore } from '../hooks/use-app-store';
-import { useSettings } from '../hooks/use-settings';
-import { InstallOllamaDialog } from '../components/features/installation/install-ollama-dialog';
-import { toast } from '../hooks/use-toast';
+import { ROUTES } from '@/routes';
+import { DevTool } from '@/renderer/features/app-startup/dev-tools';
+import { SplashScreen } from '@/renderer/features/app-startup/splash-screen';
+import { Toaster } from '@/renderer/ui/toaster';
+import { TooltipProvider } from '@/renderer/ui/tooltip';
+import { useAppStore } from '@/renderer/hooks/use-app-store';
+import { useSettings } from '@/renderer/hooks/use-settings';
+import { InstallOllamaDialog } from '@/renderer/features/installation/install-ollama-dialog';
+import { toast } from '@/renderer/hooks/use-toast';
 
 export const AppLoader = () => {
   const navigate = useNavigate();

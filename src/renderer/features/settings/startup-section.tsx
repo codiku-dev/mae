@@ -1,10 +1,10 @@
-import { Checkbox } from '@/renderer/components/ui/checkbox';
+import { Checkbox } from '@/renderer/ui/checkbox';
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-} from '@/renderer/components/ui/card';
+} from '@/renderer/ui/card';
 import {
   Control,
   Controller,

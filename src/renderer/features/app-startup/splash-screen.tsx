@@ -1,8 +1,7 @@
 import { cn } from '@/renderer/libs/utils';
 import { AnimatePresence, motion } from 'framer-motion';
-import React from 'react';
-import icon from '../../assets/icon.png';
-export const SplashScreen: React.FC = () => {
+import icon from '@/renderer/assets/icon.png';
+export const SplashScreen = () => {
   return (
     <div
       className={cn(

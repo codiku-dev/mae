@@ -3,21 +3,20 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-} from '@/renderer/components/ui/card';
-import { Label } from '@/renderer/components/ui/label';
+} from '@/renderer/ui/card';
+import { Label } from '@/renderer/ui/label';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/renderer/components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/renderer/components/ui/dialog';
+} from '@/renderer/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/renderer/ui/dialog';
 import { useSettings } from '@/renderer/hooks/use-settings';
-import { Button } from '@/renderer/components/ui/button';
+import { Button } from '@/renderer/ui/button';
 
-import { useEffect, useState } from 'react';
-import { Model } from '@/types/model-type';
+import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { ollamaService } from '@/renderer/services/ollama/ollama.service';
 import { ModelFile } from '@/renderer/services/ollama/Modelfile';

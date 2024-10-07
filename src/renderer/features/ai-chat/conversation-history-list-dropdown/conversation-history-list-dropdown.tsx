@@ -1,15 +1,15 @@
 import { useState } from 'react';
 import { ListRestart, Search, Trash2 } from 'lucide-react';
-import { Button } from "../../../ui/button";
+import { Button } from "@/renderer/ui/button";
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuTrigger,
-} from "../../../ui/dropdown-menu";
-import { Input } from "../../../ui/input";
+} from "@/renderer/ui/dropdown-menu";
+import { Input } from "@/renderer/ui/input";
 import { useConversations } from '@/renderer/hooks/use-conversations';
 import { formatTimeAgo } from '@/renderer/libs/utils';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/renderer/components/ui/tooltip';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/renderer/ui/tooltip';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -19,7 +19,7 @@ import {
     AlertDialogFooter,
     AlertDialogHeader,
     AlertDialogTitle,
-} from "@/renderer/components/ui/alert-dialog";
+} from "@/renderer/ui/alert-dialog";
 
 export const ConversationHistoryListDropdown = (p: { onClickConversationItem: () => void }) => {
     const { conversationHistory, currentConversationId, setCurrentConversationId, deleteConversation } = useConversations();

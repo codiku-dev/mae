@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
-import { useToast } from '../../../hooks/use-toast';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../../ui/dialog';
-import { LoadingSpinner } from '../../ui/loading-spinner';
+import { useEffect } from 'react';
+import { useToast } from '@/renderer/hooks/use-toast';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/renderer/ui/dialog';
+import { LoadingSpinner } from '@/renderer/ui/loading-spinner';
 
 interface Props {
     onInstallationComplete: () => void;

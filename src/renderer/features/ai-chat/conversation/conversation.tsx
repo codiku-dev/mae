@@ -1,11 +1,11 @@
 import { useRef, useEffect, useState } from "react";
-import { useConversations } from "../../../../hooks/use-conversations";
+import { useConversations } from "@/renderer/hooks/use-conversations";
 import { LLMConversationHistory, LLMMessage } from "@/renderer/services/ollama/ollama-type";
-import { UserMessage } from "./user-message";
-import { AIMessage } from "./ai-message";
+import { UserMessage } from "@/renderer/features/ai-chat/conversation/user-message";
+import { AIMessage } from "@/renderer/features/ai-chat/conversation/ai-message";
 
 import { cn } from "@/renderer/libs/utils";
-import { Button } from "@/renderer/components/ui/button"; // Add this import
+import { Button } from "@/renderer/ui/button"; // Add this import
 
 type Props = {
     onClickNewConversation: () => void,

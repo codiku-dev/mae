@@ -1,6 +1,5 @@
 import { BrowserWindow } from 'electron';
 import path from 'path';
-import { URL } from 'url';
 export function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }

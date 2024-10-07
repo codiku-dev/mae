@@ -5,7 +5,7 @@ import './App.css';
 import { ROUTES } from '../routes';
 // import { HomePage } from './pages/home.page';
 // import { SettingsPage } from './pages/settings.page';
-// import { Sandbox } from './components/features/sandbox';
+// import { Sandbox } from './features/sandbox';
 import { AppLoader } from './pages/app-loader';
 import { HomePage } from './pages/home.page';
 import { SettingsPage } from './pages/settings.page';

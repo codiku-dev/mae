@@ -4,14 +4,14 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-} from '@/renderer/components/ui/card';
+} from '@/renderer/ui/card';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/renderer/components/ui/select';
+} from '@/renderer/ui/select';
 import {
   Control,
   Controller,

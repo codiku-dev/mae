@@ -17,7 +17,7 @@ module.exports = {
   darkMode: ['class'],
   content: [
     './pages/**/*.{ts,tsx}',
-    './components/**/*.{ts,tsx}',
+    './**/*.{ts,tsx}',
     './app/**/*.{ts,tsx}',
     './src/**/*.{ts,tsx}',
     '!./src/node_modules/**/*', // Exclude node_modules in src

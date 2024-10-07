@@ -6,10 +6,10 @@ import { ArrowRight, Book, Globe, PlusCircle, Square } from 'lucide-react';
 import { forwardRef, useState } from 'react';
 import { Mention, MentionsInput } from 'react-mentions';
 import { v4 as uuidv4 } from 'uuid';
-import { Button } from '../../../ui/button';
-import { BadgeSuggestionList } from './badge-suggestion-list';
-import { DialogLinkInput } from './dialog-link-input';
-import { getMentionInListStyle, mentionInInputStyle } from './searchbar-style';
+import { Button } from '@/renderer/ui/button';
+import { BadgeSuggestionList } from '@/renderer/features/ai-chat/searchbar/badge-suggestion-list';
+import { DialogLinkInput } from '@/renderer/features/ai-chat/searchbar/dialog-link-input';
+import { getMentionInListStyle, mentionInInputStyle } from '@/renderer/features/ai-chat/searchbar/searchbar-style';
 
 type Props = {
   value: string;

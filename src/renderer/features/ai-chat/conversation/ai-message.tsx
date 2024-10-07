@@ -1,16 +1,16 @@
-import { MarkdownRenderer } from '@/renderer/components/ui/markdown-renderer';
+import { MarkdownRenderer } from '@/renderer/ui/markdown-renderer';
 import {
   codeBlockLookBack,
   findCompleteCodeBlock,
   findPartialCodeBlock,
 } from '@llm-ui/code';
 import { markdownLookBack } from '@llm-ui/markdown';
-import logo from '../../../../assets/icon-no-border.svg';
+import logo from '@/renderer/assets/icon-no-border.svg';
 //@ts-ignore
 import { useLLMOutput } from '@llm-ui/react';
-import { CodeRenderer } from '../../../ui/code-renderer';
+import { CodeRenderer } from '@/renderer/ui/code-renderer';
 
-import { Skeleton } from '@/renderer/components/ui/skeleton';
+import { Skeleton } from '@/renderer/ui/skeleton';
 export function AIMessage(p: {
   message: string;
   isLoading?: boolean;

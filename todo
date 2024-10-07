@@ -15,7 +15,7 @@ V2
 - do not install defaut model
 - subvector file for each docs
 - [x] add the 3 base models
-- check ui @ 
+- [ ] base search store on vector index
 - scrapping should get the "b" params in model in settings and also size
 - [x] remove store  package
 - [x] -set du model

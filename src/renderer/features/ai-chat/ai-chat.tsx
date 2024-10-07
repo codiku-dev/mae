@@ -1,4 +1,4 @@
-import { Error } from '@/renderer/components/features/ai-chat/conversation/error';
+import { Error } from '@/renderer/features/ai-chat/conversation/error';
 import { useAppStore } from '@/renderer/hooks/use-app-store';
 import { useConversations } from '@/renderer/hooks/use-conversations';
 import { useSearch } from '@/renderer/hooks/use-search';
@@ -6,9 +6,9 @@ import { useSettings } from '@/renderer/hooks/use-settings';
 import { ollamaService } from '@/renderer/services/ollama/ollama.service';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
-import { Conversation } from './conversation/conversation';
-import { SUGGESTION_OPTIONS_ID, Searchbar } from './searchbar/searchbar';
-import { Toolbar } from './toolbar/toolbar';
+import { Conversation } from '@/renderer/features/ai-chat/conversation/conversation';
+import { SUGGESTION_OPTIONS_ID, Searchbar } from '@/renderer/features/ai-chat/searchbar/searchbar';
+import { Toolbar } from '@/renderer/features/ai-chat/toolbar/toolbar';
 
 export function AiChat() {
   const [streamedResponse, setStreamedResponse] = useState<string>('');

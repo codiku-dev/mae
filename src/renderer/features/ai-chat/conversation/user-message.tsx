@@ -1,5 +1,4 @@
 import { useAppStore } from "@/renderer/hooks/use-app-store";
-import { useState } from "react";
 
 export function UserMessage(p: { message: string }) {
     const { userName } = useAppStore();

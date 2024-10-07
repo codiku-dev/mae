@@ -1,11 +1,11 @@
 import React from 'react';
-import { Button } from '@/renderer/components/ui/button';
+import { Button } from '@/renderer/ui/button';
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-} from '@/renderer/components/ui/card';
+} from '@/renderer/ui/card';
 import { useToast } from '@/renderer/hooks/use-toast';
 import { Trash } from 'lucide-react';
 import {
@@ -13,7 +13,7 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from '@/renderer/components/ui/accordion';
+} from '@/renderer/ui/accordion';
 import { formatKbSize } from '@/renderer/libs/utils';
 import { useSearch } from '@/renderer/hooks/use-search';
 
