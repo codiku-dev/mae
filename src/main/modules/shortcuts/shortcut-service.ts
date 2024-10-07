@@ -16,9 +16,10 @@ export class ShortcutService {
   }
 
   public openCloseApp() {
-    if (windowService.getMainWindow()?.isVisible() === false) {
-      windowService.getMainWindow()?.show();
-    }
+    windowService.toggleOpenWithAnimation(
+      !windowService.getMainWindow().isVisible(),
+    );
+
     const currentTime = Date.now();
     if (currentTime - this.lastCallTime >= this.debounceTime) {
       this.lastCallTime = currentTime;
