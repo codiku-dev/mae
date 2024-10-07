@@ -9,6 +9,7 @@ import { ROUTES } from '../routes';
 import { AppLoader } from './pages/app-loader';
 import { HomePage } from './pages/home.page';
 import { SettingsPage } from './pages/settings.page';
+import { TutorialPage } from './pages/tutorial.page';
 
 export default function App() {
   return (
@@ -17,6 +18,7 @@ export default function App() {
         {/* <Route path={"/"} Component={Sandbox}></Route> */}
         <Route path={ROUTES.root} Component={AppLoader}>
           <Route path={ROUTES.home} Component={HomePage} />
+          <Route path={ROUTES.tutorial} Component={TutorialPage} />
           <Route path={ROUTES.settings} Component={SettingsPage} />
         </Route>
       </Routes>

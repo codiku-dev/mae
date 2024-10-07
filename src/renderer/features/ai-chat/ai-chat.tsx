@@ -9,11 +9,13 @@ import { useEffect, useRef, useState } from 'react';
 import { Conversation } from '@/renderer/features/ai-chat/conversation/conversation';
 import { SUGGESTION_OPTIONS_ID, Searchbar } from '@/renderer/features/ai-chat/searchbar/searchbar';
 import { Toolbar } from '@/renderer/features/ai-chat/toolbar/toolbar';
+import { log } from 'console';
+import { logToMain } from '@/renderer/libs/utils';
 
 export function AiChat() {
   const [streamedResponse, setStreamedResponse] = useState<string>('');
   const [isVisible, setIsVisible] = useState(false);
-  const { isDialogOpen } = useAppStore();
+  const { isDialogOpen, isFirstRun, setIsFirstRun } = useAppStore();
   const inputRef = useRef<HTMLInputElement>(null);
   const {
     createNewConversation,
@@ -39,11 +41,22 @@ export function AiChat() {
   const { getCurrentModel } = useSettings();
 
   useEffect(() => {
+    setIsVisible(true);
+  }, [])
+
+  useEffect(() => {
     window.electron.ipcRenderer.sendMessage(
       'on-searchbar-visibility-change',
       isVisible,
     );
   }, [isVisible]);
+
+  // useEffect(() => {
+  //   if (isFirstRun) {
+  //     setIsFirstRun(false);
+  //     setIsVisible(true);
+  //   }
+  // }, [isFirstRun])
 
   const clearSearch = async () => {
     await ollamaService.abortAllRequests();
@@ -68,6 +81,7 @@ export function AiChat() {
       'global-shortcut',
       (e) => {
         if (e.data.shortcut === 'CommandOrControl+Shift+P') {
+          logToMain("PRESS SHORTCUT !");
           setIsVisible((prev) => {
             return !prev;
           });
@@ -186,7 +200,7 @@ export function AiChat() {
   };
 
 
-
+  logToMain('AiChat rendered with isVisible' + isVisible);
 
 
   return (
@@ -208,6 +222,7 @@ export function AiChat() {
               opacity: number;
               y: number;
             }) => {
+              logToMain('onAnimationComplete');
               // if (definition.opacity === 0) {
               //   onClosed();
               // } else {

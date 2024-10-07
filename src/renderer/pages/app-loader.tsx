@@ -14,7 +14,7 @@ import { toast } from '@/renderer/hooks/use-toast';
 export const AppLoader = () => {
   const navigate = useNavigate();
   const [isDebug, setIsDebug] = useState(false);
-  const { setIsAppLoading, isAppLoading, setUserName } = useAppStore();
+  const { setIsAppLoading, isAppLoading, setUserName, isFirstRun, setIsFirstRun } = useAppStore();
 
   const { isAppLaunchedOnStartup, setAvailableModels, availableModels } =
     useSettings();
@@ -22,6 +22,7 @@ export const AppLoader = () => {
   const [isOllamaInstalled, setIsOllamaInstalled] = useState<boolean | null>(null);
 
   useEffect(() => {
+    // setIsFirstRun(true)
     beginInstallation()
   }, []);
 
@@ -65,9 +66,18 @@ export const AppLoader = () => {
   };
 
   const finishInstallation = async () => {
-    setIsOllamaInstalled(true);
     await loadInstalledModels();
+    setIsOllamaInstalled(true);
+    // if (isFirstRun) {
+    //   window.electron.ipcRenderer.invoke("request-open-window")
+    //   setTimeout(() => {
+    //     window.electron.ipcRenderer.sendMessage('navigate', ROUTES.tutorial);
+    //   }, 200);
+
+    // } else {
     window.electron.ipcRenderer.sendMessage('navigate', ROUTES.home);
+    // }
+
   };
 
 
@@ -107,9 +117,8 @@ export const AppLoader = () => {
       {isDebug && <DevTool />}
       <Toaster />
       <TooltipProvider delayDuration={100}>
-        {!isOllamaInstalled ? <InstallOllamaDialog onInstallationComplete={finishInstallation} /> :
-          <Outlet />
-        }
+        {!isOllamaInstalled && <InstallOllamaDialog onInstallationComplete={finishInstallation} />}
+        <Outlet />
       </TooltipProvider>
 
     </>

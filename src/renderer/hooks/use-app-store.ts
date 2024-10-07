@@ -5,18 +5,21 @@ const KEYS_TO_NOT_STORE = ['isAppLoading'];
 
 export type Store = {
   userName: string;
+  isFirstRun: boolean;
   isDialogOpen: boolean;
   isAppLoading: boolean;
   setIsDialogOpen: (isDialogOpen: boolean) => void;
   setIsAppLoading: (isAppLoading: boolean) => void;
   clear: () => void;
   setUserName: (userName: string) => void;
+  setIsFirstRun: (isFirstRun: boolean) => void;
 };
 
 const INITIAL_STATE = {
   isAppLoading: true,
   userName: '',
   isDialogOpen: false,
+  isFirstRun: true,
 };
 const useAppStore = create(
   devtools(
@@ -35,6 +38,9 @@ const useAppStore = create(
         },
         setIsAppLoading: (isAppLoading: boolean) => {
           set({ isAppLoading });
+        },
+        setIsFirstRun: (isFirstRun: boolean) => {
+          set({ isFirstRun });
         },
       })),
       {
