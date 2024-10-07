@@ -102,7 +102,6 @@ export class MenuService {
   }
 
   private handleSettings() {
-    console.log('EMIITING ', ROUTES.settings);
     ipcMain.emit('navigate', ROUTES.settings);
     windowService.getMainWindow().show();
     setTimeout(() => {

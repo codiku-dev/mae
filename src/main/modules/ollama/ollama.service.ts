@@ -36,7 +36,6 @@ export class OllamaService {
         'postinstall.sh',
       );
 
-      console.log('SPANWN');
       const child = spawn('sh', [scriptPath], {
         stdio: ['ignore', 'pipe', 'pipe'],
       });

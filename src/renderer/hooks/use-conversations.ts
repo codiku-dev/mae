@@ -54,7 +54,6 @@ const useConversations = create(
           );
         },
         createNewConversation: async (title: string): Promise<string> => {
-          console.log('createNewConversation()');
           const { conversationHistory } = get();
           const id = uuidv4();
           const newConversation: LLMConversationHistory = {
@@ -63,7 +62,6 @@ const useConversations = create(
             messages: [],
             createdAt: new Date().toISOString(),
           };
-          console.log('newConversation index ', conversationHistory.length);
           const newConversationHistory = [
             ...conversationHistory,
             newConversation,

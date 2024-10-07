@@ -7,7 +7,6 @@ export class SearchbarController {
     ipcMain.on('on-searchbar-visibility-change', (event, isVisible) => {
       windowService.toggleOpenWithAnimation(isVisible);
       global.isSearchOpen = isVisible;
-      console.log('isSearchOpen ', isVisible);
       menuService.refreshMenuLabels();
     });
 

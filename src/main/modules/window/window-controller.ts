@@ -8,7 +8,6 @@ export class WindowController {
     });
 
     ipcMain.handle('request-open-window', (e) => {
-      console.log('request-open-window');
       windowService.showWindow();
     });
 
