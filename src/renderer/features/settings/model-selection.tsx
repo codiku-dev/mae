@@ -21,6 +21,7 @@ import { Loader2 } from 'lucide-react';
 import { ollamaService } from '@/renderer/services/ollama/ollama.service';
 import { ModelFile } from '@/renderer/services/ollama/Modelfile';
 import { Controller, useFormContext } from 'react-hook-form';
+import { OllamaAPI } from '@/main/modules/ollama/ollama-api';
 
 type Props = {
   name: string;
@@ -76,7 +77,7 @@ export const ModelSelection = (p: Props) => {
   const confirmInstall = async () => {
     setInstallationStatus('loading');
     try {
-      await window.electron.ipcRenderer.invoke('pull-ollama-model', currentModelToInstall?.id);
+      await OllamaAPI.pullOllamaModel(currentModelToInstall?.id!);
       const modelFile = new ModelFile()
       modelFile.setFrom(currentModelToInstall?.id!)
       const responseCreateModel = await ollamaService.createOllamaModelFromModelFile(currentModelToInstall!.id + "-mia", modelFile)

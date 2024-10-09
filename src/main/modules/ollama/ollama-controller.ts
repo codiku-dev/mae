@@ -1,5 +1,5 @@
 import { ipcMain } from 'electron';
-import { ollamaService } from './ollama.service';
+import { ollamaService } from './ollama.-service';
 import { windowService } from '../window/window.service';
 
 export class OllamaController {

@@ -18,6 +18,7 @@ import { IndexedWebsiteSection } from './indexed-websites-section';
 import { LanguageSelectionSection } from '@/renderer/features/settings/language-selection-section';
 import { ModelSelection } from '@/renderer/features/settings/model-selection';
 import { StartupSection } from '@/renderer/features/settings/startup-section';
+import { WindowAPI } from '@/main/modules/window/window.-api';
 
 type FormValues = {
   isAppLaunchedOnStartup: boolean;
@@ -118,7 +119,7 @@ export function Settings() {
       className=""
       onClick={() => {
         window.electron.ipcRenderer.sendMessage('navigate', ROUTES.home);
-        window.electron.ipcRenderer.sendMessage('request-close-window');
+        WindowAPI.hideWindow();
       }}
     >
       <X className="h-6 w-6" />

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useToast } from '@/renderer/hooks/use-toast';
 import { LoadingSpinner } from '@/renderer/ui/loading-spinner';
-import { OllamaAPI } from '@/main/modules/ollama/ollama.api';
+import { OllamaAPI } from '@/main/modules/ollama/ollama-api';
 
 interface Props {
     onInstallationComplete: () => void;

@@ -7,7 +7,7 @@ import { OllamaController } from './modules/ollama/ollama-controller';
 import { SearchbarController } from './modules/searchbar/searchbar-controller';
 import { ShortcutController } from './modules/shortcuts/shortcut-controller';
 import { WindowController } from './modules/window/window-controller';
-import { ollamaService } from './modules/ollama/ollama.service';
+import { ollamaService } from './modules/ollama/ollama.-service';
 import { docVectorStoreService } from './modules/doc-vector-store/doc-vector-store-service';
 import { menuService } from './modules/menu/menu-service';
 import { windowService } from './modules/window/window.service';

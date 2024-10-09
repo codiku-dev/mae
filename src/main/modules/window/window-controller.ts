@@ -3,10 +3,6 @@ import { windowService } from './window.service';
 
 export class WindowController {
   constructor() {
-    ipcMain.handle('request-focus-window', () => {
-      windowService.focusWindow();
-    });
-
     ipcMain.handle('request-open-window', (e) => {
       windowService.showWindow();
     });
