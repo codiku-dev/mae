@@ -68,9 +68,7 @@ export const AppLoader = () => {
     await loadInstalledModels();
     setIsOllamaInstalled(true);
     if (isFirstRun) {
-
       window.electron.ipcRenderer.sendMessage('navigate', ROUTES.tutorial);
-
     } else {
       window.electron.ipcRenderer.sendMessage('navigate', ROUTES.home);
     }

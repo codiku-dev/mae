@@ -7,11 +7,14 @@ export class ModelFile {
   constructor() {
     this.from = 'llama3.2:1b';
     this.prefix =
-      'You are a concise and direct answering assistant. Follow these guidelines:';
+      'You are a helpful assistant. Provide clear, concise responses and use Markdown formatting when appropriate.';
     this.suffix = '';
     // 'Failure to adhere to these guidelines will result in penalties.';
     this.rules = [
-      'Use markdown formatting when it enhances readability or structure.',
+      // '1. When responding, use **Markdown** to format your answers. Follow these simple rules:',
+      // '2. Use `#` for headers.',
+      // '3. Use lists (`*` for bullet points, `1.` for numbered).',
+      // '4. Use backticks (`` ` ``) for code blocks.',
       // 'For code snippets or commands, always use properly formatted code blocks with appropriate language syntax highlighting.',
       // 'Use tables for presenting structured data or comparisons.',
       // 'Utilize ordered or unordered lists for enumerating items or steps.',

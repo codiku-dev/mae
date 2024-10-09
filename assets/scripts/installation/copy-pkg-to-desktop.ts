@@ -14,12 +14,12 @@ const packageJsonRelease = JSON.parse(
   ),
 );
 
-const fileName = `${packageJsonRoot.build.productName}-${packageJsonRelease.version}-universal.pkg`;
-
+// const fileNamePkg = `${packageJsonRoot.build.productName}-${packageJsonRelease.version}-universal.pkg`;
+const fileNameDmg = `${packageJsonRoot.build.productName}-${packageJsonRelease.version}-universal.dmg`;
 function copyPkgToDesktop() {
   //copy pkg to desktop
   execSync(
-    `cp ${path.join(__dirname, `../../../release/build/${fileName}`)} ${path.join(__dirname, '../../../../../../Desktop/')}`,
+    `cp ${path.join(__dirname, `../../../release/build/${fileNameDmg}`)} ${path.join(__dirname, '../../../../../../Desktop/')}`,
   );
 }
 

@@ -18,12 +18,12 @@ export class HttpService {
     event: Electron.IpcMainInvokeEvent,
     url: string,
   ): Promise<string> {
-    logToRenderer(windowService.getMainWindow(), `Fetching: ${url}`);
+    logToRenderer(`Fetching: ${url}`);
 
     try {
       const response = await net.fetch(url);
       const text = await response.text();
-      logToRenderer(windowService.getMainWindow(), `Response found for ${url}`);
+      logToRenderer(`Response found for ${url}`);
       return text;
     } catch (error) {
       logToRenderer(

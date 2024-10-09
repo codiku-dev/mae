@@ -37,7 +37,7 @@
     "prestart": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.main.dev.ts",
     "start": "ts-node ./.erb/scripts/check-port-in-use.js && npm run prestart && npm run start:renderer",
     "start:main": "concurrently -k \"cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --watch --config ./.erb/configs/webpack.config.main.dev.ts\" \"electronmon .\"",
-    "package": "tsx ./.erb/scripts/clean.js dist && npm run build && electron-builder build --publish never && npm run build:dll && ts-node ./src/scripts/installation/copy-pkg-to-desktop.ts",
+    "package": "tsx ./.erb/scripts/clean.js dist && npm run build && electron-builder build --publish never && npm run build:dll && ts-node ./assets/scripts/installation/copy-pkg-to-desktop.ts",
     "rebuild": "electron-rebuild --parallel --types prod,dev,optional --module-dir release/app",
     "build": "concurrently \"npm run build:main\" \"npm run build:renderer\"",
     "build:dll": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.renderer.dev.dll.ts",
@@ -242,12 +242,6 @@
       "sign": ".erb/scripts/notarize.js",
       "notarize": false,
       "target": [
-        {
-          "target": "pkg",
-          "arch": [
-            "universal"
-          ]
-        },
         {
           "target": "dmg",
           "arch": [

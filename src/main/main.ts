@@ -26,7 +26,7 @@ app.disableHardwareAcceleration();
 
 function initWindow(): BrowserWindow {
   // const { width, height } = screen.getPrimaryDisplay().workAreaSize;
-  global.DEBUG = false;
+  global.DEBUG = true;
   global.isSearchOpen = false;
   global.path = ROUTES.root;
   let mainWindow = new BrowserWindow({

@@ -1,10 +1,12 @@
 import { exec } from 'child_process';
 import { promises as fsPromises } from 'fs';
 import { promisify } from 'util';
-import { sleep } from '../../../libs/utils';
+import { getResourcesPath, logToRenderer, sleep } from '../../../libs/utils';
 import { OllamaConfig } from '@/renderer/services/ollama/ollama.config';
 import path from 'path';
 import { spawn } from 'child_process';
+import { windowService } from '../window/window.service';
+import { app } from 'electron';
 
 const execAsync = promisify(exec);
 
@@ -24,17 +26,17 @@ export class OllamaService {
     return OllamaService.instance;
   }
 
-  public async install(): Promise<boolean> {
-    console.log('BEGINING OF INSTALL FUNCTION');
+  public async install(
+    onProgress: (progress: string) => void,
+  ): Promise<boolean> {
+    logToRenderer('BEGINNING OF INSTALL FUNCTION');
+
     return new Promise((resolve, reject) => {
-      const scriptPath = path.join(
-        __dirname,
-        '..',
-        '..',
-        'build',
-        'pkg-scripts',
-        'postinstall.sh',
+      // For packaged app (DMG)
+      let scriptPath = getResourcesPath(
+        '/assets/scripts/installation/install.sh',
       );
+      logToRenderer(`Script path: ${scriptPath}`);
 
       const child = spawn('sh', [scriptPath], {
         stdio: ['ignore', 'pipe', 'pipe'],
@@ -42,38 +44,50 @@ export class OllamaService {
 
       child.stdout.on('data', (data) => {
         console.log('Ollama installation output:', data.toString());
+        logToRenderer(data.toString());
+        onProgress(data.toString());
       });
 
       child.stderr.on('data', (data) => {
         console.error('Command error output:', data.toString());
+        logToRenderer(data.toString());
+        onProgress(data.toString());
       });
 
       child.on('close', (code) => {
         if (code === 0) {
           console.log('Ollama installation completed successfully.');
+          logToRenderer('Ollama installation completed successfully.');
+          onProgress('Ollama installation completed successfully.');
           resolve(true);
         } else {
           console.error(`Ollama installation failed with code ${code}`);
+          logToRenderer(`Ollama installation failed with code ${code}`);
+          onProgress(`Ollama installation failed with code ${code}`);
           reject(new Error(`Installation failed with code ${code}`));
         }
       });
 
       child.on('exit', () => {
-        console.log('Ollama installation completed successfully. EXITING');
+        console.log('Ollama installation. EXITING');
+        logToRenderer('Ollama installation. EXITING');
         resolve(true);
       });
     });
   }
 
   public async pullModel(modelName: string) {
+    logToRenderer(`Pulling model: ${modelName}`);
     try {
       const { stdout, stderr } = await execAsync(
         `${BASE_LOCAL_BIN_PATH}/ollama pull ${modelName}`,
       );
       if (stderr) {
+        logToRenderer(stderr);
         console.error('Command error output:', stderr);
       }
     } catch (error) {
+      logToRenderer((error as Error).toString());
       console.error('Error executing command:', error);
     }
   }
@@ -100,13 +114,16 @@ export class OllamaService {
       if (isRunning) {
       } else {
         console.error('Mia: OLLAMA failed to start.');
+        logToRenderer('Mia: OLLAMA failed to start.');
       }
       ollamaProcess.on('error', (error) => {
         console.error(`Mia: OLLAMA error: ${error}`);
+        logToRenderer(`Mia: OLLAMA error: ${error}`);
       });
       ollamaProcess.on('close', (code) => {
         if (code !== 0) {
           console.error(`Mia: OLLAMA process exited with code ${code}`);
+          logToRenderer(`Mia: OLLAMA process exited with code ${code}`);
         }
       });
     } else {
@@ -122,6 +139,7 @@ export class OllamaService {
       }
     } catch (error) {
       console.error('Mia: OLLAMA failed to stop. Probably already stopped.');
+      logToRenderer('Mia: OLLAMA failed to stop. Probably already stopped.');
     }
   }
 

@@ -30,7 +30,8 @@ export type Channels =
   | 'is-app-packaged'
   | 'pull-ollama-model'
   | 'install-ollama'
-  | 'check-ollama-installed';
+  | 'check-ollama-installed'
+  | 'install-ollama-progress';
 
 const electronHandler = {
   ipcRenderer: {
@@ -51,6 +52,9 @@ const electronHandler = {
     },
     invoke(channel: Channels, ...args: any[]) {
       return ipcRenderer.invoke(channel, ...args);
+    },
+    removeListener(channel: Channels, func: (...args: any[]) => void) {
+      ipcRenderer.removeListener(channel, func);
     },
   },
 };

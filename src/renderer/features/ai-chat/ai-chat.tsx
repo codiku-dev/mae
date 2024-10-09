@@ -86,9 +86,6 @@ export function AiChat() {
     await clearSearch();
   };
 
-
-
-
   useEffect(() => {
     const handleKeyUp = (e: KeyboardEvent) => {
       if (!isDialogOpen && e.key === 'Escape') {

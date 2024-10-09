@@ -1,5 +1,6 @@
 import { ipcMain } from 'electron';
 import { ollamaService } from './ollama.service';
+import { windowService } from '../window/window.service';
 
 export class OllamaController {
   constructor() {
@@ -7,7 +8,12 @@ export class OllamaController {
       await ollamaService.pullModel(modelName);
     });
     ipcMain.handle('install-ollama', async (event) => {
-      await ollamaService.install();
+      await ollamaService.install((output) => {
+        windowService
+          .getMainWindow()
+          .webContents.send('install-ollama-progress', output);
+      });
+
       return true;
     });
     ipcMain.handle('check-ollama-installed', async (event) => {

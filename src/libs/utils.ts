@@ -1,14 +1,14 @@
-import { BrowserWindow } from 'electron';
+import { windowService } from '@/main/modules/window/window.service';
 import path from 'path';
 export function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export function logToRenderer(
-  mainWindow: BrowserWindow | null,
-  message: string,
-) {
-  mainWindow?.webContents.executeJavaScript("console.log('" + message + "');");
+export function logToRenderer(message: string) {
+  const escapedMessage = JSON.stringify(message);
+  windowService
+    .getMainWindow()
+    ?.webContents.executeJavaScript(`console.log(${escapedMessage});`);
 }
 
 export function getResourcesPath(assetPath: string) {

@@ -81,18 +81,18 @@ export class DocVectorStoreService {
   }
 
   public async addDocs(htmlFiles: WebsiteScrapedContent[]) {
-    logToRenderer(windowService.getMainWindow(), 'Adding docs to vector store');
+    logToRenderer('Adding docs to vector store');
     if (htmlFiles.length === 0) {
-      logToRenderer(windowService.getMainWindow(), 'No HTML files to add');
+      logToRenderer('No HTML files to add');
       return;
     }
     const documentsChunks = await this.chunkifyDocs(htmlFiles);
 
     await this.vectorStore?.addDocuments(documentsChunks);
 
-    logToRenderer(windowService.getMainWindow(), 'Saving vector store');
+    logToRenderer('Saving vector store');
     // await this.vectorStore?.save(this.vectorStorePath);
-    logToRenderer(windowService.getMainWindow(), 'Vector store saved');
+    logToRenderer('Vector store saved');
   }
 
   public async searchDocs(query: string, qty: number) {

@@ -9,14 +9,25 @@ interface Props {
 }
 
 export const InstallOllamaDialog = (p: Props) => {
+    const [output, setOutput] = useState<string[]>([]);
     const { toast } = useToast();
+
+    const appendLogs = (output_: string) => {
+        setOutput(prev => [...prev, output_]);
+    }
     useEffect(() => {
         installOllama();
+        window.electron.ipcRenderer.on("install-ollama-progress", appendLogs);
+        return () => {
+            window.electron.ipcRenderer.removeListener("install-ollama-progress", appendLogs);
+        };
     }, []);
 
     const installOllama = async () => {
         try {
+            console.log('Installing Ollama...');
             await window.electron.ipcRenderer.invoke('install-ollama')
+            console.log('Ollama installed');
             p.onInstallationComplete();
         } catch (error) {
             toast({
@@ -29,7 +40,7 @@ export const InstallOllamaDialog = (p: Props) => {
     };
 
     return (
-        <div className=' fixed top-[30%] p-8 shadow-lg m-20 bg-white rounded-lg'>
+        <div className='fixed top-[30%] p-8 shadow-lg m-20 bg-white rounded-lg max-w-2xl w-full'>
             <div className='text-2xl font-semibold mb-4'>
                 Installing Ollama (~440mb)
             </div>
@@ -38,7 +49,11 @@ export const InstallOllamaDialog = (p: Props) => {
                     <LoadingSpinner className="mr-2" />
                     <p>Mia needs the Ollama application to run. Please wait while Ollama is being installed...</p>
                 </div>
-                <p className='text-sm'>Don't forget to uninstall the Ollama application if you decide to uninstall Mia.</p>
+                <div className='mt-4 bg-gray-100 p-4 rounded-md max-h-60 overflow-y-auto'>
+                    {output.map((line, index) => (
+                        <p key={index} className='text-sm font-mono mb-1'>{line}</p>
+                    ))}
+                </div>
             </div>
         </div>
     );
