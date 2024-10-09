@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useToast } from '@/renderer/hooks/use-toast';
 import { LoadingSpinner } from '@/renderer/ui/loading-spinner';
-import { CheckCircle } from 'lucide-react';
-import { useAppStore } from '@/renderer/hooks/use-app-store';
+import { OllamaAPI } from '@/main/modules/ollama/ollama.api';
 
 interface Props {
     onInstallationComplete: () => void;
@@ -17,16 +16,16 @@ export const InstallOllamaDialog = (p: Props) => {
     }
     useEffect(() => {
         installOllama();
-        window.electron.ipcRenderer.on("install-ollama-progress", appendLogs);
+        OllamaAPI.onInstallationProgress(appendLogs);
         return () => {
-            window.electron.ipcRenderer.removeListener("install-ollama-progress", appendLogs);
+            OllamaAPI.removeInstallationProgressListener(appendLogs);
         };
     }, []);
 
     const installOllama = async () => {
         try {
             console.log('Installing Ollama...');
-            await window.electron.ipcRenderer.invoke('install-ollama')
+            await OllamaAPI.installOllama();
             console.log('Ollama installed');
             p.onInstallationComplete();
         } catch (error) {

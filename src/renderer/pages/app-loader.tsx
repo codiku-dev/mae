@@ -10,6 +10,7 @@ import { useAppStore } from '@/renderer/hooks/use-app-store';
 import { useSettings } from '@/renderer/hooks/use-settings';
 import { InstallOllamaDialog } from '@/renderer/features/installation/install-ollama-dialog';
 import { toast } from '@/renderer/hooks/use-toast';
+import { OllamaAPI } from '@/main/modules/ollama/ollama.api';
 
 export const AppLoader = () => {
   const navigate = useNavigate();
@@ -45,7 +46,7 @@ export const AppLoader = () => {
 
   const checkOllamaInstallation = async () => {
     try {
-      const installed = await window.electron.ipcRenderer.invoke('check-ollama-installed');
+      const installed = await OllamaAPI.checkOllamaInstalled();
       setIsAppLoading(false)
       if (!installed) {
         window.electron.ipcRenderer.invoke("request-open-window");
