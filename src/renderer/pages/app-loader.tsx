@@ -11,7 +11,7 @@ import { useSettings } from '@/renderer/hooks/use-settings';
 import { InstallOllamaDialog } from '@/renderer/features/installation/install-ollama-dialog';
 import { toast } from '@/renderer/hooks/use-toast';
 import { OllamaAPI } from '@/main/modules/ollama/ollama-api';
-import { WindowAPI } from '@/main/modules/window/window.-api';
+import { WindowAPI } from '@/main/modules/window/window-api';
 
 export const AppLoader = () => {
   const navigate = useNavigate();

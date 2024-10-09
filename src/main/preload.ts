@@ -7,7 +7,6 @@ export type Channels =
   | 'log'
   | 'request-close-window'
   | 'request-open-window'
-  | 'request-focus-window'
   | 'copy-text-to-clipboard-request'
   | 'log-renderer'
   | 'user-info-request'

@@ -18,7 +18,7 @@ import { IndexedWebsiteSection } from './indexed-websites-section';
 import { LanguageSelectionSection } from '@/renderer/features/settings/language-selection-section';
 import { ModelSelection } from '@/renderer/features/settings/model-selection';
 import { StartupSection } from '@/renderer/features/settings/startup-section';
-import { WindowAPI } from '@/main/modules/window/window.-api';
+import { WindowAPI } from '@/main/modules/window/window-api';
 
 type FormValues = {
   isAppLaunchedOnStartup: boolean;
