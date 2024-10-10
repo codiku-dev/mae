@@ -25,18 +25,4 @@ export class ApplicationAPI {
   public static copyTextToClipboard(text: string) {
     window.electron.ipcRenderer.invoke('copy-text-to-clipboard-request', text);
   }
-
-  public static onGlobalShortcut(
-    callback: (data: { shortcut: string }) => void,
-  ) {
-    window.electron.ipcRenderer.on('global-shortcut', (event, data) =>
-      callback(data),
-    );
-  }
-
-  public static removeGlobalShortcutListener(
-    callback: (data: { shortcut: string }) => void,
-  ) {
-    window.electron.ipcRenderer.removeListener('global-shortcut', callback);
-  }
 }

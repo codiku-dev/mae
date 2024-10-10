@@ -1,5 +1,5 @@
-import { app, BrowserWindow /* ,screen */, screen } from 'electron';
-import path from 'path';
+import { logToMain } from '@/renderer/libs/utils';
+import { BrowserWindow } from 'electron';
 
 class WindowService {
   private static instance: WindowService;
@@ -46,8 +46,8 @@ class WindowService {
     if (this.mainWindow) {
       // Check if the window is already in the desired state
       if (
-        (shouldOpen && this.mainWindow.getOpacity() === 1) ||
-        (!shouldOpen && this.mainWindow.getOpacity() === 0)
+        (shouldOpen && this.mainWindow.isVisible()) ||
+        (!shouldOpen && !this.mainWindow.isVisible())
       ) {
         return; // Do nothing if the window is already in the desired state
       }

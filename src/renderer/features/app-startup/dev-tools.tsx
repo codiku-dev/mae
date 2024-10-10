@@ -3,6 +3,7 @@ import { useAppStore } from '@/renderer/hooks/use-app-store';
 import { useConversations } from '@/renderer/hooks/use-conversations';
 import { useSettings } from '@/renderer/hooks/use-settings';
 import { useSearch } from '@/renderer/hooks/use-search';
+import { useLocation } from 'react-router-dom';
 
 const stores = {
   appStore: useAppStore,
@@ -12,6 +13,7 @@ const stores = {
 };
 
 export const DevTool: React.FC = () => {
+  const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<keyof typeof stores>('appStore');
   const [storeContents, setStoreContents] = useState<Record<string, string>>({});
@@ -40,7 +42,7 @@ export const DevTool: React.FC = () => {
         className="fixed bottom-4 right-4 z-50 cursor-pointer rounded-full bg-blue-500 p-3 text-white shadow-lg"
         onClick={() => setIsOpen(!isOpen)}
       >
-        🛠️
+        path: {location.pathname}
       </div>
       {isOpen && (
         <div

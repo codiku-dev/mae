@@ -17,7 +17,6 @@ export class NavigatorService {
     if (pathValue !== ROUTES.home) {
       global.isSearchOpen = false;
     }
-    windowService.toggleOpenWithAnimation(true);
     global.path = pathValue;
     windowService.getMainWindow().webContents.send('navigate', pathValue);
   }

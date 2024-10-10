@@ -7,6 +7,7 @@ import { windowService } from './modules/window/window.service';
 import { onStop } from './on-stop';
 import { OnStart } from './on-start';
 import { ROUTES } from '@/routes';
+import { navigatorService } from './modules/navigator/navigator-service';
 
 class AppUpdater {
   constructor() {
@@ -28,7 +29,7 @@ function initWindow(): BrowserWindow {
   // const { width, height } = screen.getPrimaryDisplay().workAreaSize;
   global.DEBUG = true;
   global.isSearchOpen = false;
-  global.path = ROUTES.root;
+  global.path = ROUTES.idle;
   let mainWindow = new BrowserWindow({
     height: 800,
     width: 800,
@@ -85,8 +86,11 @@ app.on('before-quit', async () => {
 app
   .whenReady()
   .then(() => {
+    console.log('app.whenReady()');
     let mainWindow = initWindow();
+    console.log('initWindow() done');
     windowService.setMainWindow(mainWindow);
+    console.log('initWsetMainWindowindow() done');
     OnStart.getInstance();
     mainWindow.loadURL(resolveHtmlPath('index.html'));
     // Open urls in the user's browser

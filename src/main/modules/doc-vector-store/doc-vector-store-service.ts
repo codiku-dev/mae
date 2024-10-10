@@ -95,7 +95,6 @@ export class DocVectorStoreService {
   public async searchDocs(query: string, qty: number) {
     try {
       const response = await this.vectorStore?.similaritySearch(query, qty);
-      // const response = await retriever?.invoke(query);
       return response;
     } catch (error) {
       console.error('Error searching docs:', error);

@@ -2,6 +2,8 @@ import { getResourcesPath } from '@/libs/utils';
 import { ROUTES } from '@/routes';
 import { app, ipcMain, Menu, nativeImage, Tray } from 'electron';
 import { windowService } from '../window/window.service';
+import { shortcutService } from '../shortcuts/shortcut-service';
+import { navigatorService } from '../navigator/navigator-service';
 
 export class MenuService {
   private static instance: MenuService;
@@ -26,7 +28,7 @@ export class MenuService {
     const template = [
       {
         label: 'Open Mia (⌘+⇧+p)',
-        click: () => this.handleOpenClose(),
+        click: () => this.handleOpenCloseAiChat(),
         commandId: 1, // Replace with actual MENU.OPEN_CLOSE.id
       },
       {
@@ -90,15 +92,15 @@ export class MenuService {
     this.setTrayIcon(getResourcesPath('/assets/icons/16x16.png'));
   }
 
-  private handleOpenClose() {
-    if (global.path === ROUTES.home) {
-      ipcMain.emit('request-show-searchbar', !global.isSearchOpen);
-    } else {
-      ipcMain.emit('navigate', ROUTES.home);
-      setTimeout(() => {
-        ipcMain.emit('request-show-searchbar', true);
-      }, 500);
+  private handleOpenCloseAiChat() {
+    console.log('handleOpenCloseAiChat ', 'currnet global', global.path);
+    if (global.path !== ROUTES.home) {
+      console.log('NOW GO HOME');
+      navigatorService.navigate(ROUTES.home);
     }
+    setTimeout(() => {
+      shortcutService.emitShortCut('CommandOrControl+Shift+P');
+    }, 500);
   }
 
   private handleSettings() {

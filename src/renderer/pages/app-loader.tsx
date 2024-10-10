@@ -1,6 +1,6 @@
 import { ollamaService } from '@/renderer/services/ollama/ollama.service';
 import { useEffect, useState } from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate, useRoutes } from 'react-router-dom';
 import { ROUTES } from '@/routes';
 import { DevTool } from '@/renderer/features/app-startup/dev-tools';
 import { SplashScreen } from '@/renderer/features/app-startup/splash-screen';
@@ -13,12 +13,14 @@ import { toast } from '@/renderer/hooks/use-toast';
 import { OllamaAPI } from '@/main/modules/ollama/ollama-api';
 import { WindowAPI } from '@/main/modules/window/window-api';
 import { ApplicationAPI } from '@/main/modules/application/application-api';
+import { NavigatorAPI } from '@/main/modules/navigator/navigator-api';
+import { logToMain } from '../libs/utils';
 
 export const AppLoader = () => {
   const navigate = useNavigate();
   const [isDebug, setIsDebug] = useState(false);
   const { setIsAppLoading, isAppLoading, setUserName, isFirstRun, setIsFirstRun } = useAppStore();
-
+  const { pathname } = useLocation()
   const { isAppLaunchedOnStartup, setAvailableModels, availableModels } =
     useSettings();
 
@@ -32,7 +34,8 @@ export const AppLoader = () => {
     loadUserInfo();
     loadIsDebug();
 
-    await checkOllamaInstallation()
+    // await checkOllamaInstallation()
+    await finishInstallation()
   }
 
   async function loadUserInfo() {
@@ -47,6 +50,7 @@ export const AppLoader = () => {
 
 
   const checkOllamaInstallation = async () => {
+    logToMain("checkOllamaInstallation")
     try {
       const installed = await OllamaAPI.checkOllamaInstalled();
       setIsAppLoading(false)
@@ -68,18 +72,21 @@ export const AppLoader = () => {
   };
 
   const finishInstallation = async () => {
+    logToMain("finishInstallation")
     await loadInstalledModels();
     setIsOllamaInstalled(true);
     if (isFirstRun) {
-      window.electron.ipcRenderer.sendMessage('navigate', ROUTES.tutorial);
+      navigate(ROUTES.tutorial);
     } else {
-      window.electron.ipcRenderer.sendMessage('navigate', ROUTES.home);
+      navigate(ROUTES.idle);
     }
 
   };
 
 
+
   async function loadInstalledModels() {
+    logToMain("loadInstalledModels")
     const ollamaInstalledModels = await ollamaService.listOllamaInstalledModels();
     const installedModelsIds = ollamaInstalledModels.map(
       (model) => model.model,
@@ -93,29 +100,29 @@ export const AppLoader = () => {
     setAvailableModels(newAvailableModels);
   }
 
-  useEffect(() => {
-    const unsubscribe = window.electron.ipcRenderer.on(
-      'navigate',
-      (path: string) => {
-        navigate(path);
-      },
-    );
+  // useEffect(() => {
+  //   const unsubscribe = NavigatorAPI.onNavigate(
+  //     (path) => {
+  //       logToMain("NAVIGATE FRONT TO " + path)
+  //       navigate(path);
+  //     },
+  //   );
 
-    return () => {
-      unsubscribe();
-    };
-  }, [navigate]);
+  //   return () => {
+  //     NavigatorAPI.removeNavigateListener(unsubscribe);
+  //   };
+  // }, []);
 
-  if (isAppLoading || isOllamaInstalled === null) {
-    return isAppLaunchedOnStartup || isDebug ? null : <SplashScreen />;
-  }
+  // if (isAppLoading || isOllamaInstalled === null) {
+  //   return isAppLaunchedOnStartup || isDebug ? null : <SplashScreen />;
+  // }
 
   return (
     <>
       {isDebug && <DevTool />}
       <Toaster />
       <TooltipProvider delayDuration={100}>
-        {!isOllamaInstalled && <InstallOllamaDialog onInstallationComplete={finishInstallation} />}
+        {/* {!isOllamaInstalled && <InstallOllamaDialog onInstallationComplete={finishInstallation} />} */}
         <Outlet />
       </TooltipProvider>
 

@@ -9,6 +9,7 @@ export class DocVectorStoreController {
       'add-vector-docs',
       async (event, websites: WebsiteScrapedContent[]) => {
         await docVectorStoreService.addDocs(websites);
+        console.log('Event handled: add-vector-docs');
       },
     );
 
@@ -32,13 +33,14 @@ export class DocVectorStoreController {
         });
 
         await Promise.all(deletePromises);
-
+        console.log('Event handled: delete-vector-doc');
         return docsToDelete.map((d) => d.document.id);
       },
     );
 
     ipcMain.handle('delete-all-vector-doc', async () => {
       await docVectorStoreService.deleteAllDocs();
+      console.log('Event handled: delete-all-vector-doc');
     });
 
     ipcMain.handle(
@@ -52,6 +54,7 @@ export class DocVectorStoreController {
         const aggregation = relevantDocuments
           ?.map((r) => r.pageContent)
           .join('');
+        console.log('Event handled: find-vector-doc');
         return aggregation || '';
       },
     );
@@ -60,6 +63,7 @@ export class DocVectorStoreController {
       'add-doc-in-memory',
       async (event, websites: WebsiteScrapedContent[]) => {
         await docVectorStoreService.addDocInMemory(websites);
+        console.log('Event handled: add-doc-in-memory');
       },
     );
 
@@ -71,13 +75,16 @@ export class DocVectorStoreController {
       const relevantDocAggregation = relevantDocuments
         ?.map((r) => r.pageContent)
         .join('');
+      console.log('Event handled: search-doc-in-memory');
       return relevantDocAggregation;
     });
 
     ipcMain.handle('delete-all-doc-in-memory', async (event) => {
       await docVectorStoreService.deleteAllDocsInMemory();
+      console.log('Event handled: delete-all-doc-in-memory');
       return 'ok';
     });
+
     console.log('DocVectorStoreController initialized');
   }
 }

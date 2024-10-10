@@ -1,4 +1,3 @@
-import { BrowserWindow, globalShortcut } from 'electron';
 import { windowService } from '../window/window.service';
 
 export class ShortcutService {
@@ -19,9 +18,9 @@ export class ShortcutService {
     const currentTime = Date.now();
     if (currentTime - this.lastCallTime >= this.debounceTime) {
       this.lastCallTime = currentTime;
-      windowService.getMainWindow()?.webContents.send('global-shortcut', {
-        data: { shortcut },
-      });
+      windowService
+        .getMainWindow()
+        ?.webContents.send('global-shortcut', shortcut);
     }
   }
 }

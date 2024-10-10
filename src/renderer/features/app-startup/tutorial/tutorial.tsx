@@ -3,22 +3,19 @@ import { useAppStore } from '@/renderer/hooks/use-app-store';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/renderer/ui/dialog';
 import { CheckCircle } from 'lucide-react';
 import { ROUTES } from '@/routes';
+import { NavigatorAPI } from '@/main/modules/navigator/navigator-api';
+import { WindowAPI } from '@/main/modules/window/window-api';
+import { ShortcutAPI } from '@/main/modules/shortcuts/shortcut-api';
 
 export const Tutorial = () => {
 
     const { setIsFirstRun } = useAppStore();
 
     useEffect(function addOpenCloseListener() {
-        const unsubscribeGlobalShortcut = window.electron.ipcRenderer.on(
-            'global-shortcut',
-            (e) => {
-                if (e.data.shortcut === 'CommandOrControl+Shift+P') {
+        const unsubscribeGlobalShortcut = ShortcutAPI.onGlobalShortcut(
+            (shortcut) => {
+                if (shortcut === 'CommandOrControl+Shift+P') {
                     setIsFirstRun(false);
-                    window.electron.ipcRenderer.sendMessage('navigate', ROUTES.home);
-                    setTimeout(() => {
-                        window.electron.ipcRenderer.invoke("request-show-searchbar", true)
-                    }, 500);
-
                 }
             },
         );
@@ -32,7 +29,7 @@ export const Tutorial = () => {
         <Dialog open onOpenChange={(open) => {
             if (!open) {
                 setIsFirstRun(false);
-                window.electron.ipcRenderer.sendMessage('navigate', ROUTES.home);
+                NavigatorAPI.navigate(ROUTES.idle);
             }
         }}>
             <DialogContent>

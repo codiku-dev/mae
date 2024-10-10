@@ -3,20 +3,27 @@ import { useAppStore } from '@/renderer/hooks/use-app-store';
 import { useConversations } from '@/renderer/hooks/use-conversations';
 import { useSearch } from '@/renderer/hooks/use-search';
 import { useSettings } from '@/renderer/hooks/use-settings';
-import { ollamaService } from '@/renderer/services/ollama/ollama.service';
+import { ollamaService, } from '@/renderer/services/ollama/ollama.service';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 import { Conversation } from '@/renderer/features/ai-chat/conversation/conversation';
 import { SUGGESTION_OPTIONS_ID, Searchbar } from '@/renderer/features/ai-chat/searchbar/searchbar';
 import { Toolbar } from '@/renderer/features/ai-chat/toolbar/toolbar';
-import { logToMain } from '@/renderer/libs/utils';
 import { DocVectorStoreAPI } from '@/main/modules/doc-vector-store/doc-vector-store-api';
+import { ROUTES } from '@/routes';
+import { NavigatorAPI } from '@/main/modules/navigator/navigator-api';
+import { logToMain } from '@/renderer/libs/utils';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { ShortcutAPI } from '@/main/modules/shortcuts/shortcut-api';
+import { WindowAPI } from '@/main/modules/window/window-api';
 
 export function AiChat() {
   const [streamedResponse, setStreamedResponse] = useState<string>('');
   const [isVisible, setIsVisible] = useState(false);
   const { isDialogOpen } = useAppStore();
   const inputRef = useRef<HTMLInputElement>(null);
+  const navigate = useNavigate()
+  const { pathname } = useLocation()
   const {
     createNewConversation,
     addMessageToCurrentConversation,
@@ -40,35 +47,20 @@ export function AiChat() {
   } = useSearch();
   const { getCurrentModel } = useSettings();
 
-  useEffect(function addOpenCloseListener() {
-
-    const unsubscribeGlobalShortcut = window.electron.ipcRenderer.on(
-      'global-shortcut',
-      (e) => {
-        if (e.data.shortcut === 'CommandOrControl+Shift+P') {
-          setIsVisible((prev) => {
-            return !prev;
-          });
-        }
-      },
-    );
-
-    return () => {
-      unsubscribeGlobalShortcut();
-    };
+  useEffect(() => {
+    setIsVisible(true);
   }, []);
 
-  useEffect(() => {
-    logToMain("on-searchbar-visibility-change")
-    window.electron.ipcRenderer.once("reply-show-searchbar", (isVisiblePayload) => {
-      setIsVisible(isVisiblePayload);
-    })
-
-    window.electron.ipcRenderer.sendMessage(
-      'on-searchbar-visibility-change',
-      isVisible,
-    );
-  }, [isVisible]);
+  useEffect(function addOpenCloseListener() {
+    const handleGoiIdle = () => {
+      setIsVisible(false)
+      WindowAPI.toggleWindowWithAnimation(false)
+    }
+    ShortcutAPI.addGlobalShortcutListener(handleGoiIdle)
+    return () => {
+      ShortcutAPI.removeGlobalShortcutListener(handleGoiIdle);
+    };
+  }, [pathname]);
 
   const clearSearch = async () => {
     await ollamaService.abortAllRequests();
@@ -207,6 +199,11 @@ export function AiChat() {
               stiffness: 300,
               damping: 30,
               duration: 0.15,
+            }}
+            onAnimationComplete={(definition: { opacity: number, y: number }) => {
+              if (definition.opacity === 0) {
+                navigate(ROUTES.idle)
+              }
             }}
           >
             <div className="flex flex-col">
