@@ -1,13 +1,10 @@
 import { logToRenderer } from '@/libs/utils';
 import { WebsiteScrapedContent } from '@/renderer/hooks/use-search';
 import { ipcMain } from 'electron';
-import { windowService } from '../window/window.service';
 import { docVectorStoreService } from './doc-vector-store-service';
 
 export class DocVectorStoreController {
   constructor() {
-    ipcMain.handle('sandbox-request', () => {});
-
     ipcMain.handle(
       'add-vector-docs',
       async (event, websites: WebsiteScrapedContent[]) => {
@@ -26,8 +23,10 @@ export class DocVectorStoreController {
 
         const deletePromises = docsToDelete.map((doc) => {
           logToRenderer(
-            windowService.getMainWindow(),
             `Preparing delete promise for documentId ${doc.recordId}`,
+          );
+          logToRenderer(
+            'the metadata' + JSON.stringify(doc.document?.metadata),
           );
           return docVectorStoreService.deleteDoc(doc.recordId);
         });
@@ -38,19 +37,24 @@ export class DocVectorStoreController {
       },
     );
 
-    ipcMain.handle('delete-all-langchain-doc', async () => {
+    ipcMain.handle('delete-all-vector-doc', async () => {
       await docVectorStoreService.deleteAllDocs();
     });
 
-    ipcMain.handle('find-vector-doc', async (event, question: string) => {
-      const relevantDocuments = await docVectorStoreService.searchDocs(
-        question,
-        3,
-      );
+    ipcMain.handle(
+      'find-vector-doc',
+      async (event, question: string): Promise<string> => {
+        const relevantDocuments = await docVectorStoreService.searchDocs(
+          question,
+          3,
+        );
 
-      const aggregation = relevantDocuments?.map((r) => r.pageContent).join('');
-      return aggregation;
-    });
+        const aggregation = relevantDocuments
+          ?.map((r) => r.pageContent)
+          .join('');
+        return aggregation || '';
+      },
+    );
 
     ipcMain.handle(
       'add-doc-in-memory',

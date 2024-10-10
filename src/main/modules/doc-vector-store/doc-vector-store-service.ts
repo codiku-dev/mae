@@ -9,7 +9,6 @@ import { convert } from 'html-to-text';
 import { MemoryVectorStore } from 'langchain/vectorstores/memory';
 import llama3Tokenizer from 'llama3-tokenizer-js';
 import path from 'path';
-import { windowService } from '../window/window.service';
 
 export class DocVectorStoreService {
   private static instance: DocVectorStoreService;
@@ -90,9 +89,7 @@ export class DocVectorStoreService {
 
     await this.vectorStore?.addDocuments(documentsChunks);
 
-    logToRenderer('Saving vector store');
     // await this.vectorStore?.save(this.vectorStorePath);
-    logToRenderer('Vector store saved');
   }
 
   public async searchDocs(query: string, qty: number) {
@@ -155,7 +152,7 @@ export class DocVectorStoreService {
       return;
     }
     this.vectorStore!.docstore._docs.delete(doc.recordId);
-    await this.vectorStore!.save(this.vectorStorePath);
+    // await this.vectorStore!.save(this.vectorStorePath);
 
     return recordId;
   }

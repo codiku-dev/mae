@@ -23,6 +23,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from './tooltip';
+import { ApplicationAPI } from '@/main/modules/application/application-api';
 
 const highlighter = loadHighlighter(
   getHighlighterCore({
@@ -57,10 +58,7 @@ export const CodeRenderer: LLMOutputComponent = (p: { blockMatch: any }) => {
     setTimeout(() => {
       setHasCopiedRecently(false);
     }, 3000);
-    window.electron.ipcRenderer.sendMessage(
-      'copy-text-to-clipboard-request',
-      code,
-    );
+    ApplicationAPI.copyTextToClipboard(code);
   };
 
   if (!html) {

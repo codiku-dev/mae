@@ -6,30 +6,29 @@ import { applicationService } from './application-service';
 export class ApplicationController {
   constructor() {
     ipcMain.handle('user-info-request', async () => {
-      const user = await applicationService.getUserInfo();
-      return user;
+      return await applicationService.getUserInfo();
     });
 
-    ipcMain.on('log', (event, args) => {
+    ipcMain.handle('log', (event, args) => {
       console.log('Log renderer : ', args);
     });
 
-    ipcMain.on('request-open-external-link', (event, link) => {
+    ipcMain.handle('request-open-external-link', (event, link) => {
       applicationService.openExternalLink(link);
       windowService.getMainWindow().webContents.send('global-shortcut', {
         data: { shortcut: 'CommandOrControl+Shift+P' },
       });
     });
 
-    ipcMain.handle('set-app-auto-launch', () => {
-      applicationService.setAppAutoLaunch();
+    ipcMain.handle('toggle-app-auto-launch', (event, enable) => {
+      applicationService.setAppAutoLaunch(enable);
     });
 
     ipcMain.handle('is-app-packaged', () => {
       return applicationService.isAppPackaged();
     });
 
-    ipcMain.on('copy-text-to-clipboard-request', (event, text) => {
+    ipcMain.handle('copy-text-to-clipboard-request', (event, text) => {
       clipboard.writeText(text);
     });
   }

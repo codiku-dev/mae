@@ -24,12 +24,12 @@ export class ApplicationService {
     shell.openExternal(link);
   }
 
-  public setAppAutoLaunch(): void {
+  public setAppAutoLaunch(enable: boolean): void {
     const miaAutoLauncher = new AutoLaunch({
       name: 'Mia',
       path: '/Applications/Mia.app',
     });
-    if (useSettings.getState().isAppLaunchedOnStartup) {
+    if (enable) {
       miaAutoLauncher.enable();
     } else {
       miaAutoLauncher.disable();

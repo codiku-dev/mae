@@ -12,6 +12,7 @@ import { InstallOllamaDialog } from '@/renderer/features/installation/install-ol
 import { toast } from '@/renderer/hooks/use-toast';
 import { OllamaAPI } from '@/main/modules/ollama/ollama-api';
 import { WindowAPI } from '@/main/modules/window/window-api';
+import { ApplicationAPI } from '@/main/modules/application/application-api';
 
 export const AppLoader = () => {
   const navigate = useNavigate();
@@ -35,12 +36,12 @@ export const AppLoader = () => {
   }
 
   async function loadUserInfo() {
-    const userName = await window.electron.ipcRenderer.invoke('user-info-request');
+    const userName = await ApplicationAPI.getUserInfo();
     setUserName(userName);
   }
 
   async function loadIsDebug() {
-    const isPackaged = await window.electron.ipcRenderer.invoke('is-app-packaged');
+    const isPackaged = await ApplicationAPI.isAppPackaged();
     setIsDebug(!isPackaged);
   }
 

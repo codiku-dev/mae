@@ -9,6 +9,7 @@ import { Button } from '@/renderer/ui/button';
 import { BadgeSuggestionList } from '@/renderer/features/ai-chat/searchbar/badge-suggestion-list';
 import { DialogLinkInput } from '@/renderer/features/ai-chat/searchbar/dialog-link-input';
 import { getMentionInListStyle, mentionInInputStyle } from '@/renderer/features/ai-chat/searchbar/searchbar-style';
+import { DocVectorStoreAPI } from '@/main/modules/doc-vector-store/doc-vector-store-api';
 
 type Props = {
   value: string;
@@ -83,10 +84,7 @@ export const Searchbar = forwardRef<HTMLInputElement, Props>(
         const newIndexedWebsiteContent =
           await webScraperService.fetchWebsiteContent(link);
 
-        await window.electron.ipcRenderer.invoke(
-          'add-vector-docs',
-          newIndexedWebsiteContent,
-        );
+        await DocVectorStoreAPI.addDocs(newIndexedWebsiteContent)
 
         addWebsiteToIndexedWebsites({
           url: link,
@@ -120,13 +118,10 @@ export const Searchbar = forwardRef<HTMLInputElement, Props>(
             suggestion: selectedSuggestion?.suggestion,
           },
         ]);
-        await window.electron.ipcRenderer.invoke('delete-all-doc-in-memory');
+        await DocVectorStoreAPI.deleteAllDocsInMemory();
         const websiteContent =
           await webScraperService.fetchWebsiteContent(link);
-        await window.electron.ipcRenderer.invoke(
-          'add-doc-in-memory',
-          websiteContent,
-        );
+        await DocVectorStoreAPI.addDocInMemory(websiteContent);
 
         setisLoading(false);
       }
@@ -169,7 +164,7 @@ export const Searchbar = forwardRef<HTMLInputElement, Props>(
 
     const onDeleteBadge = () => {
       if (dialogMode === SUGGESTION_OPTIONS_ID.SEARCH_WEB) {
-        window.electron.ipcRenderer.invoke('delete-all-doc-in-memory');
+        DocVectorStoreAPI.deleteAllDocsInMemory();
       }
       setCurrentSearchSuggestions([]);
     };

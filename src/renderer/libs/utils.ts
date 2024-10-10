@@ -1,3 +1,4 @@
+import { ApplicationAPI } from '@/main/modules/application/application-api';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -6,7 +7,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function logToMain(data: any) {
-  window.electron.ipcRenderer.sendMessage('log', JSON.stringify(data));
+  ApplicationAPI.log(JSON.stringify(data));
 }
 
 export function normalizeUrl(url: string) {

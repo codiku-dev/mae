@@ -26,10 +26,7 @@ export class HttpService {
       logToRenderer(`Response found for ${url}`);
       return text;
     } catch (error) {
-      logToRenderer(
-        windowService.getMainWindow(),
-        `Error fetching ${url}: ${(error as Error).message}`,
-      );
+      logToRenderer(`Error fetching ${url}: ${(error as Error).message}`);
       throw error;
     }
   }

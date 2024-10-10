@@ -19,6 +19,7 @@ import { LanguageSelectionSection } from '@/renderer/features/settings/language-
 import { ModelSelection } from '@/renderer/features/settings/model-selection';
 import { StartupSection } from '@/renderer/features/settings/startup-section';
 import { WindowAPI } from '@/main/modules/window/window-api';
+import { ApplicationAPI } from '@/main/modules/application/application-api';
 
 type FormValues = {
   isAppLaunchedOnStartup: boolean;
@@ -57,10 +58,7 @@ export function Settings() {
     const modelFile = new ModelFile();
     if (data.isAppLaunchedOnStartup !== isAppLaunchedOnStartup) {
       setIsAppLaunchedOnStartup(data.isAppLaunchedOnStartup);
-      window.electron.ipcRenderer.invoke(
-        'set-app-auto-launch',
-        data.isAppLaunchedOnStartup,
-      );
+      ApplicationAPI.setAppAutoLaunch(data.isAppLaunchedOnStartup);
     }
     if (data.assistantLanguage !== assistantLanguage) {
       setAssistantLanguage(data.assistantLanguage as LanguageCode);

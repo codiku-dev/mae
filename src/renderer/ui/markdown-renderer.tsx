@@ -12,6 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from './table';
+import { ApplicationAPI } from '@/main/modules/application/application-api';
 
 export const MarkdownRenderer = (p: { output: string }) => {
 
@@ -80,11 +81,9 @@ export const MarkdownRenderer = (p: { output: string }) => {
             )}
             onClick={(e) => {
               e.preventDefault();
-              if (href)
-                window.electron.ipcRenderer.sendMessage(
-                  'request-open-external-link',
-                  href,
-                );
+              if (href) {
+                ApplicationAPI.openExternalLink(href);
+              }
             }}
             href={href}
             {...props}

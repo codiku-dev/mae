@@ -10,6 +10,7 @@ import { Conversation } from '@/renderer/features/ai-chat/conversation/conversat
 import { SUGGESTION_OPTIONS_ID, Searchbar } from '@/renderer/features/ai-chat/searchbar/searchbar';
 import { Toolbar } from '@/renderer/features/ai-chat/toolbar/toolbar';
 import { logToMain } from '@/renderer/libs/utils';
+import { DocVectorStoreAPI } from '@/main/modules/doc-vector-store/doc-vector-store-api';
 
 export function AiChat() {
   const [streamedResponse, setStreamedResponse] = useState<string>('');
@@ -134,13 +135,11 @@ export function AiChat() {
 
     if (currentSearchSuggestions.length > 0) {
       if (currentSearchSuggestions[0].id === SUGGESTION_OPTIONS_ID.SEARCH_WEB) {
-        documentationContext = await window.electron.ipcRenderer.invoke(
-          'search-doc-in-memory',
+        documentationContext = await DocVectorStoreAPI.findDocInMemory(
           submittedText,
         );
       } else {
-        documentationContext = await window.electron.ipcRenderer.invoke(
-          'find-vector-doc',
+        documentationContext = await DocVectorStoreAPI.findDoc(
           submittedText,
         );
       }

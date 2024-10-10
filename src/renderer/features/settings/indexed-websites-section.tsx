@@ -16,6 +16,7 @@ import {
 } from '@/renderer/ui/accordion';
 import { formatKbSize } from '@/renderer/libs/utils';
 import { useSearch } from '@/renderer/hooks/use-search';
+import { DocVectorStoreAPI } from '@/main/modules/doc-vector-store/doc-vector-store-api';
 
 export function IndexedWebsiteSection() {
   const {
@@ -36,7 +37,7 @@ export function IndexedWebsiteSection() {
 
     if (isConfirmed) {
       setIndexedWebsitesContent([]);
-      window.electron.ipcRenderer.invoke('delete-all-langchain-doc');
+      DocVectorStoreAPI.deleteAllDocs();
       setCurrentSearchSuggestions([])
       toast({
         title: 'All learned data deleted',
@@ -52,7 +53,7 @@ export function IndexedWebsiteSection() {
 
     if (isConfirmed) {
       deleteIndexedWebsite(url);
-      const docsToDelete = await window.electron.ipcRenderer.invoke('delete-vector-doc', { url: url, partial: true });
+      const docsToDelete = await DocVectorStoreAPI.deleteDoc({ url, partial: true });
       toast({
         title: 'Indexed website deleted',
         description: `All data for ${url} has been removed.`,
@@ -69,7 +70,7 @@ export function IndexedWebsiteSection() {
     );
 
     if (isConfirmed) {
-      const deletedDocs = await window.electron.ipcRenderer.invoke('delete-vector-doc', { url: childUrl, partial: false });
+      const deletedDocs = await DocVectorStoreAPI.deleteDoc({ url: childUrl, partial: true });
       if (deletedDocs.length > 0) {
         deleteWebsiteScrapedContent(parentUrl, childUrl);
         toast({
