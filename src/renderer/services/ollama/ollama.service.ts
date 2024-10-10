@@ -7,6 +7,7 @@ import { ModelFile } from './Modelfile';
 import { LLMConversationHistory, LLMMessage } from './ollama-type';
 import { OllamaModel } from '@/types/model-type';
 import { OllamaChatResponseChunk } from '@/types/ollama-chat';
+import { HttpAPI } from '@/main/modules/http/http-api';
 interface ControllerEntry {
   id: string;
   controller: AbortController;
@@ -170,10 +171,7 @@ export class OllamaService {
 
   async fetchAvailableModels(): Promise<string[]> {
     try {
-      const html = await window.electron.ipcRenderer.invoke(
-        'make-http-request',
-        'https://ollama.com/library',
-      );
+      const html = await HttpAPI.fetchText('https://ollama.com/library');
       const $ = cheerio.load(html);
 
       // CSS selector for the first model
@@ -230,7 +228,6 @@ export class OllamaService {
       }),
     });
     const jsonResp: OllamaChatResponseChunk = await response.json();
-    console.log('jsonResp', jsonResp);
     return jsonResp.message.content;
   }
 }

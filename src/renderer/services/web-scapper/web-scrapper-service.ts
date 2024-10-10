@@ -2,6 +2,7 @@ import * as cheerio from 'cheerio';
 import { decodeHTML } from 'entities';
 import { WebsiteScrapedContent } from '@/renderer/hooks/use-search';
 import { addProtocolToUrl } from '@/renderer/libs/utils';
+import { HttpAPI } from '@/main/modules/http/http-api';
 
 interface ControllerEntry {
   id: string;
@@ -22,10 +23,7 @@ export class WebScraperService {
   async fetchSublinks(url_: string): Promise<string[]> {
     const url = addProtocolToUrl(url_);
     try {
-      let html = await window.electron.ipcRenderer.invoke(
-        'make-http-request',
-        url,
-      );
+      let html = await HttpAPI.fetchText(url);
 
       const $ = cheerio.load(html);
       const sublinks: string[] = [];
@@ -66,10 +64,7 @@ export class WebScraperService {
     const url = addProtocolToUrl(url_);
     try {
       // Fetch HTML from the provided URL
-      let html = await window.electron.ipcRenderer.invoke(
-        'make-http-request',
-        url,
-      );
+      let html = await HttpAPI.fetchText(url);
 
       // Load HTML into Cheerio
       const $ = cheerio.load(html);

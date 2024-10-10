@@ -14,7 +14,7 @@ export class HttpService {
     return HttpService.instance;
   }
 
-  public async makeHttpRequest(
+  public async fetch(
     event: Electron.IpcMainInvokeEvent,
     url: string,
   ): Promise<string> {

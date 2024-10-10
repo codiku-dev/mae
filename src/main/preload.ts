@@ -16,7 +16,7 @@ export type Channels =
   | 'on-searchbar-visibility-change'
   | 'request-show-searchbar'
   | 'reply-show-searchbar'
-  | 'make-http-request'
+  | 'fetch-text'
   | 'toggle-app-auto-launch'
   | 'sandbox-request'
   | 'add-vector-docs'
