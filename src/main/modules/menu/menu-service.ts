@@ -64,7 +64,7 @@ export class MenuService {
   public refreshMenuLabels() {
     this.updateMenuLabel(
       1, // Replace with actual MENU.OPEN_CLOSE.id
-      global.isSearchOpen ? 'Close Mia (⌘+⇧+p)' : 'Open Mia (⌘+⇧+p)',
+      global.path === ROUTES.home ? 'Close Mia (⌘+⇧+p)' : 'Open Mia (⌘+⇧+p)',
     );
   }
 
@@ -101,19 +101,12 @@ export class MenuService {
         windowService.toggleOpenWithAnimation(true);
       }, 100);
     }
-    setTimeout(() => {
-      this.refreshMenuLabels();
-    }, 100);
   }
 
   private handleSettings() {
     navigatorService.navigate(ROUTES.settings);
     setTimeout(() => {
       windowService.toggleOpenWithAnimation(true);
-    }, 100);
-
-    setTimeout(() => {
-      this.refreshMenuLabels();
     }, 100);
   }
 

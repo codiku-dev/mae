@@ -1,3 +1,4 @@
+import { menuService } from '../menu/menu-service';
 import { windowService } from '../window/window.service';
 
 export class NavigatorService {
@@ -19,6 +20,7 @@ export class NavigatorService {
   public updateRoutePath(route: string) {
     console.log(`Updating route path to: ${route}`);
     global.path = route;
+    menuService.refreshMenuLabels();
   }
 }
 

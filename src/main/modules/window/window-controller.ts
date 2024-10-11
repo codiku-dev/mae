@@ -16,8 +16,6 @@ export class WindowController {
 
     ipcMain.handle('request-open-window-with-animation', (event, isVisible) => {
       windowService.toggleOpenWithAnimation(isVisible);
-      global.isSearchOpen = isVisible;
-      menuService.refreshMenuLabels();
     });
 
     console.log('WindowController initialized');

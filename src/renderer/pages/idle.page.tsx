@@ -1,28 +1,28 @@
 import { ROUTES } from "@/routes";
 
 import { WindowAPI } from "@/main/modules/window/window-api";
-import { useLocation, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
-import { ShortcutAPI } from "@/main/modules/shortcuts/shortcut-api";
+import { useNavigate } from "react-router-dom";
+import { useCallback, useEffect } from "react";
 import { logToMain } from "../libs/utils";
+import { ShortcutAPI } from "@/main/modules/shortcuts/shortcut-api";
 
 export function IdlePage() {
     const navigate = useNavigate()
-    const { pathname } = useLocation()
-    useEffect(() => {
 
-        const handleGoHome = () => {
-            navigate(ROUTES.home)
-            setTimeout(() => {
-                WindowAPI.toggleWindowWithAnimation(true)
-            }, 100)
-        }
+    const handleGoHome = useCallback(() => {
+        logToMain("Go to home page");
+        navigate(ROUTES.home);
+        WindowAPI.toggleWindowWithAnimation(true);
+    }, [navigate]);
+
+    useEffect(() => {
         logToMain("Add shortcut listener on Idle page")
-        ShortcutAPI.addGlobalShortcutListener(handleGoHome)
+        const unsubscribe = ShortcutAPI.addGlobalShortcutListener(handleGoHome);
         return () => {
-            ShortcutAPI.removeGlobalShortcutListener(handleGoHome);
+            logToMain("Remove shortcut listener on Idle page")
+            unsubscribe()
         };
-    }, [pathname]);
+    }, [handleGoHome]);
 
     return null
 

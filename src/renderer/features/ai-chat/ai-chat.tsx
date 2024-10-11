@@ -5,7 +5,7 @@ import { useSearch } from '@/renderer/hooks/use-search';
 import { useSettings } from '@/renderer/hooks/use-settings';
 import { ollamaService, } from '@/renderer/services/ollama/ollama.service';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Conversation } from '@/renderer/features/ai-chat/conversation/conversation';
 import { SUGGESTION_OPTIONS_ID, Searchbar } from '@/renderer/features/ai-chat/searchbar/searchbar';
 import { Toolbar } from '@/renderer/features/ai-chat/toolbar/toolbar';
@@ -15,6 +15,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { ShortcutAPI } from '@/main/modules/shortcuts/shortcut-api';
 import { WindowAPI } from '@/main/modules/window/window-api';
 import { logToMain } from '@/renderer/libs/utils';
+import { unsubscribe } from 'diagnostics_channel';
 
 export function AiChat() {
   const [streamedResponse, setStreamedResponse] = useState<string>('');
@@ -46,21 +47,20 @@ export function AiChat() {
   } = useSearch();
   const { getCurrentModel } = useSettings();
 
-  // useEffect(() => {
-  //   setIsVisible(true);
-  // }, []);
+  const handleGoIdle = useCallback(() => {
+    logToMain("Go to idle page")
+    setIsVisible(false)
+    WindowAPI.toggleWindowWithAnimation(false)
+  }, [setIsVisible])
 
-  useEffect(function addOpenCloseListener() {
-    const handleGoiIdle = () => {
-      setIsVisible(false)
-      WindowAPI.toggleWindowWithAnimation(false)
-    }
+  useEffect(() => {
     logToMain("Add shortcut listener on Home page")
-    ShortcutAPI.addGlobalShortcutListener(handleGoiIdle)
+    const unsubscribe = ShortcutAPI.addGlobalShortcutListener(handleGoIdle);
     return () => {
-      ShortcutAPI.removeGlobalShortcutListener(handleGoiIdle);
+      logToMain("Remove shortcut listener on Home page")
+      unsubscribe()
     };
-  }, [pathname]);
+  }, [handleGoIdle])
 
   const clearSearch = async () => {
     await ollamaService.abortAllRequests();
