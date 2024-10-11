@@ -11,11 +11,10 @@ import { SUGGESTION_OPTIONS_ID, Searchbar } from '@/renderer/features/ai-chat/se
 import { Toolbar } from '@/renderer/features/ai-chat/toolbar/toolbar';
 import { DocVectorStoreAPI } from '@/main/modules/doc-vector-store/doc-vector-store-api';
 import { ROUTES } from '@/routes';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { ShortcutAPI } from '@/main/modules/shortcuts/shortcut-api';
 import { WindowAPI } from '@/main/modules/window/window-api';
 import { logToMain } from '@/renderer/libs/utils';
-import { unsubscribe } from 'diagnostics_channel';
 
 export function AiChat() {
   const [streamedResponse, setStreamedResponse] = useState<string>('');
@@ -23,7 +22,6 @@ export function AiChat() {
   const { isDialogOpen } = useAppStore();
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate()
-  const { pathname } = useLocation()
   const {
     createNewConversation,
     addMessageToCurrentConversation,
@@ -48,18 +46,13 @@ export function AiChat() {
   const { getCurrentModel } = useSettings();
 
   const handleGoIdle = useCallback(() => {
-    logToMain("Go to idle page")
     setIsVisible(false)
     WindowAPI.toggleWindowWithAnimation(false)
   }, [setIsVisible])
 
   useEffect(() => {
-    logToMain("Add shortcut listener on Home page")
     const unsubscribe = ShortcutAPI.addGlobalShortcutListener(handleGoIdle);
-    return () => {
-      logToMain("Remove shortcut listener on Home page")
-      unsubscribe()
-    };
+    return unsubscribe
   }, [handleGoIdle])
 
   const clearSearch = async () => {

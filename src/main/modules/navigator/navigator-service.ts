@@ -18,7 +18,7 @@ export class NavigatorService {
   }
 
   public updateRoutePath(route: string) {
-    console.log(`Updating route path to: ${route}`);
+    console.log(`ROUTE UPDATE : ${route}`);
     global.path = route;
     menuService.refreshMenuLabels();
   }
