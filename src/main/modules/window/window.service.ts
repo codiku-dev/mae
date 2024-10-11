@@ -1,4 +1,3 @@
-import { logToMain } from '@/renderer/libs/utils';
 import { BrowserWindow } from 'electron';
 
 class WindowService {

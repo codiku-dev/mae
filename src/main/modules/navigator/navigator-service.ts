@@ -1,4 +1,3 @@
-import { ROUTES } from '@/routes';
 import { windowService } from '../window/window.service';
 
 export class NavigatorService {
@@ -13,16 +12,14 @@ export class NavigatorService {
     return NavigatorService.instance;
   }
 
-  public navigate(pathValue: string): void {
-    if (pathValue !== ROUTES.home) {
-      global.isSearchOpen = false;
-    }
-    global.path = pathValue;
-    windowService.getMainWindow().webContents.send('navigate', pathValue);
+  public navigate(route: string) {
+    windowService.getMainWindow()?.webContents.send('navigate', route);
   }
 
-  // Add other navigation-related methods here as needed
+  public updateRoutePath(route: string) {
+    console.log(`Updating route path to: ${route}`);
+    global.path = route;
+  }
 }
 
-// Export the singleton instance
 export const navigatorService = NavigatorService.getInstance();

@@ -25,6 +25,12 @@ export class OllamaController {
       return isInstalled;
     });
 
+    ipcMain.handle('warmup-default-model', async (event) => {
+      console.log('Event handled: warmup-default-model');
+      await ollamaService.warmupDefaultModel();
+      return true;
+    });
+
     console.log('OllamaController initialized');
   }
 }

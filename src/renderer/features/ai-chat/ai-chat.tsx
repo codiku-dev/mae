@@ -11,15 +11,14 @@ import { SUGGESTION_OPTIONS_ID, Searchbar } from '@/renderer/features/ai-chat/se
 import { Toolbar } from '@/renderer/features/ai-chat/toolbar/toolbar';
 import { DocVectorStoreAPI } from '@/main/modules/doc-vector-store/doc-vector-store-api';
 import { ROUTES } from '@/routes';
-import { NavigatorAPI } from '@/main/modules/navigator/navigator-api';
-import { logToMain } from '@/renderer/libs/utils';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ShortcutAPI } from '@/main/modules/shortcuts/shortcut-api';
 import { WindowAPI } from '@/main/modules/window/window-api';
+import { logToMain } from '@/renderer/libs/utils';
 
 export function AiChat() {
   const [streamedResponse, setStreamedResponse] = useState<string>('');
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
   const { isDialogOpen } = useAppStore();
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate()
@@ -47,15 +46,16 @@ export function AiChat() {
   } = useSearch();
   const { getCurrentModel } = useSettings();
 
-  useEffect(() => {
-    setIsVisible(true);
-  }, []);
+  // useEffect(() => {
+  //   setIsVisible(true);
+  // }, []);
 
   useEffect(function addOpenCloseListener() {
     const handleGoiIdle = () => {
       setIsVisible(false)
       WindowAPI.toggleWindowWithAnimation(false)
     }
+    logToMain("Add shortcut listener on Home page")
     ShortcutAPI.addGlobalShortcutListener(handleGoiIdle)
     return () => {
       ShortcutAPI.removeGlobalShortcutListener(handleGoiIdle);

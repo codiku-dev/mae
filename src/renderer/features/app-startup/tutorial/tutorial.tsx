@@ -3,33 +3,34 @@ import { useAppStore } from '@/renderer/hooks/use-app-store';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/renderer/ui/dialog';
 import { CheckCircle } from 'lucide-react';
 import { ROUTES } from '@/routes';
-import { NavigatorAPI } from '@/main/modules/navigator/navigator-api';
-import { WindowAPI } from '@/main/modules/window/window-api';
 import { ShortcutAPI } from '@/main/modules/shortcuts/shortcut-api';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { WindowAPI } from '@/main/modules/window/window-api';
 
 export const Tutorial = () => {
-
+    const { pathname } = useLocation();
     const { setIsFirstRun } = useAppStore();
+    const navigate = useNavigate();
 
     useEffect(function addOpenCloseListener() {
-        const unsubscribeGlobalShortcut = ShortcutAPI.onGlobalShortcut(
-            (shortcut) => {
-                if (shortcut === 'CommandOrControl+Shift+P') {
-                    setIsFirstRun(false);
-                }
-            },
-        );
-
+        const handleGoToHome = () => {
+            setIsFirstRun(false);
+            navigate(ROUTES.home);
+        }
+        ShortcutAPI.addGlobalShortcutListener(handleGoToHome)
         return () => {
-            unsubscribeGlobalShortcut();
+            ShortcutAPI.removeGlobalShortcutListener(handleGoToHome);
         };
-    }, []);
+    }, [pathname]);
 
     return (
         <Dialog open onOpenChange={(open) => {
             if (!open) {
                 setIsFirstRun(false);
-                NavigatorAPI.navigate(ROUTES.idle);
+                WindowAPI.toggleWindowWithAnimation(false)
+                setTimeout(() => {
+                    navigate(ROUTES.idle);
+                }, 400)
             }
         }}>
             <DialogContent>

@@ -13,8 +13,8 @@ import { toast } from '@/renderer/hooks/use-toast';
 import { OllamaAPI } from '@/main/modules/ollama/ollama-api';
 import { WindowAPI } from '@/main/modules/window/window-api';
 import { ApplicationAPI } from '@/main/modules/application/application-api';
-import { NavigatorAPI } from '@/main/modules/navigator/navigator-api';
 import { logToMain } from '../libs/utils';
+import { NavigatorAPI } from '@/main/modules/navigator/navigator-api';
 
 export const AppLoader = () => {
   const navigate = useNavigate();
@@ -26,6 +26,24 @@ export const AppLoader = () => {
 
   const [isOllamaInstalled, setIsOllamaInstalled] = useState<boolean | null>(null);
 
+  // Allow the main renderer menu to ask the renderer to navigate to a route
+  useEffect(function listenToMainMenuNavigation() {
+    const handleNavigation = (_event: Electron.IpcRendererEvent | string, route: string) => {
+      const path = route || (_event as string);
+      navigate(path);
+    }
+
+    NavigatorAPI.addNavigateListener(handleNavigation);
+    return () => {
+      NavigatorAPI.removeNavigateListener(handleNavigation);
+    };
+  }, []);
+
+  // SO the main renderer knows the route at all time ( and can update the menu accordingly )
+  useEffect(function updateMainRoutePathOnRouteChange() {
+    NavigatorAPI.updateRoutePath(pathname);
+  }, [pathname]);
+
   useEffect(() => {
     beginInstallation()
   }, []);
@@ -34,8 +52,7 @@ export const AppLoader = () => {
     loadUserInfo();
     loadIsDebug();
 
-    // await checkOllamaInstallation()
-    await finishInstallation()
+    await checkOllamaInstallation()
   }
 
   async function loadUserInfo() {
@@ -73,17 +90,19 @@ export const AppLoader = () => {
 
   const finishInstallation = async () => {
     logToMain("finishInstallation")
+    OllamaAPI.warmupDefaultModel();
     await loadInstalledModels();
     setIsOllamaInstalled(true);
     if (isFirstRun) {
       navigate(ROUTES.tutorial);
     } else {
-      navigate(ROUTES.idle);
+      WindowAPI.toggleWindowWithAnimation(false)
+      setTimeout(() => {
+        navigate(ROUTES.idle);
+      }, 400)
     }
 
   };
-
-
 
   async function loadInstalledModels() {
     logToMain("loadInstalledModels")
@@ -100,29 +119,17 @@ export const AppLoader = () => {
     setAvailableModels(newAvailableModels);
   }
 
-  // useEffect(() => {
-  //   const unsubscribe = NavigatorAPI.onNavigate(
-  //     (path) => {
-  //       logToMain("NAVIGATE FRONT TO " + path)
-  //       navigate(path);
-  //     },
-  //   );
+  if (isAppLoading || isOllamaInstalled === null) {
+    return isAppLaunchedOnStartup || isDebug ? null : <SplashScreen />;
+  }
 
-  //   return () => {
-  //     NavigatorAPI.removeNavigateListener(unsubscribe);
-  //   };
-  // }, []);
-
-  // if (isAppLoading || isOllamaInstalled === null) {
-  //   return isAppLaunchedOnStartup || isDebug ? null : <SplashScreen />;
-  // }
 
   return (
     <>
       {isDebug && <DevTool />}
       <Toaster />
       <TooltipProvider delayDuration={100}>
-        {/* {!isOllamaInstalled && <InstallOllamaDialog onInstallationComplete={finishInstallation} />} */}
+        {!isOllamaInstalled && <InstallOllamaDialog onInstallationComplete={finishInstallation} />}
         <Outlet />
       </TooltipProvider>
 

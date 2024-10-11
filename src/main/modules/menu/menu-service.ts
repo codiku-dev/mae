@@ -93,19 +93,25 @@ export class MenuService {
   }
 
   private handleOpenCloseAiChat() {
-    console.log('handleOpenCloseAiChat ', 'currnet global', global.path);
-    if (global.path !== ROUTES.home) {
-      console.log('NOW GO HOME');
+    if (global.path === ROUTES.idle || global.path === ROUTES.home) {
+      shortcutService.emitShortCut('CommandOrControl+Shift+P');
+    } else {
       navigatorService.navigate(ROUTES.home);
+      setTimeout(() => {
+        windowService.toggleOpenWithAnimation(true);
+      }, 100);
     }
     setTimeout(() => {
-      shortcutService.emitShortCut('CommandOrControl+Shift+P');
-    }, 500);
+      this.refreshMenuLabels();
+    }, 100);
   }
 
   private handleSettings() {
-    ipcMain.emit('navigate', ROUTES.settings);
-    windowService.getMainWindow().show();
+    navigatorService.navigate(ROUTES.settings);
+    setTimeout(() => {
+      windowService.toggleOpenWithAnimation(true);
+    }, 100);
+
     setTimeout(() => {
       this.refreshMenuLabels();
     }, 100);

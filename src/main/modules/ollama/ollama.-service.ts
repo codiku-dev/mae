@@ -1,12 +1,9 @@
-import { exec } from 'child_process';
+import { exec, spawn, ChildProcess } from 'child_process';
 import { promises as fsPromises } from 'fs';
 import { promisify } from 'util';
 import { getResourcesPath, logToRenderer, sleep } from '../../../libs/utils';
 import { OllamaConfig } from '@/renderer/services/ollama/ollama.config';
-import path from 'path';
-import { spawn } from 'child_process';
-import { windowService } from '../window/window.service';
-import { app } from 'electron';
+import treeKill from 'tree-kill';
 
 const execAsync = promisify(exec);
 
@@ -32,23 +29,49 @@ export class OllamaService {
     logToRenderer('BEGINNING OF INSTALL FUNCTION');
 
     return new Promise((resolve, reject) => {
-      // For packaged app (DMG)
       let scriptPath = getResourcesPath(
         '/assets/scripts/installation/install.sh',
       );
       logToRenderer(`Script path: ${scriptPath}`);
 
-      const child = spawn('sh', [scriptPath], {
+      const child: ChildProcess = spawn('sh', [scriptPath], {
         stdio: ['ignore', 'pipe', 'pipe'],
       });
 
-      child.stdout.on('data', (data) => {
+      const killProcess = () => {
+        if (child.pid) {
+          treeKill(child.pid, 'SIGKILL', (err) => {
+            if (err) {
+              console.error('Failed to kill process tree:', err);
+              logToRenderer(`Failed to kill process tree: ${err}`);
+            } else {
+              console.log('Process tree killed successfully : PID', child.pid);
+              logToRenderer(
+                `Process tree killed successfully : PID ${child.pid}`,
+              );
+            }
+          });
+        }
+      };
+
+      const cleanupAndResolve = (success: boolean) => {
+        killProcess();
+        child?.stdout?.removeAllListeners('data');
+        child?.stderr?.removeAllListeners('data');
+        child?.removeAllListeners('close');
+        child?.removeAllListeners('exit');
+        resolve(success);
+      };
+
+      child?.stdout?.on('data', async (data) => {
         console.log('Ollama installation output:', data.toString());
-        logToRenderer(data.toString());
         onProgress(data.toString());
+        if (data.toString().includes('Installation complete')) {
+          cleanupAndResolve(true);
+        }
       });
 
-      child.stderr.on('data', (data) => {
+      child?.stderr?.on('data', (data) => {
         console.error('Command error output:', data.toString());
         logToRenderer(data.toString());
         onProgress(data.toString());
@@ -59,7 +82,7 @@ export class OllamaService {
           console.log('Ollama installation completed successfully.');
           logToRenderer('Ollama installation completed successfully.');
           onProgress('Ollama installation completed successfully.');
-          resolve(true);
+          cleanupAndResolve(true);
         } else {
           console.error(`Ollama installation failed with code ${code}`);
           logToRenderer(`Ollama installation failed with code ${code}`);
@@ -72,6 +95,7 @@ export class OllamaService {
         console.log('Ollama installation. EXITING');
         logToRenderer('Ollama installation. EXITING');
         resolve(true);
+        return;
       });
     });
   }
@@ -164,8 +188,8 @@ export class OllamaService {
     await this.start();
   }
 
-  public async preloadDefaultModel() {
-    await fetch('http://localhost:11434/api/chat', {
+  public async warmupDefaultModel() {
+    const data = await fetch('http://localhost:11434/api/generate', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -176,6 +200,7 @@ export class OllamaService {
         stream: false,
       }),
     });
+    const json = await data.json();
   }
 }
 

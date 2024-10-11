@@ -20,16 +20,17 @@ export class OnStart {
   public async init() {
     new WindowController();
     new ApplicationController();
-    // new NavigatorController();
+    new NavigatorController();
     new MenuController();
     new HttpController();
     new DocVectorStoreController();
     new ShortcutController();
     new OllamaController();
 
+    //Todo : We don't know if ollama installed though, we should check that first
     await ollamaService.restart();
     try {
-      await ollamaService.preloadDefaultModel();
+      await ollamaService.warmupDefaultModel();
       await docVectorStoreService.init();
     } catch (error) {
       console.log("'request-before-start error", error);

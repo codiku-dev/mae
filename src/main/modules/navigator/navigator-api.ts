@@ -1,17 +1,24 @@
 import { logToMain } from '@/renderer/libs/utils';
+import { ipcRenderer } from 'electron';
 
 export class NavigatorAPI {
-  public static async navigate(pathValue: string) {
-    window.electron.ipcRenderer.sendMessage('navigate', pathValue);
+  public static async navigate(route: string) {
+    return await window.electron.ipcRenderer.invoke('navigate', route);
   }
 
-  public static onNavigate(callback: (pathValue: string) => void): () => void {
-    return window.electron.ipcRenderer.on('navigate', (event, pathValue) => {
-      callback(event || pathValue);
-    });
+  public static addNavigateListener(
+    callback: (event: Electron.IpcRendererEvent, route: string) => void,
+  ) {
+    window.electron.ipcRenderer.on('navigate', callback);
   }
 
-  public static removeNavigateListener(callback: (pathValue: string) => void) {
+  public static removeNavigateListener(
+    callback: (event: Electron.IpcRendererEvent, route: string) => void,
+  ) {
     window.electron.ipcRenderer.removeListener('navigate', callback);
+  }
+
+  public static updateRoutePath(route: string) {
+    window.electron.ipcRenderer.invoke('update-route-path', route);
   }
 }

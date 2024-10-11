@@ -20,6 +20,8 @@ import { ModelSelection } from '@/renderer/features/settings/model-selection';
 import { StartupSection } from '@/renderer/features/settings/startup-section';
 import { WindowAPI } from '@/main/modules/window/window-api';
 import { ApplicationAPI } from '@/main/modules/application/application-api';
+import { OllamaAPI } from '@/main/modules/ollama/ollama-api';
+import { useNavigate } from 'react-router-dom';
 
 type FormValues = {
   isAppLaunchedOnStartup: boolean;
@@ -27,6 +29,7 @@ type FormValues = {
   modelId: string;
 };
 export function Settings() {
+  const navigate = useNavigate();
   const { indexedWebsitesContent } = useSearch();
   const { conversationHistory } = useConversations();
   const {
@@ -84,21 +87,15 @@ export function Settings() {
         }),
       );
       requireModelUpdate = true;
-      // warmup the mdel
+      // warmup the model
+
     }
     if (requireModelUpdate) {
       await ollamaService.createOllamaModelFromModelFile(
         data.modelId + '-mia',
         modelFile,
       );
-      await ollamaService.requestLlamaStream(
-        data.modelId,
-        [{ role: 'user', content: 'Hello' }],
-        '',
-        undefined,
-        undefined,
-        false,
-      );
+      await OllamaAPI.warmupDefaultModel();
     }
 
     setIsLoading(false);
@@ -116,8 +113,8 @@ export function Settings() {
       size="icon"
       className=""
       onClick={() => {
-        window.electron.ipcRenderer.sendMessage('navigate', ROUTES.home);
         WindowAPI.hideWindow();
+        navigate(ROUTES.idle);
       }}
     >
       <X className="h-6 w-6" />

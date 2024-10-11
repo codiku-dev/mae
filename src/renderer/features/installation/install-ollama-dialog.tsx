@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useToast } from '@/renderer/hooks/use-toast';
 import { LoadingSpinner } from '@/renderer/ui/loading-spinner';
 import { OllamaAPI } from '@/main/modules/ollama/ollama-api';
@@ -10,10 +10,13 @@ interface Props {
 export const InstallOllamaDialog = (p: Props) => {
     const [output, setOutput] = useState<string[]>([]);
     const { toast } = useToast();
+    const outputRef = useRef<HTMLDivElement>(null);
+    const [userScrolled, setUserScrolled] = useState(false);
 
     const appendLogs = (output_: string) => {
         setOutput(prev => [...prev, output_]);
     }
+
     useEffect(() => {
         installOllama();
         OllamaAPI.onInstallationProgress(appendLogs);
@@ -21,6 +24,20 @@ export const InstallOllamaDialog = (p: Props) => {
             OllamaAPI.removeInstallationProgressListener(appendLogs);
         };
     }, []);
+
+    useEffect(() => {
+        if (!userScrolled && outputRef.current) {
+            outputRef.current.scrollTop = outputRef.current.scrollHeight;
+        }
+    }, [output, userScrolled]);
+
+    const handleScroll = () => {
+        if (outputRef.current) {
+            const { scrollTop, scrollHeight, clientHeight } = outputRef.current;
+            const isScrolledToBottom = scrollHeight - scrollTop === clientHeight;
+            setUserScrolled(!isScrolledToBottom);
+        }
+    };
 
     const installOllama = async () => {
         try {
@@ -48,7 +65,11 @@ export const InstallOllamaDialog = (p: Props) => {
                     <LoadingSpinner className="mr-2" />
                     <p>Mia needs the Ollama application to run. Please wait while Ollama is being installed...</p>
                 </div>
-                <div className='mt-4 bg-gray-100 p-4 rounded-md max-h-60 overflow-y-auto'>
+                <div
+                    ref={outputRef}
+                    onScroll={handleScroll}
+                    className='mt-4 bg-gray-100 p-4 rounded-md max-h-60 overflow-y-auto'
+                >
                     {output.map((line, index) => (
                         <p key={index} className='text-sm font-mono mb-1'>{line}</p>
                     ))}

@@ -25,4 +25,8 @@ export class OllamaAPI {
   public static async checkOllamaInstalled() {
     return await window.electron.ipcRenderer.invoke('check-ollama-installed');
   }
+
+  public static async warmupDefaultModel() {
+    return await window.electron.ipcRenderer.invoke('warmup-default-model');
+  }
 }
