@@ -64,7 +64,7 @@ export class MenuService {
   public refreshMenuLabels() {
     this.updateMenuLabel(
       1, // Replace with actual MENU.OPEN_CLOSE.id
-      global.path === ROUTES.home ? 'Close Mia (⌘+⇧+p)' : 'Open Mia (⌘+⇧+p)',
+      global.path === ROUTES.aiChat ? 'Close Mia (⌘+⇧+p)' : 'Open Mia (⌘+⇧+p)',
     );
   }
 
@@ -93,10 +93,10 @@ export class MenuService {
   }
 
   private handleOpenCloseAiChat() {
-    if (global.path === ROUTES.idle || global.path === ROUTES.home) {
+    if (global.path === ROUTES.idle || global.path === ROUTES.aiChat) {
       shortcutService.emitShortCut('CommandOrControl+Shift+P');
     } else {
-      navigatorService.navigate(ROUTES.home);
+      navigatorService.navigate(ROUTES.aiChat);
       setTimeout(() => {
         windowService.toggleOpenWithAnimation(true);
       }, 100);

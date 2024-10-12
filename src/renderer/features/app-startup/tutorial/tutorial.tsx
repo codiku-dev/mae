@@ -1,27 +1,26 @@
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useAppStore } from '@/renderer/hooks/use-app-store';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/renderer/ui/dialog';
 import { CheckCircle } from 'lucide-react';
 import { ROUTES } from '@/routes';
 import { ShortcutAPI } from '@/main/modules/shortcuts/shortcut-api';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { WindowAPI } from '@/main/modules/window/window-api';
 
 export const Tutorial = () => {
-    const { pathname } = useLocation();
     const { setIsFirstRun } = useAppStore();
     const navigate = useNavigate();
 
-    useEffect(function addOpenCloseListener() {
-        const handleGoToHome = () => {
-            setIsFirstRun(false);
-            navigate(ROUTES.home);
-        }
-        ShortcutAPI.addGlobalShortcutListener(handleGoToHome)
-        return () => {
-            ShortcutAPI.removeGlobalShortcutListener(handleGoToHome);
-        };
-    }, [pathname]);
+    const handleGoToHome = useCallback(() => {
+        setIsFirstRun(false);
+        navigate(ROUTES.aiChat);
+    }, [navigate, setIsFirstRun])
+
+
+    useEffect(() => {
+        const unsubscribe = ShortcutAPI.addGlobalShortcutListener(handleGoToHome);
+        return unsubscribe
+    }, [handleGoToHome])
 
     return (
         <Dialog open onOpenChange={(open) => {

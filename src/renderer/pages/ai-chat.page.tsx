@@ -1,7 +1,7 @@
 
 import { AiChat } from '../features/ai-chat/ai-chat';
 
-export function HomePage() {
+export function AiChatPage() {
 
   return (
     <AiChat />

@@ -1,7 +1,6 @@
 // Disable no-unused-vars, broken for spread args
 /* eslint no-unused-vars: off */
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
-import { NavigatorAPI } from './modules/navigator/navigator-api';
 
 export type Channels =
   | 'global-shortcut'
@@ -62,5 +61,3 @@ const electronHandler = {
 contextBridge.exposeInMainWorld('electron', electronHandler);
 
 export type ElectronHandler = typeof electronHandler;
-
-contextBridge.exposeInMainWorld('navigator', NavigatorAPI);

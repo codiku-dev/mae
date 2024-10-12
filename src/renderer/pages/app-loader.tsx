@@ -32,11 +32,8 @@ export const AppLoader = () => {
       const path = route || (_event as string);
       navigate(path);
     }
-
-    NavigatorAPI.addNavigateListener(handleNavigation);
-    return () => {
-      NavigatorAPI.removeNavigateListener(handleNavigation);
-    };
+    const unsubscribe = NavigatorAPI.addNavigateListener(handleNavigation);
+    return unsubscribe
   }, []);
 
   // SO the main renderer knows the route at all time ( and can update the menu accordingly )

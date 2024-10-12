@@ -28,7 +28,7 @@ export class OnStart {
     new OllamaController();
 
     //Todo : We don't know if ollama installed though, we should check that first
-    await ollamaService.restart();
+    await ollamaService.start();
     try {
       await ollamaService.warmupDefaultModel();
       await docVectorStoreService.init();

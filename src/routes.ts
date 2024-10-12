@@ -1,7 +1,7 @@
 export const ROUTES = Object.freeze({
   root: '/',
   idle: '/idle',
-  home: '/home',
+  aiChat: '/ai-chat',
   settings: '/settings',
   tutorial: '/tutorial',
   // root: '/sandbox',

@@ -14,7 +14,6 @@ import { ROUTES } from '@/routes';
 import { useNavigate } from 'react-router-dom';
 import { ShortcutAPI } from '@/main/modules/shortcuts/shortcut-api';
 import { WindowAPI } from '@/main/modules/window/window-api';
-import { logToMain } from '@/renderer/libs/utils';
 
 export function AiChat() {
   const [streamedResponse, setStreamedResponse] = useState<string>('');

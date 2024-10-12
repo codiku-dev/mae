@@ -9,7 +9,7 @@ export function IdlePage() {
     const navigate = useNavigate()
 
     const handleGoHome = useCallback(() => {
-        navigate(ROUTES.home);
+        navigate(ROUTES.aiChat);
         WindowAPI.toggleWindowWithAnimation(true);
     }, [navigate]);
 
